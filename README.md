@@ -22,7 +22,7 @@ Guidelines for contributing
 Community Information
 
 ## Versioning
-
+Version information
 
 ## Creators
 
