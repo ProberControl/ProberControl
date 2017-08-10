@@ -1,0 +1,190 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Write a Doc-String &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Writing a Configuration File" href="writeConfigFile.html" />
+    <link rel="prev" title="Plotter" href="../components/plotter.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="write-a-doc-string">
+<h1>Write a Doc-String<a class="headerlink" href="#write-a-doc-string" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>A doc-string appears below every function header and indicates the following:</dt>
+<dd><ol class="first last arabic simple">
+<li>What, how, and why the function does</li>
+<li>Parameters and their types</li>
+<li>Any Exceptions the function may raise</li>
+<li>The return type and expected value</li>
+<li>Usage Example</li>
+</ol>
+</dd>
+</dl>
+<p>The doc-string is important for several reasons. It is not up to the reader of source code to figure out the logic, implementation, reasoning, and usage of any given function. The designer should provide insights into the function’s attributes and usage by using a doc-string and appropriate comments.</p>
+<dl class="docutils">
+<dt>There are a few of conventions any doc-string in ProberControl will follow:</dt>
+<dd><ol class="first last arabic simple">
+<li><dl class="first docutils">
+<dt>Use the syntax for the following:</dt>
+<dd><ol class="first last loweralpha">
+<li><code class="docutils literal"><span class="pre">:param</span> <span class="pre">YourNameHere:</span></code> Description of parameter</li>
+<li><code class="docutils literal"><span class="pre">:type</span> <span class="pre">YourNameHere:</span></code> Data type of parameter</li>
+<li><code class="docutils literal"><span class="pre">:returns:</span> <span class="pre">...</span></code> The expected value and data type returned by a function</li>
+<li><code class="docutils literal"><span class="pre">:raises:</span> <span class="pre">...</span></code> Any exceptions this function may raise</li>
+</ol>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+<p>Doc-strings are strictly indicated by the triple single quotes: <code class="docutils literal"><span class="pre">'''Doc-String'''</span></code></p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">scaled</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">query_range</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Queries the voltage of multimeter.</span>
+
+<span class="sd">    :param scaled: Optional scaling</span>
+<span class="sd">    :type scaled: Boolean</span>
+<span class="sd">    :param query_range: range for query</span>
+<span class="sd">    :type query_range: Integer</span>
+<span class="sd">    :param resolution: resolution for query</span>
+<span class="sd">    :type resolution: Float</span>
+<span class="sd">    :returns: current voltage reading as float</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;MEAS:VOLT:DC?)</span>
+    <span class="k">return</span> <span class="n">val</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">__cmd_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Handles exceptions for raw_function()</span>
+
+<span class="sd">    :param command: takes a single command as String</span>
+<span class="sd">    :type command: String</span>
+<span class="sd">    :param query: if command is a query, then True. Defaults to False.</span>
+<span class="sd">    :type query: Boolean</span>
+<span class="sd">    :returns: a reply if query as String</span>
+<span class="sd">    :raises: Exception, VisaTimeoutError</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">query</span><span class="p">:</span> <span class="c1"># expects a reply</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_switch</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># expects no reply</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_switch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Write a Doc-String</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../components/plotter.html" title="previous chapter">Plotter</a></li>
+      <li>Next: <a href="writeConfigFile.html" title="next chapter">Writing a Configuration File</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/howto/writingDocStrings.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/source/howto/writingDocStrings.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

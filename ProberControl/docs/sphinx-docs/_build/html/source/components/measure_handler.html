@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MeasureHandler &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Plotter" href="plotter.html" />
+    <link rel="prev" title="Maitre" href="maitre.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="measurehandler">
+<h1>MeasureHandler<a class="headerlink" href="#measurehandler" title="Permalink to this headline">¶</a></h1>
+<p>The measure handler is the entity that will control and distribute access of the measurement instruments, such as dc multi-meters or optical power-meters, to the procedures or objects that require them. The handler takes away from the specific functions the responsibility to know exactly what instruments they are dealing with. The functions will only need to provide the type of instrument they need and the measure handler will perform all the necessary work to find such an instrument.</p>
+<dl class="docutils">
+<dt><strong>Interface:</strong></dt>
+<dd>The measure handler functionality is cleanly exposed by a single class called Global_MeasureHandler. The class utilizes a Singleton scheme so the same object will be accessed from anywhere in the code. The constructor only needs a reference to the Stages dictionary:</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@Singleton</span>        <span class="c1"># apply the Singleton decorator</span>
+<span class="k">class</span> <span class="nc">Global_MeasureHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Stages</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Instruments</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Stages</span> <span class="o">=</span> <span class="n">Stages</span>
+</pre></div>
+</div>
+<p>Internally the class should utilize a two level table[1]_ to classify the different instruments. It should look like this:</p>
+<a class="reference internal image-reference" href="../../_images/diagram.png"><img alt="../../_images/diagram.png" class="align-center" src="../../_images/diagram.png" style="width: 600px; height: 300px;" /></a>
+<p>The core of the measure handler’s functionality lies on the nature of the attribute type in the main dictionary. In the current implementation this attribute is the measurement type the instrument performs (ex. DC, RF, optical). The attribute type could as well be the kind of function that the specific interface of the instrument exposes (ex. Does it implement get_current() ?). The final entries are triplets (function, threshold, user). What the user of the Global_MeasureHandler is interested in is the measurement function and any associated values that help in the tests (ex. the power threshold for optical coupling).</p>
+<dl class="docutils">
+<dt>A description of the class’s methods is provided below:</dt>
+<dd><dl class="first last docutils">
+<dt><code class="docutils literal"><span class="pre">__INIT__(SELF,</span> <span class="pre">STAGES)</span></code></dt>
+<dd>The constructor will simply get a reference to the Stages dictionary. This is how it gains access to the actual instrument objects. In the initialization stage of the prober software (<code class="docutils literal"><span class="pre">ProberControl.py</span></code>), all machines specified in the <code class="docutils literal"><span class="pre">ProberConfig.conf</span></code> file are initialized and passed in the dictionary Stages. Since all the functions after that use the equipment through that dictionary it acts as a synchronization point and thus we don’t want the measure_handler to have a separate copy of that list. It should be examined, though, whether the measurement instruments should never make it into Stages, but only be kept in <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code>.</dd>
+<dt><code class="docutils literal"><span class="pre">INSERT_INSTR(SELF,</span> <span class="pre">STAGE_NAME,</span> <span class="pre">INSTR_ATTR)</span></code></dt>
+<dd>This is the function that adds an instrument to the measure_handler. In the current implementation we use the stage_name as the primary id of the instrument, since we have the Stages reference from where we get the underlying object, to access its functions, attributes, etc. The instr_attr argument is the attribute that will determine instrument’s place in the data structure. For the multilevel table and the complex classification extensions discussed in a comment earlier, the <code class="docutils literal"><span class="pre">instr_attr</span></code> argument could be a list of such attributes.</dd>
+<dt><code class="docutils literal"><span class="pre">GET_INSTR(SELF,</span> <span class="pre">INSTR_ATTR,</span> <span class="pre">PAIR=FALSE)</span></code></dt>
+<dd>This is one of the function that is used by the testing procedures to get an instrument measurement function form the handler. The user specifies the attribute they want the instrument to have, and the handler will return the first such available instrument-function. If the pair optional argument is set True, then the function returns a tuple composed of the measurement function and the associated value(s).</dd>
+<dt><code class="docutils literal"><span class="pre">GET_INSTR_BY_NAME(SELF,</span> <span class="pre">INSTR_NAME,</span> <span class="pre">PAIR=FALSE)</span></code></dt>
+<dd>In the case where a very specific test function requires a specific instrument, the latter can get requested by name from the handler. If that instrument is available, the method will return the wanted function (and value(s), as specified by the pair parameter, see <code class="docutils literal"><span class="pre">get_instr</span></code>). Otherwise, there are two ways to go: We either find an available instrument that shares the same attributes with the one requested, or we signal the caller that the requested instrument is currently unavailable.</dd>
+<dt>PARALLELISM</dt>
+<dd>In the method descriptions above the notion of availability is extensively referenced. The general idea behind that is that we would like in the future for the testing procedure to become pipelined so that different tests can be performed at the same time. In that case strict mechanism has to be defined to distribute the instrument resources. The Global_MeasureHandler is also responsible for that. This is what the user field in the table entries are for. Also if tests are to be performed in parallel, the measure_handler should be completely thread safe, securing the data structure with locks where necessary.
+SIDE EFFECTS</dd>
+<dt>CONFIGURATION FILE</dt>
+<dd>Because of the way we want the measure handler to work, we need to get instrument classification information from somewhere (that would go into the insert_instr call). Thus, the ProberConfig.conf file and its parsing mechanism within ProberControl.py should expand to accommodate the insertion of descriptions at least for the instrument entries that are used for measurements (whose names begin with ‘M’).</dd>
+<dt>SWITCHING</dt>
+<dd>The development of Global_MeasureHandler should also allow for an efficient way of interacting with the module that will control the large switch which will connect the different components. Some example code could look like:</dd>
+</dl>
+</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">some_test_function</span><span class="p">(</span><span class="n">blah</span><span class="p">,</span> <span class="n">blah</span><span class="p">):</span>
+    <span class="n">g_mh</span> <span class="o">=</span> <span class="n">Global_MeasureHandler</span><span class="p">()</span>
+    <span class="c1"># more stuff...</span>
+
+<span class="n">fun</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">g_mh</span><span class="o">.</span><span class="n">get_instr</span><span class="p">(</span><span class="s1">&#39;DC&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+<span class="n">switch</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">switch_id_of</span><span class="p">(</span><span class="n">fun</span><span class="p">),</span> <span class="n">this_fiber</span><span class="p">)</span>
+<span class="c1">#continue with test...</span>
+</pre></div>
+</div>
+<p>The GUI is based on Tkinter. The constructor has the following dynamic parts:
+1.    It generates the line with Item 6,7,8 dynamically depending whether a stage or measurement tool is connected
+2.    Line A is equipped with buttons representing the stages keys in the stages Dictionary.</p>
+<p><a href="#id2"><span class="problematic" id="id3"><span id="id1"></span>[1]_</span></a> The design of Global_MeasureHandler should be such that in the future it can easily allow for more complex classification of instruments with multi-level tables. Optimally the underlying data structure of the handler would be able to classify instruments in many possible ways, to accommodate what the testing procedures need.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="maitre.html" title="previous chapter">Maitre</a></li>
+      <li>Next: <a href="plotter.html" title="next chapter">Plotter</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/components/measure_handler.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/source/components/measure_handler.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

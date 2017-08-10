@@ -1,0 +1,215 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>classes.gonio_stage &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for classes.gonio_stage</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Gonio-Stage class</span>
+<span class="c1"># Inherits from Motor</span>
+
+<span class="c1"># TODO: - find the specific step to degree coeff.</span>
+<span class="c1">#        - design a precise mechanism to detect when the stage has reached a limit</span>
+
+<span class="kn">from</span> <span class="nn">Motor</span> <span class="k">import</span> <span class="n">Motor</span>
+<span class="kn">from</span> <span class="nn">Motor</span> <span class="k">import</span> <span class="n">hexString</span>
+<span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">STEPS_PER_MM</span> <span class="o">=</span> <span class="mi">34304</span>
+
+<span class="c1"># GNL18 data</span>
+<span class="n">GNL18_ZERO_2_FIVE</span> <span class="o">=</span> <span class="mf">5.6</span>    <span class="c1"># in mm</span>
+<span class="n">GNL18_STEPS_PER_DEG</span> <span class="o">=</span> <span class="n">STEPS_PER_MM</span> <span class="o">*</span> <span class="n">GNL18_ZERO_2_FIVE</span> <span class="o">/</span> <span class="mi">5</span>
+<span class="n">GNL18_STOP_LIMIT</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># GNL10 data</span>
+<span class="n">GNL10_TEN_2_ZERO</span> <span class="o">=</span> <span class="mf">6.6999</span>    <span class="c1"># in mm</span>
+<span class="n">GNL10_STEPS_PER_DEG</span> <span class="o">=</span> <span class="n">STEPS_PER_MM</span> <span class="o">*</span> <span class="n">GNL10_TEN_2_ZERO</span> <span class="o">/</span> <span class="mi">10</span>
+<span class="n">GNL10_STOP_LIMIT</span> <span class="o">=</span> <span class="mi">10</span>
+
+<div class="viewcode-block" id="GonStage"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage">[docs]</a><span class="k">class</span> <span class="nc">GonStage</span><span class="p">(</span><span class="n">Motor</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Constructor</span>
+<span class="sd">         </span>
+<span class="sd">         self (serial.Serial): the serial object bound to the device</span>
+<span class="sd">         model (string): the goniometer stage model (&#39;GNL10&#39; or &#39;GNL18&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    
+        <span class="n">Motor</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">[</span><span class="s1">&#39;ClassName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GonStage&#39;</span>    <span class="c1"># for logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">()</span>
+        <span class="c1"># set internal constants based on model</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;GNL18&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STEPS_PER_DEG</span> <span class="o">=</span> <span class="n">GNL18_STEPS_PER_DEG</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span> <span class="o">=</span> <span class="n">GNL18_STOP_LIMIT</span>
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;GNL10&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STEPS_PER_DEG</span> <span class="o">=</span> <span class="n">GNL10_STEPS_PER_DEG</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span> <span class="o">=</span> <span class="n">GNL10_STOP_LIMIT</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;invalid model &lt;</span><span class="si">{}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">()</span>
+        <span class="c1"># move to middle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deg_zero</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_as_zero</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">))</span>
+        
+        
+<div class="viewcode-block" id="GonStage.home"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.home">[docs]</a>    <span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Puts the motor to backward limit position, so that the</span>
+<span class="sd">         position markers make sense</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="c1"># NOTE: Might need to call &lt; MGMSG_MOT_SET_TSTACTUATORTYPE &gt; first</span>
+        
+        <span class="c1"># MGMSG_MOT_MOVE_HOME</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;43 04 01 00 50 01&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">reset_input_buffer</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;44 04 01 00 01 50&#39;</span><span class="p">):</span>    <span class="c1"># MGMSG_MOT_MOVE_HOMED</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;problem homing&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;homed successfully.&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="GonStage.delta_rot"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.delta_rot">[docs]</a>    <span class="k">def</span> <span class="nf">delta_rot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degs</span><span class="p">):</span>     <span class="c1">#, m_callback = None, params = ()):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Relative translation on the motor</span>
+<span class="sd">         </span>
+<span class="sd">         degs (float): the millimeters of rotation (negative -&gt; backwards)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="c1"># check that we will be within limits</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+</span> <span class="n">degs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;input would cause out of bounds error [</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+</span> <span class="n">degs</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+=</span> <span class="n">degs</span>
+        <span class="c1"># convert millimeters to steps</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">degs</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">STEPS_PER_DEG</span><span class="p">))</span>
+        
+        <span class="n">Motor</span><span class="o">.</span><span class="n">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="GonStage.abs_rot"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.abs_rot">[docs]</a>    <span class="k">def</span> <span class="nf">abs_rot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Absolute translation on the motor</span>
+<span class="sd">         </span>
+<span class="sd">         degs (float): the millmeters of rotation (negative -&gt; backwards)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="c1"># check limits</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">degs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;out of bounds error [</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degs</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># convert degrees to steps</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">degs</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">STEPS_PER_DEG</span><span class="p">))</span>
+        
+        <span class="n">Motor</span><span class="o">.</span><span class="n">abs_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">=</span> <span class="n">degs</span></div>
+        
+<div class="viewcode-block" id="GonStage.get_deg_pos"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.get_deg_pos">[docs]</a>    <span class="k">def</span> <span class="nf">get_deg_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         return the motors current position, in millimeters</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span></div>
+        
+<div class="viewcode-block" id="GonStage.set_as_zero"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.set_as_zero">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zer_deg</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         change the origin (zero)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="n">n_zero</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">zer_deg</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">STEPS_PER_DEG</span><span class="p">))</span>
+        <span class="n">Motor</span><span class="o">.</span><span class="n">set_as_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_zero</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">deg_zero</span> <span class="o">=</span> <span class="n">zer_deg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">-=</span> <span class="n">zer_deg</span></div></div>
+        
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

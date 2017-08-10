@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Write and Execute a Measurement Script &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Writing a Coordinate File" href="coordinateFile.html" />
+    <link rel="prev" title="Interface with a Multi-Channel Device" href="interfaceMultiChannel.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="write-and-execute-a-measurement-script">
+<h1>Write and Execute a Measurement Script<a class="headerlink" href="#write-and-execute-a-measurement-script" title="Permalink to this headline">¶</a></h1>
+<p>Measurement scripts are used to automate experiments that may take a long time. There are two ways to run measurement scripts. They can be run via the command line or they can be launched over the graphical user interface (GUI).</p>
+<div class="section" id="running-scripts">
+<h2>Running Scripts<a class="headerlink" href="#running-scripts" title="Permalink to this headline">¶</a></h2>
+<p>Interfacing through the GUI allows you to locate the script to run via a navigation window. After choosing your script to be ran, use the <code class="docutils literal"><span class="pre">Execute</span> <span class="pre">Script</span></code> button to begin the script. You’ll see a progress bar launched in the command-prompt window. The results will be written to a file <code class="docutils literal"><span class="pre">results.csv</span></code> in the <code class="docutils literal"><span class="pre">config</span></code> directory.</p>
+<p>You can also run the script via the command line which is described <a class="reference external" href="/launching.html">here</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you run a script, you can continue to interface with your ProberControl system. The instruments that are locked for the duration of the script will not be available to you until the script is finished, so you shouldn’t worry about collisions between devices.</p>
+</div>
+<a class="reference internal image-reference" href="../../_images/scripting.PNG"><img alt="../../_images/scripting.PNG" class="align-center" src="../../_images/scripting.PNG" style="width: 450px; height: 500px;" /></a>
+</div>
+<div class="section" id="writing-scripts">
+<h2>Writing Scripts<a class="headerlink" href="#writing-scripts" title="Permalink to this headline">¶</a></h2>
+<p>Writing a measuremeant script is similiar to writing a configuration file. We use the same notation, relying on the <code class="docutils literal"><span class="pre">#</span></code> symbol to designate certain features and a new line defining the beginning and end of an information block. For any experiment or execution of function, you’ll need to write an information block. The <code class="docutils literal"><span class="pre">direct</span></code> and <code class="docutils literal"><span class="pre">indirect</span></code> information blocks are defined below.</p>
+<p>There are two kinds of interactions that you can have when scripting. You can either interface with an instrument directly, i.e. telling a laser to have a certain wavelength or you can interface with an entire structure that you’ve defined in a coordinates file. You can find an example of a each in the <code class="docutils literal"><span class="pre">templates</span></code> folder. You can also mix these two types of interactions into one script. The defining difference is that your structure scripting will utilize methods that you’ve defined and placed into the <code class="docutils literal"><span class="pre">procedures</span></code> folder, whereas the stages interface allows you to refer to an instrument directly. We’ll refer to them as <code class="docutils literal"><span class="pre">direct</span></code> and <code class="docutils literal"><span class="pre">indirect</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Blocks of information are seperated by a new line</p>
+</div>
+</div>
+<div class="section" id="direct">
+<h2>Direct<a class="headerlink" href="#direct" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The <code class="docutils literal"><span class="pre">stage</span></code> field refers to the instrument stage name, ie <code class="docutils literal"><span class="pre">Laser</span></code> or <code class="docutils literal"><span class="pre">DCSource</span></code> that you’ve defined in the instrument class under the function <code class="docutils literal"><span class="pre">whoAmI()</span></code>.</li>
+<li>The <code class="docutils literal"><span class="pre">function</span></code> field refers to the function of the instrument you wish to utilize.</li>
+<li>The <code class="docutils literal"><span class="pre">Arguments</span></code> field refers to the arguments, if any, for the function you wish to utilize. If there are no arguments, write <code class="docutils literal"><span class="pre">none</span></code> before the arguments field.</li>
+<li>The <code class="docutils literal"><span class="pre">lock</span></code> field is optional and you can use it to lock an instrument for the time that the script it running. If you lock an instrument, it will not appear in the <code class="docutils literal"><span class="pre">Stages</span> <span class="pre">to</span> <span class="pre">Execute</span></code> option menu in the GUI. then when the script is finished, the previously locked instrument will reappear in stages menu again.</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#Stage</span>
+<span class="n">MPowerMeter</span>
+<span class="c1">#function</span>
+<span class="n">get_power</span>
+<span class="c1">#arguments</span>
+<span class="n">none</span>
+<span class="c1">#lock</span>
+<span class="n">true</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="indirect">
+<h2>Indirect<a class="headerlink" href="#indirect" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The <code class="docutils literal"><span class="pre">Measurement</span> <span class="pre">Name</span></code> field is whatever you would like to name it.</li>
+<li>The <code class="docutils literal"><span class="pre">Structure</span></code> field is defined in the coordinates file that you’ve written already.</li>
+<li>the <code class="docutils literal"><span class="pre">procedure</span></code> field refers to a <code class="docutils literal"><span class="pre">.py</span></code> file that you’ve written and placed in the procedures directory.</li>
+<li>The <code class="docutils literal"><span class="pre">function</span></code> field refers to the function in the procedures file that you’ve defined and wish to utilize</li>
+<li>The <code class="docutils literal"><span class="pre">Arguments</span></code> field refers to the arguments, if any, for the function you wish to utilize. If there are no arguments, write <code class="docutils literal"><span class="pre">none</span></code> before the arguments field.</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#Measurement Name</span>
+<span class="n">Test_PhaseShifter_Spec</span>
+<span class="c1">#Structure</span>
+<span class="n">phaseshift_cell_brian</span>
+<span class="c1">#procedure</span>
+<span class="n">Measure</span>
+<span class="c1">#Function</span>
+<span class="n">get_e_spectrum</span>
+<span class="c1">#Arguments</span>
+<span class="mi">10</span> <span class="mi">300</span> <span class="mi">10</span> <span class="mf">0.1</span>
+
+<span class="c1">#Measurement Name</span>
+<span class="n">Test_Ring_Bot_Res_Shift</span>
+<span class="c1">#Structure</span>
+<span class="n">ring_bot</span>
+<span class="c1">#procedure</span>
+<span class="n">Measure</span>
+<span class="c1">#Function</span>
+<span class="n">dc_sweep_1d</span>
+<span class="c1">#Arguments</span>
+<span class="n">none</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Write and Execute a Measurement Script</a><ul>
+<li><a class="reference internal" href="#running-scripts">Running Scripts</a></li>
+<li><a class="reference internal" href="#writing-scripts">Writing Scripts</a></li>
+<li><a class="reference internal" href="#direct">Direct</a></li>
+<li><a class="reference internal" href="#indirect">Indirect</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="interfaceMultiChannel.html" title="previous chapter">Interface with a Multi-Channel Device</a></li>
+      <li>Next: <a href="coordinateFile.html" title="next chapter">Writing a Coordinate File</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/howto/measurementScript.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/source/howto/measurementScript.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

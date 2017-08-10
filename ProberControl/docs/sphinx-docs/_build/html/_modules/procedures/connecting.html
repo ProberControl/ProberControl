@@ -1,0 +1,677 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>procedures.connecting &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for procedures.connecting</h1><div class="highlight"><pre>
+<span></span><span class="c1">#from Classes.xyzstage import XYZ_Stage</span>
+<span class="kn">import</span> <span class="nn">fine_allign</span>
+<span class="kn">import</span> <span class="nn">Measure</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">Global_MeasureHandler</span> <span class="k">import</span> <span class="n">Global_MeasureHandler</span>
+
+<span class="c1"># to be used for vitual leveling purposes</span>
+
+<span class="n">__vl_point</span> <span class="o">=</span> <span class="p">[]</span>    
+<span class="n">__vl_flag_disable</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">__vl_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># to be used for calib_chip_rot purposes</span>
+
+<span class="n">__ccr_point</span> <span class="o">=</span> <span class="p">[]</span>    
+<span class="n">__ccr_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="c1"># ---------------------------------------</span>
+
+<span class="c1"># helper functions to add/subtract tuples</span>
+<div class="viewcode-block" id="t_add"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.t_add">[docs]</a><span class="k">def</span> <span class="nf">t_add</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="reset_chip_rot"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.reset_chip_rot">[docs]</a><span class="k">def</span> <span class="nf">reset_chip_rot</span><span class="p">():</span>
+    <span class="nb">print</span> <span class="n">__ccr_point</span>
+    <span class="k">del</span> <span class="n">__ccr_point</span><span class="p">[:]</span>
+    <span class="n">__ccr_id</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="calib_chip"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.calib_chip">[docs]</a><span class="k">def</span> <span class="nf">calib_chip</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__vl_id</span>
+    <span class="k">global</span> <span class="n">__vl_point</span>
+    <span class="k">global</span> <span class="n">__vl_flag_disable</span>
+    <span class="c1">#------------------------</span>
+    <span class="k">global</span> <span class="n">__ccr_id</span>
+    <span class="k">global</span> <span class="n">__ccr_point</span>
+    
+    <span class="k">if</span> <span class="n">__vl_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">id</span> <span class="o">!=</span> <span class="n">__vl_id</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip: Changed Stage</span><span class="se">\n\t</span><span class="s1">expected: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s1">got: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__vl_id</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="n">__ccr_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">id</span> <span class="o">!=</span> <span class="n">__ccr_id</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip: Changed Stage</span><span class="se">\n\t</span><span class="s1">expected: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s1">got: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__vl_id</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">__vl_id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="c1">#------------</span>
+        <span class="n">__ccr_id</span> <span class="o">=</span> <span class="nb">id</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">__vl_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">__vl_flag_disable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip: getting base point. Arrow up/down next.&#39;</span>
+            <span class="n">__vl_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+            <span class="c1">#----------------------------------------------</span>
+            <span class="nb">print</span> <span class="s1">&#39;Move along edge to next corner on chip. Move along x axis of stage correct using y axis.&#39;</span>
+            <span class="n">__ccr_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">([</span><span class="n">__ccr_point</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">__ccr_point</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">__ccr_point</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">__vl_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: getting UP point.&#39;</span>
+            <span class="n">__vl_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+            <span class="c1">#----------------------------------------------</span>
+            <span class="n">__ccr_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+                    
+            <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip Rotation: Computing rotation...&#39;</span>
+            <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span> <span class="o">=</span>  <span class="n">__ccr_point</span>
+            <span class="n">ang_x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span> <span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">))</span>
+                        
+            <span class="nb">print</span> <span class="s1">&#39;Ang_x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ang_x</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;CS&#39;</span> <span class="ow">in</span> <span class="n">Stages</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip Rotation: Performing rotation...&#39;</span>
+                <span class="n">Stages</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">delta_angle</span><span class="p">(</span><span class="n">ang_x</span><span class="p">)</span>
+           
+
+            <span class="k">del</span> <span class="n">__ccr_point</span><span class="p">[:]</span>
+            <span class="n">__ccr_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1">#---------------</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">([</span><span class="n">__vl_point</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">__vl_point</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">__vl_point</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: Arrow right/left next.&#39;</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">__vl_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: getting RIGHT point.&#39;</span>
+            <span class="n">__vl_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+            
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: performing leveling...&#39;</span>
+            <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span> <span class="o">=</span>  <span class="n">__vl_point</span>
+            <span class="n">ang_x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span> <span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">))</span>
+            <span class="n">ang_y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span> <span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">p1</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">))</span>
+            
+            <span class="nb">print</span> <span class="s1">&#39;Ang_x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ang_x</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="s1">&#39;Ang_y&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ang_y</span><span class="p">)</span>
+            
+            
+            <span class="c1"># insert info to selcted stage</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">ang_x</span><span class="p">,</span> <span class="n">ang_y</span><span class="p">)</span>
+            <span class="c1"># insert on the rest of the stages</span>
+            <span class="n">c_ang</span> <span class="o">=</span> <span class="n">coord_s2c</span><span class="p">(</span><span class="n">Stages</span><span class="p">,(</span><span class="n">ang_x</span><span class="p">,</span> <span class="n">ang_y</span><span class="p">),</span> <span class="nb">id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;EO&#39;</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">!=</span> <span class="nb">id</span> <span class="p">:</span>
+                    <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="o">*</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">c_ang</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+                    
+            <span class="k">del</span> <span class="n">__vl_point</span><span class="p">[:]</span>
+            <span class="n">__vl_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">__vl_flag_disable</span> <span class="o">=</span> <span class="kc">False</span>
+            
+            <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip: Finished.&#39;</span></div>
+
+<div class="viewcode-block" id="calib_chip_rot"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.calib_chip_rot">[docs]</a><span class="k">def</span> <span class="nf">calib_chip_rot</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__ccr_id</span>
+    <span class="k">global</span> <span class="n">__ccr_point</span>
+
+    <span class="k">if</span> <span class="n">__ccr_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">id</span> <span class="o">!=</span> <span class="n">__ccr_id</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip Rotation: Changed Stage</span><span class="se">\n\t</span><span class="s1">expected: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s1">got: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__ccr_id</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">__ccr_id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">__ccr_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip Rotation: Move along edge to next corner on chip. Move along x axis of stage correct using y axis.&#39;</span>
+            <span class="n">__ccr_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">([</span><span class="n">__ccr_point</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">__ccr_point</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">__ccr_point</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">__ccr_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">__ccr_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+                    
+            <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip Rotation: Computing rotation...&#39;</span>
+            <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span> <span class="o">=</span>  <span class="n">__ccr_point</span>
+            <span class="n">ang_x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span> <span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">))</span>
+                        
+            <span class="nb">print</span> <span class="s1">&#39;Ang_x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ang_x</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;CS&#39;</span> <span class="ow">in</span> <span class="n">Stages</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s1">&#39;Calibrate Chip Rotation: Performing rotation...&#39;</span>
+                <span class="n">Stages</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">delta_angle</span><span class="p">(</span><span class="n">ang_x</span><span class="p">)</span>
+           
+
+            <span class="k">del</span> <span class="n">__ccr_point</span><span class="p">[:]</span>
+            <span class="n">__ccr_id</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="virtual_level"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.virtual_level">[docs]</a><span class="k">def</span> <span class="nf">virtual_level</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__vl_id</span>
+    <span class="k">global</span> <span class="n">__vl_point</span>
+    <span class="k">global</span> <span class="n">__vl_flag_disable</span>
+    <span class="k">if</span> <span class="n">__vl_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">id</span> <span class="o">!=</span> <span class="n">__vl_id</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;virtual level: Changed Stage</span><span class="se">\n\t</span><span class="s1">expected: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s1">got: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__vl_id</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">__vl_id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">__vl_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">__vl_flag_disable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: getting base point. Arrow up/down next.&#39;</span>
+            <span class="n">__vl_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">__vl_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: getting UP point. Arrow right/left next.&#39;</span>
+            <span class="n">__vl_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">__vl_point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: getting RIGHT point.&#39;</span>
+            <span class="n">__vl_point</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+            
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: performing leveling...&#39;</span>
+            <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span> <span class="o">=</span>  <span class="n">__vl_point</span>
+            <span class="n">ang_x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span> <span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">))</span>
+            <span class="n">ang_y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span> <span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">p1</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">))</span>
+            
+            <span class="nb">print</span> <span class="s1">&#39;Ang_x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ang_x</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="s1">&#39;Ang_y&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ang_y</span><span class="p">)</span>
+            
+            
+            <span class="c1"># insert info to selcted stage</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">ang_x</span><span class="p">,</span> <span class="n">ang_y</span><span class="p">)</span>
+            <span class="c1"># insert on the rest of the stages</span>
+            <span class="n">c_ang</span> <span class="o">=</span> <span class="n">coord_s2c</span><span class="p">(</span><span class="n">Stages</span><span class="p">,(</span><span class="n">ang_x</span><span class="p">,</span> <span class="n">ang_y</span><span class="p">),</span> <span class="nb">id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;EO&#39;</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">!=</span> <span class="nb">id</span> <span class="p">:</span>
+                    <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="o">*</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">c_ang</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+                    
+            <span class="k">del</span> <span class="n">__vl_point</span><span class="p">[:]</span>
+            <span class="n">__vl_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">__vl_flag_disable</span> <span class="o">=</span> <span class="kc">False</span>
+            
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level: Finished.&#39;</span></div>
+
+<div class="viewcode-block" id="save_coarse_coordinates"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.save_coarse_coordinates">[docs]</a><span class="k">def</span> <span class="nf">save_coarse_coordinates</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;PreAlign.conf&#39;</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__vl_flag_disable</span>
+    <span class="nb">print</span> <span class="s1">&#39;flag: &#39;</span><span class="p">,</span> <span class="n">__vl_flag_disable</span>
+    <span class="k">if</span> <span class="n">__vl_flag_disable</span> <span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;virtual_level:ERROR: cannot perform operation while leveling in progress.&#39;</span>
+        <span class="k">return</span>
+    
+    <span class="n">coarse_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span> <span class="ow">or</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>
+            <span class="n">save_coords</span> <span class="o">=</span> <span class="n">t_add</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_real_coordinates</span><span class="p">(),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">])</span>
+            <span class="n">coarse_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">save_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">save_coords</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">save_coords</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">ang_x</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">ang_y</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">coarse_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="set_coarse_coordinates"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.set_coarse_coordinates">[docs]</a><span class="k">def</span> <span class="nf">set_coarse_coordinates</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;PreAlign.conf&#39;</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__vl_flag_disable</span>
+    <span class="k">if</span> <span class="n">__vl_flag_disable</span> <span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;virtual_level:ERROR: cannot perform operation while leveling in progress.&#39;</span>
+        <span class="k">return</span>
+    
+    <span class="c1">#Check wheather stages are homed:</span>
+    <span class="n">homed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span> <span class="ow">or</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">zeros</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span>  <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span>
+                <span class="nb">print</span> <span class="s2">&quot;Stages not homed or system already recalibatrate, cannot apply set_coarse_coordinates&quot;</span>
+                <span class="k">return</span> <span class="mi">0</span>
+
+
+    <span class="n">coordinates</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">CoordsFile</span> <span class="o">=</span>  <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">CoordsFile</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
+        <span class="n">coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">angles</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+        <span class="nb">print</span> <span class="n">coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="nb">print</span> <span class="n">angles</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+
+    <span class="n">outward_dim</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">sideward_dim</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="c1"># Step 1: Go through coordinates and split sideward from inward moves</span>
+    <span class="c1"># coordinates are already in stage coordinates</span>
+    <span class="n">inward_coordinates</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">sideward_coordinates</span><span class="o">=</span><span class="p">{}</span>
+
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+                <span class="n">side_coord</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">())</span>
+                <span class="n">side_coord</span><span class="p">[</span><span class="n">sideward_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">sideward_dim</span><span class="p">]</span>
+                <span class="n">sideward_coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">side_coord</span> 
+        
+                <span class="n">inward_coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="nb">print</span> <span class="n">sideward_coordinates</span>
+    <span class="nb">print</span> <span class="n">inward_coordinates</span>
+
+    <span class="c1"># Step 2: Apply sideward moves</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">sideward_coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="c1"># Step 3: Apply inward moves</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">inward_coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="c1"># Step 4: Apply virtual levelling angles</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">angles</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">ang_x</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">ang_y</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="connect_structure"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.connect_structure">[docs]</a><span class="k">def</span> <span class="nf">connect_structure</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">Maitre</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;Coordinates.conf&#39;</span><span class="p">,</span> <span class="n">struct_name</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__vl_flag_disable</span>
+    <span class="k">if</span> <span class="n">__vl_flag_disable</span> <span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;virtual_level:ERROR: cannot perform operation while leveling in progress.&#39;</span>
+        <span class="k">return</span>
+    
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">read_coords_file</span><span class="p">(</span> <span class="n">path</span> <span class="p">)[</span><span class="nb">str</span><span class="p">(</span><span class="n">struct_name</span><span class="p">)]</span>
+    <span class="nb">print</span> <span class="n">coords</span>
+
+    <span class="n">gmh</span> <span class="o">=</span> <span class="n">Global_MeasureHandler</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="s1">&#39;SignalSource&#39;</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">:</span>
+        <span class="c1"># fine_allign.set_signal_source(coords[&#39;SignalSource&#39;])</span>
+        <span class="n">measurement_function</span> <span class="o">=</span> <span class="n">gmh</span><span class="o">.</span><span class="n">get_instr_by_name</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">])</span>
+        <span class="n">fine_allign</span><span class="o">.</span><span class="n">set_meas_fun</span><span class="p">(</span><span class="n">measurement_function</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># fine_allign.set_signal_source()</span>
+        <span class="n">measurement_function</span> <span class="o">=</span> <span class="n">gmh</span><span class="o">.</span><span class="n">get_instr</span><span class="p">(</span><span class="s1">&#39;OPT&#39;</span><span class="p">)</span>
+        <span class="n">fine_allign</span><span class="o">.</span><span class="n">set_meas_fun</span><span class="p">(</span><span class="n">measurement_function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">connect_coordinates</span><span class="p">(</span> <span class="n">coords</span><span class="p">,</span> <span class="n">Stages</span><span class="p">,</span> <span class="n">Maitre</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+    
+<div class="viewcode-block" id="calibrate_on_structure"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.calibrate_on_structure">[docs]</a><span class="k">def</span> <span class="nf">calibrate_on_structure</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;Coordinates.conf&#39;</span><span class="p">,</span> <span class="n">struct_name</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__vl_flag_disable</span>
+    <span class="k">if</span> <span class="n">__vl_flag_disable</span> <span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;virtual_level:ERROR: cannot perform operation while leveling in progress.&#39;</span>
+        <span class="k">return</span>
+    
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">read_coords_file</span><span class="p">(</span> <span class="n">path</span> <span class="p">)[</span><span class="nb">str</span><span class="p">(</span><span class="n">struct_name</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">coords</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_cur_as_2d</span><span class="p">(</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span>
+                <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">setLowZ</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="check_coordinate_set"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.check_coordinate_set">[docs]</a><span class="k">def</span> <span class="nf">check_coordinate_set</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        To prevent collision dont allow a coordinate more West than the W stage, more East than the E Stage etc also add stage</span>
+<span class="sd">        depending buffer zones, the two dimensions of the buffer zones (dx,dy) are to be understood in the coordinate system </span>
+<span class="sd">        of the stages</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">limits</span><span class="o">=</span><span class="p">{}</span>    
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span> <span class="n">limits</span>
+            <span class="nb">print</span> <span class="n">k</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;E&#39;</span><span class="p">:</span>
+                <span class="n">limits</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;W&#39;</span><span class="p">:</span>
+                <span class="n">limits</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;S&#39;</span><span class="p">:</span>
+                <span class="n">limits</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;N&#39;</span><span class="p">:</span>
+                <span class="n">limits</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+        <span class="nb">print</span> <span class="n">limits</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;E&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;N&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&gt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;S&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;W&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&gt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;W&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;W&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;N&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&gt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;S&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;E&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;N&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;S&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;W&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&gt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;W&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;E&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;S&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;N&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&gt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;W&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&gt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;W&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s1">&#39;E&#39;</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+                  <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">space</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="connect_coordinates"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.connect_coordinates">[docs]</a><span class="k">def</span> <span class="nf">connect_coordinates</span><span class="p">(</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">Stages</span><span class="p">,</span> <span class="n">Maitre</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Zero    Step: Check whether all connected probes are used / create safe positions of unsused stages</span>
+<span class="sd">        0.25    Step: Check whether Coordinates are not leading to collisions</span>
+<span class="sd">        0.5     Step: Go through coordinates and check wether positions can be reached by probes if not quite</span>
+<span class="sd">    First   Step: Split outward sideward inward moves from each other to avoid collision of probes.</span>
+<span class="sd">    Second  Step: Unconnect E-Probes</span>
+<span class="sd">    Third   Step: Apply outward moves</span>
+<span class="sd">    Fourth  Step: Apply side moves</span>
+<span class="sd">        Fifth   Step: Apply inward moves</span>
+<span class="sd">    Sixth   Step: Connect E-Proves</span>
+<span class="sd">    Seventh Step: Get Spectrum and adjust laser to highest throughput for optimal coupling</span>
+<span class="sd">    Eight   Step: Perform FineAllign on O-Stages</span>
+<span class="sd">    Nineth  Step: Reset system coordinates to &#39;planned&#39; coordinates as on the fly recalibration</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">outward_dim</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">sideward_dim</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="n">used</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">unused</span><span class="o">=</span><span class="p">[]</span>
+
+    <span class="n">power_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mi">60</span>
+
+    <span class="c1"># Step 0: Check whether all connected probes are used</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span> <span class="ow">or</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
+                <span class="n">used</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">unused</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="c1"># bring unsused stages to x-home positions if they were calibrated on chip before</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">unused</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_calibrated</span><span class="p">():</span>
+            <span class="n">coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_s2c</span><span class="p">(</span><span class="n">Stages</span><span class="p">,(</span><span class="nb">round</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_coor_2d</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_real_coordinates</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_coor_2d</span><span class="p">()[</span><span class="mi">1</span><span class="p">]),</span><span class="n">k</span><span class="p">)</span>
+        
+    <span class="c1"># Step 0.25: Check whether coordinates are not leading to collisions</span>
+    <span class="c1">#    if not check_coordinate_set(Stages, coordinates):</span>
+    <span class="c1">#    print &#39;Coordinates might lead to collision&#39;</span>
+    <span class="c1">#        return False</span>
+
+    <span class="c1"># Step 0.5: Go through coordinates and check wether positions can be reached by probes if not return False</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">check_coordinates_2d</span><span class="p">(</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)):</span>
+                <span class="nb">print</span> <span class="s1">&#39;Coordinates out of range for Stage &#39;</span><span class="o">+</span><span class="n">k</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+
+    <span class="c1"># Step 1: Go through coordinates and split outward / sideward / inward moves</span>
+    <span class="c1"># coordinates are already in stage coordinates</span>
+    <span class="n">outward_coordinates</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">sideward_coordinates</span><span class="o">=</span><span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_coor_2d</span><span class="p">()[</span><span class="n">outward_dim</span><span class="p">]</span><span class="o">-</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)[</span><span class="n">outward_dim</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># print &#39;outward detected...&#39;</span>
+                <span class="n">out_coord</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_coor_2d</span><span class="p">())</span>
+                <span class="n">out_coord</span><span class="p">[</span><span class="n">outward_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)[</span><span class="n">outward_dim</span><span class="p">]</span>
+                <span class="n">outward_coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_coord</span>
+
+                <span class="n">side_coord</span> <span class="o">=</span> <span class="n">out_coord</span><span class="p">[:]</span>    <span class="c1"># slice idx to copy list</span>
+                <span class="n">side_coord</span><span class="p">[</span><span class="n">sideward_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)[</span><span class="n">sideward_dim</span><span class="p">]</span>
+                <span class="n">sideward_coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">side_coord</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">side_coord</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_coor_2d</span><span class="p">())</span>
+                <span class="n">side_coord</span><span class="p">[</span><span class="n">sideward_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)[</span><span class="n">sideward_dim</span><span class="p">]</span>
+                <span class="n">sideward_coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">side_coord</span>
+    
+
+    <span class="c1"># Step 2: Unconnect E-Probes         </span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+    <span class="c1"># Step 3: Apply outward moves</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">outward_coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="c1"># print &#39;applying outward\n\t{}\n\t{}\n&#39;.format(Stages[k].get_coordinates(), v)</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_coor_2d</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Step 4: Apply sideward moves</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">sideward_coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_coor_2d</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Step 5: Apply inward moves</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">,</span><span class="s1">&#39;SignalSource&#39;</span><span class="p">]:</span>
+            <span class="nb">print</span> <span class="s1">&#39;Attemp to move&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;to:&#39;</span>
+            <span class="nb">print</span> <span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_coor_2d</span><span class="p">(</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+
+
+    <span class="c1"># Step 6: Connect E-Probes</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">used</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="c1"># Step 7: Find wavelength with high enough / highest throughput</span>
+    <span class="c1">#if Stages[&#39;MPowerMeter&#39;].get_power() &lt; power_threshold:</span>
+    <span class="c1">#    data = Measure._thresh_wavelength(Stages,Maitre,Stages[&#39;MLaser&#39;].get_min_wavelength(),Stages[&#39;MLaser&#39;].get_max_wavelength(),1)</span>
+    <span class="c1">#    trans = zip(*data)</span>
+
+    <span class="c1">#    max_ind = trans[1].index(max(trans[1]))</span>
+    <span class="c1">#    max_wavelength = data[max_ind][0]</span>
+        
+    <span class="c1">#    print &#39;Found threshold power wavelength&#39;</span>
+    <span class="c1">#    print max_wavelength</span>
+
+    <span class="c1">#    Stages[&#39;MLaser&#39;].setwavelength(max_wavelength)</span>
+
+    <span class="c1"># Step 8: FineAllign O-Probes</span>
+    <span class="c1"># try to allign all</span>
+    <span class="n">failed</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">retry</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;O&#39;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fine_allign</span><span class="o">.</span><span class="n">fast_align</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">power_threshold</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">retry</span> <span class="o">=</span> <span class="kc">True</span>
+                
+    <span class="c1"># one at least succeeded so re-allign the rest</span>
+    <span class="k">if</span> <span class="n">retry</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">failed</span><span class="p">:</span>
+            <span class="n">fine_allign</span><span class="o">.</span><span class="n">fast_align</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">power_threshold</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;no structures could be connected - Aborting connect_structure...&#39;</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Step 9: Reset coordinates</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">Stages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;O&#39;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+            <span class="n">Stages</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_cur_as_2d</span><span class="p">(</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">coordinates</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">k</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="read_coords_file"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.read_coords_file">[docs]</a><span class="k">def</span> <span class="nf">read_coords_file</span><span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
+    <span class="k">global</span> <span class="n">__vl_flag_disable</span>
+    <span class="k">if</span> <span class="n">__vl_flag_disable</span> <span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;virtual_level:ERROR: cannot perform operation while leveling in progress.&#39;</span>
+            <span class="k">return</span>
+        
+    <span class="n">CoordsFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">CoordsFile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;Problem reading Coordinates file.&#39;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">Coords</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">CoordsList</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">CoordsFile</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="n">line</span>
+
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;#&#39;</span><span class="p">:</span>
+            <span class="n">ParaIndex</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;#Si&#39;</span><span class="p">:</span>
+            <span class="n">ParaIndex</span> <span class="o">=</span> <span class="s1">&#39;SignalSource&#39;</span>
+
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;##&#39;</span><span class="p">:</span>
+            <span class="n">ParaIndex</span> <span class="o">=</span> <span class="s1">&#39;StructName&#39;</span>
+            <span class="k">if</span> <span class="n">Coords</span> <span class="o">!=</span> <span class="p">{}:</span>
+                <span class="n">CoordsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Coords</span><span class="p">)</span>
+                <span class="n">Coords</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;#&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ParaIndex</span> <span class="o">==</span> <span class="s1">&#39;StructName&#39;</span><span class="p">:</span>
+                <span class="n">Coords</span><span class="p">[</span><span class="n">ParaIndex</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">ParaIndex</span> <span class="o">==</span> <span class="s1">&#39;SignalSource&#39;</span><span class="p">:</span>
+                <span class="n">Coords</span><span class="p">[</span><span class="n">ParaIndex</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Coords</span><span class="p">[</span><span class="n">ParaIndex</span><span class="p">]</span><span class="o">=</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+
+    <span class="n">CoordsDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">CoordsList</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="s1">&#39;StructName&#39;</span><span class="p">])</span>
+            <span class="k">del</span> <span class="n">elem</span><span class="p">[</span><span class="s1">&#39;StructName&#39;</span><span class="p">]</span>
+            <span class="n">CoordsDict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">=</span><span class="n">elem</span>
+
+    <span class="k">return</span> <span class="n">CoordsDict</span></div>
+
+<div class="viewcode-block" id="coord_c2s"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.coord_c2s">[docs]</a><span class="k">def</span> <span class="nf">coord_c2s</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">coords</span><span class="p">,</span><span class="n">StageKey</span><span class="p">):</span>
+
+    <span class="nb">print</span> <span class="n">StageKey</span>
+    <span class="nb">print</span> <span class="n">coords</span>
+
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">0</span>   <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">90</span>  <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">180</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">270</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+
+    <span class="nb">print</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="n">angle</span>
+    <span class="nb">print</span> <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
+        
+
+<div class="viewcode-block" id="coord_s2c"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.connecting.coord_s2c">[docs]</a><span class="k">def</span> <span class="nf">coord_s2c</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span><span class="n">coords</span><span class="p">,</span><span class="n">StageKey</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">0</span>   <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">90</span>  <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">180</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">StageKey</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">270</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">Stages</span><span class="p">[</span><span class="n">StageKey</span><span class="p">]</span><span class="o">.</span><span class="n">get_off_angle</span><span class="p">()))</span>
+
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="o">-</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="o">-</span><span class="n">angle</span><span class="p">)</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">read_coords_file</span><span class="p">(</span><span class="s1">&#39;Test-Coordinates.conf&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="n">coords</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

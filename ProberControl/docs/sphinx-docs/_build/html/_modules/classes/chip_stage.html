@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>classes.chip_stage &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for classes.chip_stage</h1><div class="highlight"><pre>
+<span></span><span class="c1">#    Chip Stage class</span>
+<span class="c1">#</span>
+<span class="c1"># Be aware positive rotation of gon_r move chip right edge downwards</span>
+<span class="c1"># Be aware positive rotation of gon_l move chip top edge downwards</span>
+
+
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">rotator</span> <span class="k">import</span> <span class="n">Rotator</span>
+<span class="kn">from</span> <span class="nn">gonio_stage</span> <span class="k">import</span> <span class="n">GonStage</span>
+
+<div class="viewcode-block" id="ChipStage"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage">[docs]</a><span class="k">class</span> <span class="nc">ChipStage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser_list</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="mi">10</span>
+            
+            <span class="c1"># To bring the dist_measurement to valid start point</span>
+            <span class="c1"># can be left at zero with wide enough chip holders</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">width_off</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#3.5    # 2.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">length_off</span> <span class="o">=</span> <span class="mi">4</span> <span class="c1">#1.0    # 1.5</span>
+            
+            <span class="c1">#Calibration for Chip Leveling for X-Axis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_coordX</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_coordX</span> <span class="o">=</span> <span class="mf">3.5</span>
+
+            <span class="c1">#Calibration for Chip Leveling for Y-Axis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_coordY</span> <span class="o">=</span> <span class="mf">8.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_coordY</span> <span class="o">=</span> <span class="mi">1</span>
+            
+            <span class="k">def</span> <span class="nf">r_init</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rot</span> <span class="o">=</span> <span class="n">Rotator</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">def</span> <span class="nf">gl_init</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_l</span> <span class="o">=</span> <span class="n">GonStage</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;GNL10&#39;</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">gr_init</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_r</span> <span class="o">=</span> <span class="n">GonStage</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;GNL18&#39;</span><span class="p">)</span>
+
+            <span class="n">t_r</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">r_init</span><span class="p">)</span>
+            <span class="c1">#t_gl = threading.Thread(target=gl_init)</span>
+            <span class="c1">#t_gr = threading.Thread(target=gr_init)</span>
+
+            <span class="n">t_r</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="c1">#, t_gl.start(), t_gr.start()</span>
+            <span class="n">t_r</span><span class="o">.</span><span class="n">join</span><span class="p">()</span><span class="c1">#, t_gl.join(), t_gr.join()</span>
+
+<div class="viewcode-block" id="ChipStage.set_stepsize"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.set_stepsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_stepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">stepsize</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Updates the degree stepsize used in step() function</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">stepsize</span></div>
+
+<div class="viewcode-block" id="ChipStage.step"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        - Move Stage in either direction by one step</span>
+<span class="sd">        - Step Size defined in set_stepsize()</span>
+<span class="sd">        - direction expected to be char: L(CW),R(CCW)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">moving</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">delta_angle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">deg_pos</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">delta_angle</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">deg_pos</span></div></div>
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,150 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Updating the Documentation &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Interface with a Multi-Channel Device" href="interfaceMultiChannel.html" />
+    <link rel="prev" title="Adding a New Instrument" href="addNewInstrument.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="updating-the-documentation">
+<h1>Updating the Documentation<a class="headerlink" href="#updating-the-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The documentation site is built on the Sphinx module, <a class="reference external" href="http://www.sphinx-doc.org/en/stable/">Sphinx docs</a> and is written using the <a class="reference external" href="http://docutils.sourceforge.net/docs/user/rst/cheatsheet.txt">reStructuredText</a> language. If you want to update the documentation, you can follow the guide below.</p>
+</div>
+<div class="section" id="step-by-step">
+<h2>Step-by-step<a class="headerlink" href="#step-by-step" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><dl class="first docutils">
+<dt>Decide on where you want to add documentation. Within the <code class="docutils literal"><span class="pre">docs\</span></code> directory, there are a few items that are critical to the documention.</dt>
+<dd><ul class="first last">
+<li><code class="docutils literal"><span class="pre">index.rst</span></code> is the root file, all of the <code class="docutils literal"><span class="pre">.rst</span></code> files branch from this file.</li>
+<li><code class="docutils literal"><span class="pre">contents.rst</span></code> is the file that lists all of the directories listed on the documentation homepage.</li>
+<li><code class="docutils literal"><span class="pre">source\</span></code> directory is where all of the documentation is housed. For example, you’ll find files like <code class="docutils literal"><span class="pre">addNewInstrument.rst</span></code> where you’ll find the written documention adding a new instrument class.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Once you’ve decided where to add/edit, you merely edit the <code class="docutils literal"><span class="pre">.rst</span></code> file corresponding to the documentation you want to edit.</dt>
+<dd><ul class="first last">
+<li>Note that if you are adding a new section to the documentation site, you need to create a new <code class="docutils literal"><span class="pre">.rst</span></code> file, put it in <code class="docutils literal"><span class="pre">source\</span></code>, and edit <code class="docutils literal"><span class="pre">contents.rst</span></code> in the appropriate location.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Finally, in the command-prompt at the present working directory of <code class="docutils literal"><span class="pre">..\..\ProberControl\prober\docs\sphinx-docs\</span></code> execute <code class="docutils literal"><span class="pre">make</span> <span class="pre">clean</span></code>, then execute <code class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></code></li>
+<li>You’ll now have an updated documentation site.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are using Windows PowerShell, you may need to execute <code class="docutils literal"><span class="pre">./make.bat</span> <span class="pre">clean</span></code> and <code class="docutils literal"><span class="pre">./make.bat</span> <span class="pre">html</span></code> in order to execute a batch file if your PATH variable is not set for running <code class="docutils literal"><span class="pre">.bat</span></code></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When building the html after running <code class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></code> or <code class="docutils literal"><span class="pre">./make.bat</span> <span class="pre">html</span></code>, the builder may throw several warnings in red. Glance over them, but most of the them are trivial and do not effect the documentation site.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Updating the Documentation</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#step-by-step">Step-by-step</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="addNewInstrument.html" title="previous chapter">Adding a New Instrument</a></li>
+      <li>Next: <a href="interfaceMultiChannel.html" title="next chapter">Interface with a Multi-Channel Device</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/howto/docsUpdate.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/source/howto/docsUpdate.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

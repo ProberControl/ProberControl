@@ -1,0 +1,216 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>instruments.RSY01 &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for instruments.RSY01</h1><div class="highlight"><pre>
+<span></span><span class="c1">#import serial</span>
+<span class="c1">#import visa</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="RSY01"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01">[docs]</a><span class="k">class</span> <span class="nc">RSY01</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This class models Signal Generator, specifically for Model RSY01</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">res_manager</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="s1">&#39;GPIB0::28::INSTR&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor method</span>
+
+<span class="sd">        :param res_manager: PyVisa resource manager</span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :param address: SCPI address of instrument</span>
+<span class="sd">        :type address: String</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span> <span class="o">=</span> <span class="n">res_manager</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1"># Constants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_freq</span> <span class="o">=</span> <span class="mi">1040</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_freq</span> <span class="o">=</span> <span class="mf">0.009</span>
+
+        <span class="c1"># Class Globals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startfreq</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopfreq</span>  <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepfreq</span>  <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentfreq</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="RSY01.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RSY01.whoAmI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;RFSource&#39;</span></div>
+
+<div class="viewcode-block" id="RSY01.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="RSY01.reset"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Resets the instrument</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;PRESET&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSY01.out_on"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.out_on">[docs]</a>    <span class="k">def</span> <span class="nf">out_on</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Turns the level on.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;LEVEL:ON&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level: ON&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSY01.out_off"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.out_off">[docs]</a>    <span class="k">def</span> <span class="nf">out_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Turns the level off.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;LEVEL:OFF&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level: OFF.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSY01.set_freq"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.set_freq">[docs]</a>    <span class="k">def</span> <span class="nf">set_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the frequency to specified frequency.</span>
+
+<span class="sd">        :param freq: Specified frequency, defaults to 10.</span>
+<span class="sd">        :type freq: Integer</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RF &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; MHZ&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSY01.set_power"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.set_power">[docs]</a>    <span class="k">def</span> <span class="nf">set_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">power</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the power to specified power.</span>
+
+<span class="sd">        :param power: Specified power, defaults to 0.</span>
+<span class="sd">        :type power: Integer</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;LEVEL &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">power</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; V&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSY01.sweepTriggerSetup"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.sweepTriggerSetup">[docs]</a>    <span class="k">def</span> <span class="nf">sweepTriggerSetup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Execute a trigger sweep</span>
+
+<span class="sd">        :param start: Specified start</span>
+<span class="sd">        :type start: Float</span>
+<span class="sd">        :param end: Specified end</span>
+<span class="sd">        :type end: Float</span>
+<span class="sd">        :param step: Specified step</span>
+<span class="sd">        :type step: Float</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">start</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_freq</span> <span class="ow">or</span>
+            <span class="n">start</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_freq</span> <span class="ow">or</span>
+            <span class="n">end</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_freq</span> <span class="ow">or</span>
+            <span class="n">end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_freq</span> <span class="ow">or</span>
+            <span class="n">step</span> <span class="o">&lt;</span> <span class="mf">0.001</span>
+            <span class="p">):</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Specified Frequence Out of Range, or Step Too Low&#39;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stopfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currentfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_freq</span><span class="p">(</span><span class="n">start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RSY01.trigger"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.RSY01.RSY01.trigger">[docs]</a>    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Execute the trigger for laster</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentfreq</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopfreq</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentfreq</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startfreq</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currentfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentfreq</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepfreq</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_freq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentfreq</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;RSY01&#39;</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

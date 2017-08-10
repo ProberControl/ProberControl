@@ -1,0 +1,430 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>classes.camera &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for classes.camera</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">MAIN_CAM</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DEBUG_MODE</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="im_match_err"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.im_match_err">[docs]</a><span class="k">def</span> <span class="nf">im_match_err</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span> <span class="n">im2</span><span class="p">):</span>
+    <span class="c1"># matching images for Camera.get_from_map()</span>
+    <span class="n">L2_err</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span> <span class="n">im2</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">NORM_L2</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">L2_err</span> <span class="o">/</span> <span class="p">(</span><span class="nb">float</span><span class="p">)(</span><span class="n">im1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">im1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">error</span></div>
+    
+<div class="viewcode-block" id="im_rot"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.im_rot">[docs]</a><span class="k">def</span> <span class="nf">im_rot</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ang</span><span class="p">,</span> <span class="n">im_w</span><span class="p">,</span> <span class="n">im_h</span><span class="p">):</span>
+    <span class="c1"># rotation data</span>
+    <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ang</span>
+    <span class="n">rot_matrix</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getRotationMatrix2D</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+    <span class="c1">#apply rotation</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">warpAffine</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">rot_matrix</span><span class="p">,</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="c1"># resize</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="p">(</span><span class="n">im_w</span><span class="p">,</span> <span class="n">im_h</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">im</span></div>
+    
+
+<div class="viewcode-block" id="Camera"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera">[docs]</a><span class="k">class</span> <span class="nc">Camera</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cam_desc</span><span class="p">,</span> <span class="n">cam_ctrl</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Constructor</span>
+<span class="sd">         </span>
+<span class="sd">         cam_desc (int): the camera file descriptor</span>
+<span class="sd">         cam_ctrl (CameraController)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="c1"># get feed from the specified camera</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">cam_desc</span><span class="p">)</span>
+        <span class="c1"># bind the object to a controller (experimantal)</span>
+        <span class="k">if</span> <span class="n">cam_ctrl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No controller bound to camera object: disp() will not function properly.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span> <span class="o">=</span> <span class="n">cam_ctrl</span>
+        
+    <span class="c1"># EXPERIMENTAL</span>
+<div class="viewcode-block" id="Camera.displ"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.displ">[docs]</a>    <span class="k">def</span> <span class="nf">displ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Display camera feed until thread is done</span>
+<span class="sd">         </span>
+<span class="sd">         thrd (threading.Thread): thread to be done</span>
+<span class="sd">         hud (String): HUD to display on screen</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>    <span class="c1"># for cv2.morphologyEx() </span>
+        
+        <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s1">&#39;problem reading from camera&#39;</span>
+                <span class="n">exit</span><span class="p">()</span>
+                
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">hudMsg</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">hudON</span><span class="p">:</span>
+                <span class="n">font</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">hudMsg</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span> <span class="n">font</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">LINE_AA</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">t_rects</span><span class="p">:</span>
+                <span class="c1"># convert to greyscale</span>
+                <span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+                <span class="c1"># apply blur</span>
+                <span class="n">blur</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="n">gray</span><span class="p">,(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="c1"># Otsu mask</span>
+                <span class="n">ret</span><span class="p">,</span> <span class="n">thr</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">blur</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span> <span class="o">+</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
+                <span class="c1">## cv2.imshow(&#39;thresh&#39;, thr)</span>
+                
+                <span class="c1"># morphology closing : eliminate noise inside main shape</span>
+                <span class="n">clo</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">thr</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_CLOSE</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+                <span class="c1">## cv2.imshow(&#39;closing&#39;, clo)</span>
+                
+                <span class="c1"># find contours </span>
+                <span class="n">im2</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="n">hierarchy</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="n">clo</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_TREE</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_SIMPLE</span><span class="p">)</span>
+                <span class="c1"># select contour &lt;- subject to change</span>
+                <span class="n">cnt</span> <span class="o">=</span> <span class="kc">None</span>
+                
+                <span class="k">for</span> <span class="n">ct</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">75</span> <span class="ow">and</span> <span class="n">cv2</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30000</span><span class="p">:</span>    <span class="c1"># probably found main shape</span>
+                        <span class="n">cnt</span> <span class="o">=</span> <span class="n">ct</span>
+                        <span class="k">break</span>
+                
+                <span class="k">if</span> <span class="n">cnt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                    
+                <span class="c1"># draw the selected contour</span>
+                <span class="c1">## cv2.drawContours(frame, [cnt], 0, (255,0,0), 3)</span>
+                
+                <span class="c1"># find the corresponding straight rectangle</span>
+                <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">,(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),(</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+                
+                <span class="c1"># find the minimum area rect    angle i.e. the rotated rectangle</span>
+                <span class="c1"># if not wait:        </span>
+                <span class="n">r_rect</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">minAreaRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+                <span class="n">box</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxPoints</span><span class="p">(</span><span class="n">r_rect</span><span class="p">)</span>
+                <span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int0</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">[</span><span class="n">box</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;cam&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">t_rects</span><span class="p">:</span>
+                <span class="n">t_curr</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTickCount</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">t_curr</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">t_init</span><span class="p">)</span> <span class="o">/</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTickFrequency</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">secs</span> <span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">box_data</span> <span class="o">=</span> <span class="n">box</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">t_rects</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">t_rects</span><span class="p">:</span>
+                <span class="k">break</span></div>
+        
+    
+    <span class="c1"># The wait functionallity of the following method is depricated,</span>
+    <span class="c1"># because the function is too heavy.</span>
+    <span class="c1"># It should only be used when its really needed.</span>
+<div class="viewcode-block" id="Camera.get_coord"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.get_coord">[docs]</a>    <span class="k">def</span> <span class="nf">get_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">boxCoor</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">thrd</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Find the orientation of the chip and return the coordinates</span>
+<span class="sd">         of the rectangle surrounding it</span>
+<span class="sd">         </span>
+<span class="sd">         secs (unsigned int): the time, in seconds we give the camera</span>
+<span class="sd">         to compute the coordinates</span>
+<span class="sd">         wait (boolean): wait mode -&gt; quit with &#39;q&#39;</span>
+<span class="sd">         boxCoor (boolean): the return value is the right rectangle&#39;s coordinates</span>
+<span class="sd">                            instead of the slanted&#39;s</span>
+<span class="sd">         thrd (object): for externally controlled observation (i.e. to see motor movements)</span>
+<span class="sd">                          - must have a boolean running() method</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>    <span class="c1"># for cv2.morphologyEx() </span>
+        
+        <span class="c1"># keep track of time</span>
+        <span class="n">t_init</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTickCount</span><span class="p">()</span>
+
+        <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s1">&#39;problem reading from camera&#39;</span>
+                <span class="n">exit</span><span class="p">()</span>
+            
+            <span class="c1"># convert to greyscale</span>
+            <span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+            <span class="c1"># apply blur</span>
+            <span class="n">blur</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="n">gray</span><span class="p">,(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># Otsu mask</span>
+            <span class="n">ret</span><span class="p">,</span> <span class="n">thr</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">blur</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span> <span class="o">+</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
+            <span class="c1">## cv2.imshow(&#39;thresh&#39;, thr)</span>
+            
+            <span class="c1"># morphology closing : eliminate noise inside main shape</span>
+            <span class="n">clo</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">thr</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_CLOSE</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+            <span class="c1">## cv2.imshow(&#39;closing&#39;, clo)</span>
+            
+            <span class="c1"># find contours </span>
+            <span class="n">im2</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="n">hierarchy</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="n">clo</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_TREE</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_SIMPLE</span><span class="p">)</span>
+            <span class="c1"># select contour &lt;- subject to change</span>
+            <span class="n">cnt</span> <span class="o">=</span> <span class="kc">None</span>
+            
+            <span class="k">for</span> <span class="n">ct</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">75</span> <span class="ow">and</span> <span class="n">cv2</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30000</span><span class="p">:</span>    <span class="c1"># probably found main shape</span>
+                    <span class="n">cnt</span> <span class="o">=</span> <span class="n">ct</span>
+                    <span class="k">break</span>
+            
+            <span class="k">if</span> <span class="n">cnt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+                
+            <span class="c1"># draw the selected contour</span>
+            <span class="c1">## cv2.drawContours(frame, [cnt], 0, (255,0,0), 3)</span>
+            
+            <span class="k">if</span> <span class="n">DEBUG_MODE</span><span class="p">:</span>
+                <span class="n">font</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cnt</span><span class="p">)),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span> <span class="n">font</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">LINE_AA</span><span class="p">)</span>
+
+            <span class="c1"># find the corresponding straight rectangle</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">,(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),(</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">DEBUG_MODE</span><span class="p">:</span>
+                <span class="n">font</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="s1">&#39;area: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">h</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">40</span><span class="p">),</span> <span class="n">font</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">LINE_AA</span><span class="p">)</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="s1">&#39;cnt area: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">cnt</span><span class="p">)),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">60</span><span class="p">),</span> <span class="n">font</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">LINE_AA</span><span class="p">)</span>
+            
+            <span class="c1"># find the minimum area rect    angle i.e. the rotated rectangle</span>
+            <span class="c1"># if not wait:        </span>
+            <span class="n">r_rect</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">minAreaRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+            <span class="n">box</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxPoints</span><span class="p">(</span><span class="n">r_rect</span><span class="p">)</span>
+            <span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int0</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">[</span><span class="n">box</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                
+            
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;cam&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span> <span class="o">==</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">)</span>
+            <span class="c1"># check if this function is running on parallel</span>
+            <span class="n">threaded</span> <span class="o">=</span> <span class="p">(</span><span class="n">thrd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">thrd</span><span class="o">.</span><span class="n">is_alive</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">wait</span> <span class="ow">and</span> <span class="p">(</span><span class="n">key</span> <span class="ow">or</span> <span class="n">threaded</span><span class="p">)</span> <span class="p">:</span>
+                <span class="k">break</span>
+            
+            <span class="c1"># see if enough time has passed</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">wait</span><span class="p">:</span>
+                <span class="n">t_curr</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTickCount</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">t_curr</span> <span class="o">-</span> <span class="n">t_init</span><span class="p">)</span> <span class="o">/</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTickFrequency</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">secs</span> <span class="p">:</span>
+                    <span class="k">break</span>
+            
+
+        <span class="c1"># self.cap.release()</span>
+        <span class="c1"># cv2.destroyAllWindows()</span>
+        
+        <span class="k">if</span> <span class="n">boxCoor</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">box</span></div>
+        
+    
+<div class="viewcode-block" id="Camera.get_from_map"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.get_from_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_filename</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Finds which side the chip has to turn to according to the map</span>
+<span class="sd">         provided. The user makes the selection.</span>
+<span class="sd">         </span>
+<span class="sd">         - Should be run complementary to get_coord()</span>
+<span class="sd">         </span>
+<span class="sd">         image_filename (string): the filepath of the map</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="nb">map</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">image_filename</span><span class="p">)</span>
+
+        <span class="c1"># extract the ROI of the map that has the chip</span>
+        <span class="n">grey_map</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+        <span class="n">ret1</span><span class="p">,</span> <span class="n">map_mask</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">grey_map</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="n">hierarchy</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="n">map_mask</span><span class="p">,</span> 
+                                                  <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_TREE</span><span class="p">,</span> 
+                                                  <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_SIMPLE</span><span class="p">)</span>
+        <span class="n">map_x</span><span class="p">,</span> <span class="n">map_y</span><span class="p">,</span> <span class="n">map_w</span><span class="p">,</span> <span class="n">map_h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">map_roi</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="n">map_y</span> <span class="p">:</span> <span class="n">map_y</span><span class="o">+</span><span class="n">map_h</span> <span class="p">,</span> <span class="n">map_x</span> <span class="p">:</span> <span class="n">map_x</span><span class="o">+</span><span class="n">map_w</span><span class="p">]</span>
+        <span class="c1">## cv2.imshow(&#39;masked map&#39;, map_roi)</span>
+        <span class="c1">## cv2.waitKey()</span>
+
+        <span class="c1"># locate th chip in the live feed</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coord</span><span class="p">(</span><span class="n">boxCoor</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># resize map_roi according to live size</span>
+        <span class="n">map_roi</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">map_roi</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+        
+        <span class="n">final_angle</span> <span class="o">=</span> <span class="mf">0.0</span>
+        
+        <span class="c1"># suggest the correct orientation</span>
+        <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="nb">min</span> <span class="o">=</span> <span class="n">im_match_err</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">],</span> <span class="n">map_roi</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="nb">min</span>
+        <span class="n">temp_ang</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">temp_ang</span> <span class="o">+=</span> <span class="mf">90.0</span>
+            <span class="n">map_roi</span> <span class="o">=</span> <span class="n">im_rot</span><span class="p">(</span><span class="n">map_roi</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">im_match_err</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">],</span> <span class="n">map_roi</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="n">error</span>
+            <span class="k">if</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">:</span>
+                <span class="nb">min</span> <span class="o">=</span> <span class="n">error</span>
+                <span class="n">final_angle</span> <span class="o">=</span> <span class="n">temp_ang</span>
+            
+        <span class="n">map_roi</span> <span class="o">=</span> <span class="n">im_rot</span><span class="p">(</span><span class="n">map_roi</span><span class="p">,</span> <span class="n">final_angle</span> <span class="o">-</span> <span class="mf">270.0</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>    
+
+        <span class="k">if</span> <span class="n">final_angle</span> <span class="o">==</span> <span class="mi">270</span><span class="p">:</span>
+            <span class="n">final_angle</span> <span class="o">==</span> <span class="o">-</span><span class="mi">90</span>
+
+        <span class="c1"># manual control</span>
+        <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            
+            <span class="n">frame</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">map_roi</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;cam&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+            <span class="c1"># input handling - user selects orientation</span>
+            <span class="n">key_pressed</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span>
+            <span class="k">if</span> <span class="n">key_pressed</span> <span class="o">==</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">key_pressed</span> <span class="o">==</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key_pressed</span> <span class="o">==</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">):</span>    <span class="c1"># right/left arrow</span>
+                <span class="nb">print</span> <span class="s1">&#39;here&#39;</span>
+                <span class="c1"># rotation data</span>
+                <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">map_roi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">map_roi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="k">if</span> <span class="n">key_pressed</span> <span class="o">==</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">):</span>     <span class="c1"># right</span>
+                    <span class="n">angle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="mf">90.0</span>
+                    <span class="n">final_angle</span> <span class="o">+=</span> <span class="mf">90.0</span>
+                <span class="k">else</span><span class="p">:</span>                            <span class="c1"># left</span>
+                    <span class="n">angle</span> <span class="o">=</span> <span class="mf">90.0</span>
+                    <span class="n">final_angle</span> <span class="o">-=</span> <span class="mf">90.0</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">final_angle</span><span class="p">)</span> <span class="o">==</span> <span class="mi">270</span><span class="p">:</span>
+                    <span class="n">final_angle</span> <span class="o">/=</span> <span class="o">-</span><span class="mi">3</span>
+                
+                <span class="n">rot_matrix</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getRotationMatrix2D</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+                <span class="c1">#apply rotation</span>
+                <span class="n">map_roi</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">warpAffine</span><span class="p">(</span><span class="n">map_roi</span><span class="p">,</span> <span class="n">rot_matrix</span><span class="p">,</span> <span class="p">(</span><span class="n">map_roi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">map_roi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="c1"># resize</span>
+                <span class="n">map_roi</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">map_roi</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">key_pressed</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">final_angle</span></div>
+                
+    
+<div class="viewcode-block" id="Camera.close"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span></div></div>
+        
+        
+<span class="c1"># Still on experimantal stage        </span>
+<div class="viewcode-block" id="CameraController"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.CameraController">[docs]</a><span class="k">class</span> <span class="nc">CameraController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">killed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hudON</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_rects</span> <span class="o">=</span> <span class="kc">False</span>    <span class="c1"># to retrieve box coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_init</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># to start counting time for box coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">box_data</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># to store the box coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secs</span> <span class="o">=</span> <span class="mi">1</span>            <span class="c1"># how long to wait to get box coords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hudMsg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        
+<div class="viewcode-block" id="CameraController.kill"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.CameraController.kill">[docs]</a>    <span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="c1"># User</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">killed</span> <span class="o">=</span> <span class="kc">True</span></div>
+        
+<div class="viewcode-block" id="CameraController.quit"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.CameraController.quit">[docs]</a>    <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">killed</span></div>
+        
+<div class="viewcode-block" id="CameraController.toggleHUD"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.CameraController.toggleHUD">[docs]</a>    <span class="k">def</span> <span class="nf">toggleHUD</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="c1"># User</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hudON</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hudON</span></div>
+        
+<div class="viewcode-block" id="CameraController.setHUD"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.CameraController.setHUD">[docs]</a>    <span class="k">def</span> <span class="nf">setHUD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>    <span class="c1"># User</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hudMsg</span> <span class="o">=</span> <span class="n">msg</span></div>
+        
+<div class="viewcode-block" id="CameraController.enRects"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.CameraController.enRects">[docs]</a>    <span class="k">def</span> <span class="nf">enRects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>    <span class="c1"># User</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secs</span> <span class="o">=</span> <span class="n">secs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">box_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_init</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTickCount</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_rects</span> <span class="o">=</span> <span class="kc">True</span>
+        
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_rects</span><span class="p">:</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">box_data</span></div></div>
+            
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
