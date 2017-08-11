@@ -12,6 +12,7 @@ The goal of the prober control software is to deliver a framework that can be us
 
 The prober controller will provide a clear mechanism for integrating switches (independent of the nature of the switch) in a test setups and how to assign signals lucid to the IOs where they are needed. The prober controller will provide a transparent system on reflecting the connected probe inside the code.
 
+- [Documentation Site](https://probercontrol.github.io/ProberControl/)
 
 ## Contributing
 
