@@ -2,9 +2,18 @@
   <a href="https://probercontrol.github.io/ProberControl/">
     <img src="./ProberControl/docs/sphinx-docs/_static/logo.png" width=200 height=200>
   </a>
+  
+  <h1 align="center">ProberControl</h1>
+  </p>
+  <p align="center">
 
-  <h3 align="center">ProberControl</h3>
+  <h3 align="center">Sponsored by: </h3>
+  <a href="https://probercontrol.github.io/ProberControl/">
+    <img src="https://probercontrol.github.io/ProberControl/_images/AIM_logo.PNG" width=300 height=150>
+  </a>
+  </p>
 </p>
+
 
 <br>
 
