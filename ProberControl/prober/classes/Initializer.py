@@ -2,9 +2,17 @@ import serial
 import visa
 import time
 import sys, os
-from instruments import *
-from procedures import *
-from classes import *
+from ..instruments import *
+from ..procedures import *
+from ..classes import *
+import threading
+
+def import_instrument(instrumentName):
+    for name, mod in sys.modules.iteritems():
+        suffix = name[name.rfind('.') + 1 :]
+        if instrumentName == suffix:
+            return mod
+    raise ImportError("Initializer: Could not find module {}".format(instrumentName))
 
 class Singleton(type):
     _instances = {}
@@ -27,6 +35,15 @@ class Initializer(object):
         self.stageCollection = {} # collection for instantiated stages
         self.configCollection = [] # collection for all configurations from config file
 
+    def printGPIB(self):
+        '''
+        Method for printing all devices connected to the GPIB Bus
+        '''
+        try:
+            print self.rm.list_resources()
+        except:
+            print "Error: Could not read from Visa Resource Manager"
+
     def read_config(self):
         '''
         Method for reading in the configuration file. The config_collection object is a list of dictionaries. Each dictionary has information about a particular instrument.
@@ -42,7 +59,7 @@ class Initializer(object):
         if (pwd.split('\\')[-1:][0]=='server'): # Launched via ethernet
             path = './../../config/ProberConfig.conf'
         else: # conventional launch
-            path = './../config/ProberConfig.conf'
+            path = './config/ProberConfig.conf'
 
 
         try:
@@ -55,7 +72,7 @@ class Initializer(object):
                         # If it is a multi-channel device, configure for every channel
                         if self._isMultichannel(stage_config):
                             stage_config = self._makeMoreChannels(stage_config)
-                            
+
                         config_collection.append(stage_config)
                         stage_config = {}
 
@@ -87,7 +104,7 @@ class Initializer(object):
         for entry in self.configCollection:
             if entry in config_collection:
                 temp.append(entry)
-        
+
         self.configCollection = temp
 
     def _isInformation(self, line):
@@ -116,23 +133,51 @@ class Initializer(object):
         for entry in stage_config:
             if 'N' in entry:
                 return True
-            
+
     def _makeMoreChannels(self, stage_config):
         '''Produces more entries of lasers for every channel designated by the config file'''
+		# Format channel N input
         n = stage_config['N']
-        begin, end = self._format(n)
+        sys, dev = self._format(n)
+		# Split P input at ;'s
+        if 'P' in stage_config:
+        	m = stage_config['P']
+        	ports = self._pFormat(m)
         toReturn = []
-        for i in range(begin, end+1):
+        for i in range(0,len(sys)):
             new_entry = stage_config.copy()
-            new_entry['N'] = str(i)
+            new_entry['SysChan'] = sys[i]
+            new_entry['DevChan'] = dev[i]
+            if 'P' in stage_config:
+				new_entry['P'] = ports[i]
+
             toReturn.append(new_entry)
-        return toReturn    
-        
+
+        return toReturn
+
+    def _pFormat(self,n):
+            channel_strs = [i for i in n.split(';')]
+            channel_list = []
+            for elem in channel_strs:
+                channel_list.append(elem.split(':')[1])
+
+            return channel_list
+
     def _format(self, n):
         '''Helper function for _makeMoreChannels()'''
-        n = [int(i) for i in n.split(',')]
-        n.sort()
-        return n[0], n[-1]
+        n = [i for i in n.split(';')]
+
+        sys=[]
+        dev=[]
+        for elem in n:
+            if ':' in elem:
+        		sys.append(elem.split(':')[0])
+        		dev.append(elem.split(':')[1])
+            else:
+        		sys.append(elem)
+        		dev.append('None')
+
+        return sys,dev
 
     def _flatten(self, config_collection):
         '''Flattens the list to return, not possible in list comp because of different data types'''
@@ -143,7 +188,7 @@ class Initializer(object):
                     toReturn.append(item)
             else:
                 toReturn.append(i)
-                
+
         return toReturn
 
     def generate_stages(self):
@@ -151,15 +196,19 @@ class Initializer(object):
 
         # Clear the brokenInstruments collection
         self.brokenInstruments = []
-        instruments_instantiated = [str(i) for i in self.stageCollection.values()]    
-        
-        gm_handler = Global_MeasureHandler.Global_MeasureHandler(self.stageCollection)
+        instruments_instantiated = [str(i) for i in self.stageCollection.values()]
+
+        gm_handler = Global_MeasureHandler.Global_MeasureHandler()
+
+        # store the locks for each address for stepmotors w/ MultiSerial
+        self.stp_mSerials = {}
 
         constructor_methods = {
             'O': self._genOptElecStage, #Optical stage
             'E': self._genOptElecStage, #Electrical stage
             'C': self._genChipStage, #Chip stage
             'M': self._genMeasureStage, #Measurement stage
+            'V': self._genVideoCamera #Video Camera
         }
 
         for stage_config in self.configCollection:
@@ -173,10 +222,17 @@ class Initializer(object):
                     newStage = constructor_methods[stage_type](stage_config,gm_handler)
 
                     # construct the key for GlobalMeasurement_Handler and stages dictionary
-                    key = stage_type+newStage.whoAmI()
+                    if 'SysChan' in stage_config:
+						key = stage_type+newStage.whoAmI()+str(stage_config['SysChan'])
+                    else:
+						key = stage_type+newStage.whoAmI()
 
                     # add the instance of the class to the stages dictionary
-                    self.stageCollection[key] = newStage
+                    if key in  self.stageCollection.keys():
+                        print "ERROR: "+key+"was initialized twice check numbering of devices and channels"
+                        self.stageCollection[key] = newStage
+                    else:
+                        self.stageCollection[key] = newStage
 
                     # add the new instance to the GlobalMeasurement_Handler
                     gm_handler.update_stages(self.stageCollection)
@@ -199,7 +255,7 @@ class Initializer(object):
 
         # reset broken devices collection
         self.brokenInstruments = []
-        
+
         gm_handler = Global_MeasureHandler.Global_MeasureHandler(self.stageCollection)
 
         constructor_methods = {
@@ -207,6 +263,7 @@ class Initializer(object):
             'E': self._genOptElecStage, #Electrical stage
             'C': self._genChipStage, #Chip stage
             'M': self._genMeasureStage, #Measurement stage
+            'V': self._genVideoCamera, #Video Camera
         }
 
         for stage_config in configuration:
@@ -217,10 +274,17 @@ class Initializer(object):
                 newStage = constructor_methods[stage_type](stage_config,gm_handler)
 
                 # construct the key for GlobalMeasurement_Handler and stages dictionary
-                key = stage_type+newStage.whoAmI()
+                if 'SysChan' in stage_config:
+						key = stage_type+newStage.whoAmI()+str(stage_config['SysChan'])
+                else:
+						key = stage_type+newStage.whoAmI()
 
                 # add the instance of the class to the stages dictionary
-                self.stageCollection[key] = newStage
+                if key in  self.stageCollection.keys():
+                        print "ERROR: "+key+"was initialized twice check numbering of devices and channels"
+                        self.stageCollection[key] = newStage
+                else:
+                        self.stageCollection[key] = newStag
 
                 # add the new instance to the GlobalMeasurement_Handler
                 gm_handler.update_stages(self.stageCollection)
@@ -233,7 +297,7 @@ class Initializer(object):
 
         self.stageCollection = self._genHandlers(self.configCollection, self.stageCollection)
 
-        self._checkInstruments()
+        self._checkInstruments(self.stageCollection)
 
         return self.stageCollection
 
@@ -244,12 +308,15 @@ class Initializer(object):
         :param stage_config: Configuration entry read from ProberConfig.conf
         :type stage_config: Dictionary
         '''
-        ser_list = []
         space = None
         off_angle = None
-        ser_list.append(apt_util.c2r(stage_config['X']))
-        ser_list.append(apt_util.c2r(stage_config['Y']))
-        ser_list.append(apt_util.c2r(stage_config['Z']))
+        mtr_x = []; mtr_y = []; mtr_z = [];
+        t_x = self._genStpMtr(stage_config['X'], threaded=True, empty_collector=mtr_x)
+        t_y = self._genStpMtr(stage_config['Y'], threaded=True, empty_collector=mtr_y)
+        t_z = self._genStpMtr(stage_config['Z'], threaded=True, empty_collector=mtr_z)
+        t_x.start(); t_y.start(); t_z.start()
+        t_x.join(); t_y.join(); t_z.join()
+        mtr_list = [mtr_x[0], mtr_y[0], mtr_z[0]]
 
         if 'S' in stage_config:
             space =  map(float,stage_config['S'].split(' '))
@@ -258,19 +325,21 @@ class Initializer(object):
             off_angle = float(stage_config['A'])
 
         if stage_config['Stage'] == 'O':
-            temp = OptStage.OptStage(ser_list, space, off_angle)
+            temp = OptStage.OptStage(mtr_list, space, off_angle)
             temp.set_whoAmI(stage_config['O'])
             return temp
 
         elif stage_config['Stage'] == 'E':
-            temp = E_Stage.E_Stage(ser_list, space, off_angle)
+            temp = E_Stage.E_Stage(mtr_list, space, off_angle)
             temp.set_whoAmI(stage_config['O'])
             return temp
 
     def _genChipStage(self, stage_config, gm_handler):
         '''Generates ChipStage object from stage_configuation dictionary'''
         ser_list = []
-        ser_list.append(apt_util.c2r(stage_config['R']))
+        ser_list.append(apt_util.c2r(stage_config['R'], 9600))
+        ser_list.append(apt_util.c2r(stage_config['T']))
+        ser_list.append(apt_util.c2r(stage_config['B']))
         return chip_stage.ChipStage(ser_list)
 
     def _genMeasureStage(self, stage_config, gm_handler):
@@ -279,25 +348,41 @@ class Initializer(object):
         instrumentName = stage_config['O']
 
         # Special case for Amonics EDFA
-        if instrumentName == 'AEDFA_IL_23_B_FA': 
-            instrumentPort = __import__(instrumentName)
+        if instrumentName == 'AEDFA_IL_23_B_FA':
+            instrumentPort = import_instrument(instrumentName)
             instrumentActual = getattr(instrumentPort, instrumentName)(apt_util.c2r(address))
 
         # Special case for distance measurement setup
-        elif instrumentName == 'Distance': 
+        elif instrumentName == 'Distance':
             instrumentActual = self._distanceSetup(stage_config)
-        
+
         # Importing a multi-channel device
-        elif 'N' in stage_config: 
-            instrumentPort = __import__(instrumentName)
-            instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address, stage_config['N'])
+        elif 'N' in stage_config:
+			if stage_config['DevChan'] != 'None':
+				instrumentPort = import_instrument(instrumentName)
+				instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address, stage_config['DevChan'])
+			else:
+				instrumentPort = import_instrument(instrumentName)
+				instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address)
 
         #Normal case
-        else: 
-            instrumentPort = __import__(instrumentName)
+        else:
+            instrumentPort = import_instrument(instrumentName)
             instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address)
 
         return instrumentActual
+
+    def _genVideoCamera(self, stage_config, gm_handler):
+        id = stage_config['I']
+        cameraName = stage_config['O']
+        controller = None
+
+        if 'C' in stage_config:
+            controller = stage_config['C']
+
+        temp = camera.Camera(id, controller)
+        temp.set_whoAmI(cameraName)
+        return temp
 
     def _distanceSetup(self, stage_config):
         '''Internal helper function'''
@@ -314,12 +399,12 @@ class Initializer(object):
         :note: Currently only generates switch handler
         '''
         handlerActual = ''
-        
+
         for item in stages:
             if 'switch' in item.lower():
-                handlerPort = __import__('SwitchHandler')
+                handlerPort = import_instrument('SwitchHandler')
                 handlerActual = getattr(handlerPort, 'SwitchHandler')(stage_config,stages,stages[item])
-        
+
         if handlerActual:
             stages['SwitchHandler'] = handlerActual
 
@@ -333,7 +418,41 @@ class Initializer(object):
                 print '{}'.format(entry['O'])
 
         else:
-            print 'All instruments listed in the configuration file are initialized.'
+            print 'The following tools were initialized as:'
+            for k,v in self.stageCollection.items():
+                print "Stages Key: " + k + " Model: " + str(v)
+
+    def _genUniqueAddressHandle(self, address):
+        if address in self.stp_mSerials:
+            if not self.stp_mSerials[address].lock_given:
+                # second time we see this address; give it a lock
+                self.stp_mSerials[address].lock = threading.Lock()
+                self.stp_mSerials[address].lock_given = True
+            return self.stp_mSerials[address]
+        else:
+            mser = apt_util.c2r(address)
+            self.stp_mSerials[address] = mser
+            return mser
+
+    def _genStpMtr(self, infoLine, threaded=False, empty_collector=[]):
+        ''' parses the motor info to generate step motors '''
+        args = map(lambda s: s.strip(), infoLine.split(';'))
+
+        if len(args) < 2:
+            raise ValueError('generate_stages: at least 2 arguments expected; got {}'.format(len(args)))
+        instrumentName = args[0]
+        address_handle = self._genUniqueAddressHandle(args[1])
+        ctor_args = [address_handle]
+        # convert all other arguments to integers
+        ctor_args[1:] = map(lambda x: int(x), args[2:])
+
+        instrumentPort = import_instrument(instrumentName)
+        if not threaded:
+            return getattr(instrumentPort, instrumentName)(*ctor_args)
+        else:
+            def init_thread():
+                empty_collector.append(getattr(instrumentPort, instrumentName)(*ctor_args))
+            return threading.Thread(target=init_thread)
 
     def refresh(self):
 

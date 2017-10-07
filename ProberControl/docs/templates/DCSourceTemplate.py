@@ -24,7 +24,7 @@ class InstrumentNameHere(object):
         :param address: SCPI address of instrument
         :type address: String
         '''
-
+        self.active = False
         self.gpib = res_manager.open_resource(address) #call visa
 
     def whoAmI(self):
@@ -38,6 +38,13 @@ class InstrumentNameHere(object):
     def __str__(self):
         '''Adds built in functionality for printing and casting'''
         return 'ClassName'
+
+    def change_state(self):
+        ''' Toggles the self.active parameter'''
+        if self.active == True:
+            self.active = False
+        else:
+            self.active = True
 
     def get_voltage(self):
         '''Get the voltage''' 

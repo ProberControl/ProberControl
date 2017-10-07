@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy
 #to measure procedure run-time
-import time 
-from classes.Global_MeasureHandler import Global_MeasureHandler as gh
+import time
+from ..classes.Global_MeasureHandler import Global_MeasureHandler as gh
 
 STD_SOURCE    = 'MPowerMeter'
 SIGNAL_SOURCE = 'MPowerMeter'
 
-gh = gh([])
+# Getting Global_MeasureHandler (singleton)instance; Do not change this!
+gh = gh()
 
 # set default value
 try:
@@ -24,10 +25,10 @@ except Exception as e:
 def _report(msg):
     prt_msg = 'fine-allign: ' + msg
     print prt_msg
-    
+
 def set_meas_fun(fn):
     global __selected_function
-    __selected_function = fn    
+    __selected_function = fn
 
 def set_signal_source(source_string=''):
     global SIGNAL_SOURCE
@@ -38,11 +39,11 @@ def set_signal_source(source_string=''):
 
     if source_string == 'MPOWERMETER':
         SIGNAL_SOURCE = 'MPOWERMETER'
-        return 
+        return
 
     if source_string == 'MDCMeter':
         SIGNAL_SOURCE = 'MDCMeter'
-        return 
+        return
 
     print str(source_string)+" does not match configured coupling signal source"
     return -1
@@ -64,7 +65,7 @@ def _get_signal(stages):
     except TypeError as e:
         print 'Function not available'
 
-def fast_align(stages, target,thresh=-60):    
+def fast_align(stages, target,thresh=-60):
     # If power reading is below threshold search by raster
     if _get_signal(stages) < thresh:
         if not _raster_thresh(stages, target,thresh):
@@ -99,7 +100,7 @@ def _raster_thresh(stages, target,thresh=-55, size=(15,15),step=0.001):
                 cur_pos = stages[target].get_coordinates()
                 new_pos = (cur_pos[0], cur_pos[1] + step, cur_pos[2])
                 stages[target].set_coordinates(new_pos)
-                    
+
             pow_tbl.append(pow_ln)
             cur_pos = stages[target].get_coordinates()
             new_pos = (cur_pos[0] + step, cur_pos[1] - size[1]*step, cur_pos[2])
@@ -108,7 +109,7 @@ def _raster_thresh(stages, target,thresh=-55, size=(15,15),step=0.001):
     # return to the best place scanned
     opt_point, _ = raster.optimal_point(pow_tbl)
     cur_pos = stages[target].get_coordinates()
-    new_pos = (cur_pos[0] + (-size[0] + opt_point[0])*step, 
+    new_pos = (cur_pos[0] + (-size[0] + opt_point[0])*step,
                cur_pos[1] + (size[1] - opt_point[1])*step,
                cur_pos[2])
     stages[target].set_coordinates(new_pos)
@@ -157,9 +158,9 @@ def smooth_align(stages, target, dim=0):
     pos=[]
     max_val = -9999
     max_pos = -9999
-    
+
     print data_list
-    
+
     for point in data_list:
         if max_val < point[1]:
             max_val = point[1]
@@ -170,11 +171,61 @@ def smooth_align(stages, target, dim=0):
     print coordinates
     stages[target].set_coor_2d(coordinates)
 
+def smooth_rot(stages, target):
+    '''
+        Searches and alligns on the maximum of rotation offset
+    '''
+    jump_back   = 0.0014*20
+    grad_thresh = 0.1/(0.0025)
+    approaching = False
+    max_cycle   = 50
+    data_list   = []
+
+    for i in range(max_cycle):
+        data =  _get_meas_r(stages,target)
+        grad =  _comp_gradient(data)
+
+        if grad > grad_thresh:
+            # loop
+            continue
+
+        if grad > 0 and grad < grad_thresh:
+            # append data
+            data_list += data
+            approaching = True
+            continue
+
+        if grad < 0 and approaching == True:
+            # append data
+            data_list += data
+            break
+
+        if grad < 0 and approaching == False:
+            # Jump back
+            coordinates = stages[target].get_rot()
+            coordinates -= jump_back
+            stages[target].set_rot(coordinates)
+            continue
+
+    max_val = -9999
+    max_pos = -9999
+
+    print data_list
+
+    for point in data_list:
+        if max_val < point[1]:
+            max_val = point[1]
+            max_pos = point[0]
+
+    coordinates = max_pos
+    print coordinates
+    stages[target].set_rot(coordinates)
+
 def _get_meas(stages,target,dim):
-    stepsize = 0.0005
+    stepsize = 0.0014
     data = []
     nr_samples = 5
-    
+
     dim = int(dim)
 
     for i in range(nr_samples):
@@ -192,7 +243,30 @@ def _get_meas(stages,target,dim):
             smooth_data.append([data[i][0],(2*data[i][1]+data[i-1][1])/3])
         else:
             smooth_data.append([data[i][0],(data[i][1]+data[i-1][1]+data[i+1][1])/3])
-    
+
+    return smooth_data
+
+def _get_meas_r(stages, target):
+    stepsize = 0.0005
+    data = []
+    nr_samples = 5
+
+    for i in range(nr_samples):
+        coordinates = stages[target].get_rot()
+        data.append([coordinates,_get_signal(stages)])
+        coordinates += stepsize
+        stages[target].set_rot(coordinates)
+
+    # smooth data
+    smooth_data =[]
+    for i in range(nr_samples):
+        if i == 0:
+            smooth_data.append([data[i][0],(2*data[i][1]+data[i+1][1])/3])
+        elif i== nr_samples -1:
+            smooth_data.append([data[i][0],(2*data[i][1]+data[i-1][1])/3])
+        else:
+            smooth_data.append([data[i][0],(data[i][1]+data[i-1][1]+data[i+1][1])/3])
+
     return smooth_data
 
 def _comp_gradient(data):
@@ -202,7 +276,7 @@ def _comp_gradient(data):
     for point in data[1:-1]:
         x.append(point[0])
         y.append(point[1])
-        
+
     a,b=numpy.polyfit(x,y,1)
 
 
@@ -216,13 +290,13 @@ def _sign(number):
 
 def gradient_ascent(stages, target, plot=False, stepsize=0.001,beta_p=0.001,max_steps=100,min_d=1):
     '''
-        Two Dimensional Gradient Ascent Algorythm to position fiber. 
+        Two Dimensional Gradient Ascent Algorythm to position fiber.
         Gradient computed by power measurements at position a,b,c.
         The gradient then defines the stepsize to the next position a'
         The fiber is considered coupled if:
             a) If the gradient is below a threshold 3 times in a row
     '''
-    
+
     start_time = time.clock()
     # Define Constants
     beta = beta_p * stepsize
@@ -273,7 +347,7 @@ def gradient_ascent(stages, target, plot=False, stepsize=0.001,beta_p=0.001,max_
             if plot:
                 _print_path(coord_list,power_list)
             print time.clock() - start_time, "seconds"
-            return     
+            return
 
         # compute and set new coordinates
         coordinates_aa = coordinates_b
@@ -281,15 +355,15 @@ def gradient_ascent(stages, target, plot=False, stepsize=0.001,beta_p=0.001,max_
         coordinates_aa[1] += beta*d1
 
         stages[target].set_coor_2d(coordinates_aa)
-    
+
     if plot:
         _print_path(coord_list,power_list)
     _report('Stopped without hitting the break condition')
     print time.clock() - start_time, "seconds"
-    
+
 def gradient_ascent_m(stages, target, plot=False, stepsize=0.001,beta_p=0.001,p_p = 0.001, max_steps=100,min_d=1):
     '''
-        Two Dimensional Gradient Ascent Algorythm to position fiber. 
+        Two Dimensional Gradient Ascent Algorythm to position fiber.
         Gradient computed by power measurements at position a,b,c.
         The gradient then defines the stepsize to the next position a'
         The fiber is considered coupled if:
@@ -299,7 +373,7 @@ def gradient_ascent_m(stages, target, plot=False, stepsize=0.001,beta_p=0.001,p_
     # Define Constants
     beta = beta_p*stepsize
     p = p_p*stepsize
-    
+
     # Initialize counters, references etc
     d0 = 1
     d1 = 1
@@ -347,7 +421,7 @@ def gradient_ascent_m(stages, target, plot=False, stepsize=0.001,beta_p=0.001,p_
             if plot:
                 _print_path(coord_list,power_list)
             print time.clock() - start_time, "seconds"
-            return     
+            return
 
         # compute and set new coordinates
         coordinates_aa = coordinates_b
@@ -355,15 +429,15 @@ def gradient_ascent_m(stages, target, plot=False, stepsize=0.001,beta_p=0.001,p_
         coordinates_aa[1] += (beta*d1 + ref_d1*p)
 
         stages[target].set_coor_2d(coordinates_aa)
-    
+
     if plot:
         _print_path(coord_list,power_list)
     _report('Stopped without hitting the break condition')
     print time.clock() - start_time, "seconds"
-    
+
 def gradient_ascent_miniBatch(stages, target, plot=False):
     '''
-        Two Dimensional Gradient Ascent Algorythm to position fiber. 
+        Two Dimensional Gradient Ascent Algorythm to position fiber.
         Gradient computed by power measurements at position a,b,c.
         The gradient then defines the stepsize to the next position a'
         The fiber is considered coupled if:
@@ -375,7 +449,7 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
     beta      = 0.001*stepsize
     max_steps = 100
     min_d     = 1
-    
+
     # Initialize counters, references etc
     d_xy = [1,1,1,1,1,1,1,1]
     d = d_xy[:]
@@ -402,7 +476,7 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
         coordinates_c[1] = coordinates_b[1]-stepsize
         stages[target].set_coor_2d(coordinates_c)
         power_c = _get_signal(stages)
-        
+
         # point d
         coordinates_d = coordinates_c[:]
         coordinates_d[0] = coordinates_c[0]+stepsize
@@ -414,7 +488,7 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
         coordinates_e[0] = coordinates_d[0]+stepsize
         stages[target].set_coor_2d(coordinates_e)
         power_e = _get_signal(stages)
-        
+
         # point f
         coordinates_f = coordinates_e[:]
         coordinates_f[1] = coordinates_e[1]+stepsize
@@ -426,7 +500,7 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
         coordinates_g[1] = coordinates_f[1]+stepsize
         stages[target].set_coor_2d(coordinates_g)
         power_g = _get_signal(stages)
-        
+
         # point h
         coordinates_h = coordinates_g[:]
         coordinates_h[0] = coordinates_g[0]-2*stepsize
@@ -457,7 +531,7 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
             if plot:
                 _print_path(coord_list,power_list)
             print time.clock() - start_time, "seconds"
-            return     
+            return
 
         # compute and set new coordinates
         coordinates_aa = coordinates_b
@@ -465,12 +539,12 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
         coordinates_aa[1] += beta*d1
 
         stages[target].set_coor_2d(coordinates_aa)
-    
+
     if plot:
         _print_path(coord_list,power_list)
     _report('Stopped without hitting the break condition')
     print time.clock() - start_time, "seconds"
-    
+
 
 def _print_path(coord_list, powers):
 

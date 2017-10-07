@@ -80,7 +80,12 @@ class Polatis(object):
         :param egress: output port
         :type egress: integer
         '''
-        
+
+        if ingress > egress:
+        	buffer = egress
+        	egress = ingress
+        	ingress = buffer
+		
         ingress = self.__formatConventional(str(ingress))
         egress = self.__formatConventional(str(egress))
         
@@ -264,8 +269,18 @@ class Polatis(object):
         connections = self.get_all_connections().split("),(")
         connections[0] = connections[0][2:].split(',')
         connections[1] = connections[1][1:-1].split(',')
-
-        return zip(connections[0], connections[1])
+		
+        row1 = []
+        for elem in connections[0]:
+			print elem
+			row1.append(int(elem))
+			
+        row2 = []
+        for elem in connections[1]:
+			print elem
+			row2.append(int(elem))
+		
+        return zip(row1, row2)
 
     def __str__(self):
         '''Adds built in functionality for printing and casting'''

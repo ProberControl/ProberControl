@@ -44,7 +44,6 @@
   <h1>Source code for classes.xyzstage</h1><div class="highlight"><pre>
 <span></span><span class="c1"># XYZ-Stage Class</span>
 
-<span class="kn">from</span> <span class="nn">stp_mtr</span> <span class="k">import</span> <span class="n">StepMotor</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -53,7 +52,7 @@
 <span class="c1"># helper functions to add/subtract tuples</span>
 <div class="viewcode-block" id="t_add"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.t_add">[docs]</a><span class="k">def</span> <span class="nf">t_add</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">))</span></div>
-    
+
 <div class="viewcode-block" id="t_sub"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.t_sub">[docs]</a><span class="k">def</span> <span class="nf">t_sub</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">))</span></div>
 <span class="c1">##</span>
@@ -61,56 +60,50 @@
 
 <div class="viewcode-block" id="XYZ_Stage"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage">[docs]</a><span class="k">class</span> <span class="nc">XYZ_Stage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser_list</span><span class="p">,</span><span class="n">off_angle</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtr_list</span><span class="p">,</span><span class="n">off_angle</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Constructor</span>
-<span class="sd">         </span>
-<span class="sd">         ser_list (list): a list with serial objects corresponding to </span>
+
+<span class="sd">         ser_list (list): a list with serial objects corresponding to</span>
 <span class="sd">                          the x, y and z motors respectively</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
-        <span class="c1"># self.x_axis = StepMotor.__new__(StepMotor)    # StepMotor(ser_list[0])</span>
-        <span class="c1"># self.y_axis = StepMotor.__new__(StepMotor)    # StepMotor(ser_list[1])</span>
-        <span class="c1"># self.z_axis = StepMotor.__new__(StepMotor)    # StepMotor(ser_list[2])</span>
-        
-        <span class="c1">## threading approach</span>
-        <span class="c1"># t_x = threading.Thread(target=StepMotor.__init__, args=(self.x_axis, ser_list[0]))</span>
-        <span class="c1"># t_y = threading.Thread(target=StepMotor.__init__, args=(self.y_axis, ser_list[1]))</span>
-        <span class="c1"># t_z = threading.Thread(target=StepMotor.__init__, args=(self.z_axis, ser_list[2]))</span>
-        
-        <span class="c1"># new threading approach</span>
-        <span class="k">def</span> <span class="nf">init_x_axis</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span> <span class="o">=</span> <span class="n">StepMotor</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">def</span> <span class="nf">init_y_axis</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span> <span class="o">=</span> <span class="n">StepMotor</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">def</span> <span class="nf">init_z_axis</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span> <span class="o">=</span> <span class="n">StepMotor</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-            
-        <span class="n">t_x</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">init_x_axis</span><span class="p">)</span>
-        <span class="n">t_y</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">init_y_axis</span><span class="p">)</span>
-        <span class="n">t_z</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">init_z_axis</span><span class="p">)</span>
-        
-        <span class="n">t_x</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_y</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_z</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="c1"># t_x.join(), t_y.join(), t_z.join()</span>
-    
+
+        <span class="c1"># # new threading approach</span>
+        <span class="c1"># def init_x_axis():</span>
+        <span class="c1">#     self.x_axis = StepMotor(ser_list[0])</span>
+        <span class="c1"># def init_y_axis():</span>
+        <span class="c1">#     self.y_axis = StepMotor(ser_list[1])</span>
+        <span class="c1"># def init_z_axis():</span>
+        <span class="c1">#     self.z_axis = StepMotor(ser_list[2])</span>
+        <span class="c1">#</span>
+        <span class="c1"># t_x = threading.Thread(target=init_x_axis)</span>
+        <span class="c1"># t_y = threading.Thread(target=init_y_axis)</span>
+        <span class="c1"># t_z = threading.Thread(target=init_z_axis)</span>
+        <span class="c1">#</span>
+        <span class="c1"># t_x.start(), t_y.start(), t_z.start()</span>
+        <span class="c1"># # t_x.join(), t_y.join(), t_z.join()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span> <span class="o">=</span> <span class="n">mtr_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span> <span class="o">=</span> <span class="n">mtr_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span> <span class="o">=</span> <span class="n">mtr_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="mf">0.001</span>
-        
+
                 <span class="c1"># virtual leveling helpers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ang_x</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ang_y</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># offset angle of x and y stages from optimal axis</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">off_angle</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">off_angle</span><span class="p">)</span>
-        
+
 
         <span class="k">def</span> <span class="nf">set_off_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">off_angle</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">off_angle</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">off_angle</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">get_off_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_angle</span>
-        
+
         <span class="k">def</span> <span class="nf">get_calibrated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">                Check whether the stage was calibrated to chip by checking whether zeros are unequal 0</span>
@@ -122,33 +115,33 @@
 
 <div class="viewcode-block" id="XYZ_Stage.home"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.home">[docs]</a>    <span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Sets all of step-motors to home position&#39;&#39;&#39;</span>
-        
+
         <span class="c1"># Create threads for homing</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span><span class="o">.</span><span class="n">home</span><span class="p">())</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">home</span><span class="p">())</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="o">.</span><span class="n">home</span><span class="p">())</span>
-        
+
         <span class="c1"># Starts x-direction, then y-direction and z-direction</span>
         <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">();</span> <span class="n">y</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">z</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-    
+
         <span class="c1"># Reset isntance variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="mf">0.001</span></div>
-    
+
 <div class="viewcode-block" id="XYZ_Stage.check_coordinates_2d"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.check_coordinates_2d">[docs]</a>    <span class="k">def</span> <span class="nf">check_coordinates_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Check whather move to a point in space is possible within actuator range</span>
-<span class="sd">         </span>
+
 <span class="sd">         target_pos (2-tuple): (x,y) coordinates of the final point</span>
-<span class="sd">        &#39;&#39;&#39;</span>            
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_coordinates</span><span class="p">((</span><span class="n">target_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="XYZ_Stage.check_coordinates"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.check_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">check_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Check whather move to a point in space is possible within actuator range</span>
-<span class="sd">         </span>
+
 <span class="sd">         target_pos (3-tuple): (x,y,z) coordinates of the final point</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">act_x</span><span class="p">,</span> <span class="n">act_y</span><span class="p">,</span> <span class="n">act_z</span> <span class="o">=</span> <span class="n">t_add</span><span class="p">(</span><span class="n">target_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span><span class="p">)</span>
@@ -160,7 +153,7 @@
 <div class="viewcode-block" id="XYZ_Stage.set_coordinates"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.set_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Move to a point in the plane</span>
-<span class="sd">         </span>
+
 <span class="sd">         target_pos (3-tuple): (x,y,z) coordinates of the final point</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># actual distances sent to StepMotor</span>
@@ -169,21 +162,21 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span><span class="o">.</span><span class="n">moving</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">moving</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="o">.</span><span class="n">moving</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span><span class="o">.</span><span class="n">check_abs_transl</span><span class="p">(</span><span class="n">act_x</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">check_abs_transl</span><span class="p">(</span><span class="n">act_y</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="o">.</span><span class="n">check_abs_transl</span><span class="p">(</span><span class="n">act_z</span><span class="p">):</span>
             <span class="n">x_d</span> <span class="o">=</span> <span class="n">target_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
             <span class="n">y_d</span> <span class="o">=</span> <span class="n">target_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">target_pos</span>
-            
+
             <span class="n">z_extra</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">if</span> <span class="n">long</span> <span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leveled</span><span class="p">():</span>
                     <span class="n">z_extra</span> <span class="o">+=</span> <span class="n">x_d</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ang_x</span><span class="p">))</span> <span class="o">+</span> <span class="n">y_d</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ang_y</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">+=</span> <span class="n">z_extra</span>
                 <span class="n">act_z</span> <span class="o">+=</span> <span class="n">z_extra</span>
-        
+
             <span class="c1"># threading approach</span>
             <span class="n">t_x</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">StepMotor</span><span class="o">.</span><span class="n">abs_transl</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span><span class="p">,</span> <span class="n">act_x</span><span class="p">))</span>
             <span class="n">t_y</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">StepMotor</span><span class="o">.</span><span class="n">abs_transl</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="p">,</span> <span class="n">act_y</span><span class="p">))</span>
             <span class="n">t_z</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">StepMotor</span><span class="o">.</span><span class="n">abs_transl</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="p">,</span> <span class="n">act_z</span><span class="p">))</span>
-            
+
             <span class="k">if</span> <span class="n">z_extra</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">t_x</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_y</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
                 <span class="n">t_x</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_y</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -199,14 +192,14 @@
                 <span class="n">t_x</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_y</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_z</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span> <span class="s1">&#39;XYZ_stage::error: Attempted move out of bounds (abs_pos:</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">act_x</span><span class="p">,</span> <span class="n">act_y</span><span class="p">,</span> <span class="n">act_z</span><span class="p">)</span></div>
-            
+
 <div class="viewcode-block" id="XYZ_Stage.set_coor_2d"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.set_coor_2d">[docs]</a>    <span class="k">def</span> <span class="nf">set_coor_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Move to a point in the plane</span>
-<span class="sd">         </span>
+
 <span class="sd">         target_pos (2-tuple): (x,y) coordinates of the final point</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">((</span><span class="n">target_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">),</span> <span class="n">long</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYZ_Stage.set_stepsize"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.set_stepsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_stepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">stepsize</span><span class="p">):</span>
@@ -214,7 +207,7 @@
 <span class="sd">        Updates the stepsize used in step() function</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">stepsize</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.step"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        - Move Stage in either direction by one step</span>
@@ -231,82 +224,82 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">moving</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">delta_transl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>        
+                    <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
             <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">delta_transl</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="o">.</span><span class="n">moving</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="o">.</span><span class="n">delta_transl</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>    
+                    <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
             <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="o">.</span><span class="n">delta_transl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>            </div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span></div>
 
-                                                
+
 <div class="viewcode-block" id="XYZ_Stage.get_coordinates"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Returns the current position of the XYZ-Stage relative to the set origin</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.get_coor_2d"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.get_coor_2d">[docs]</a>    <span class="k">def</span> <span class="nf">get_coor_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Returns the current position of the XYZ-Stage relative to the set origin</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.get_real_coordinates"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.get_real_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_real_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Returns the actual position of the XYZ-Stage (relative to homing)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">t_add</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.set_as_zero"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.set_as_zero">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_zero</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Change the origin</span>
-<span class="sd">         </span>
+
 <span class="sd">         new_zero (3-tuple): (x,y,z) coordinates of the new origin</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="n">actual</span> <span class="o">=</span> <span class="n">t_add</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">t_sub</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">new_zero</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span> <span class="o">=</span> <span class="n">new_zero</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.set_cur_as"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.set_cur_as">[docs]</a>    <span class="k">def</span> <span class="nf">set_cur_as</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correct_pos</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Changes the coordinates of the current position, esentially</span>
 <span class="sd">         computing the new origin. Does NOT involve any motor movement</span>
-<span class="sd">         </span>
+
 <span class="sd">         correct_pos (3-tuple): (x,y,z) coordinates of the &quot;corect&quot; position</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="n">zero_trans</span> <span class="o">=</span> <span class="n">t_sub</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">),</span> <span class="n">correct_pos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_as_zero</span><span class="p">(</span><span class="n">t_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span> <span class="n">zero_trans</span><span class="p">))</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.set_cur_as_2d"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.set_cur_as_2d">[docs]</a>    <span class="k">def</span> <span class="nf">set_cur_as_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correct_pos</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Changes the coordinates of the current position, esentially</span>
 <span class="sd">         computing the new origin. Does NOT involve any motor movement</span>
-<span class="sd">         </span>
+
 <span class="sd">         correct_pos (2-tuple): (x,y) coordinates of the &quot;corect&quot; position</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="n">correct_pos_3</span> <span class="o">=</span> <span class="p">(</span><span class="n">correct_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">correct_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_cur_as</span><span class="p">(</span><span class="n">correct_pos_3</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.set_level"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.set_level">[docs]</a>    <span class="k">def</span> <span class="nf">set_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ang_x</span><span class="p">,</span> <span class="n">ang_y</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         set variables for virtual leveling</span>
 <span class="sd">         Note: the axes are relative to the stage</span>
-<span class="sd">         </span>
+
 <span class="sd">         ang_x (float): angle in x-axis</span>
 <span class="sd">         ang_y (float): anfle in y-axis</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ang_x</span> <span class="o">=</span> <span class="n">ang_x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ang_y</span> <span class="o">=</span> <span class="n">ang_y</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.leveled"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.leveled">[docs]</a>    <span class="k">def</span> <span class="nf">leveled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Check if virtual leveling parameters have been set</span>
@@ -320,16 +313,33 @@
                 <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
-        
+
 <div class="viewcode-block" id="XYZ_Stage.close"><a class="viewcode-back" href="../../source/components/classes.html#classes.xyzstage.XYZ_Stage.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Closes the underlying motors</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z_axis</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
-    
+
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

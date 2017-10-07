@@ -14,22 +14,18 @@ class Singleton(object):
         if self.instance == None:
             self.instance = self.u_class(*args, **kwargs)
         return self.instance
-        
+
 def _print_mh(msg):
     print 'Global_MeasureHandler:: {}'.format(msg)
 
-@Singleton        
+@Singleton
 class Global_MeasureHandler(object):
 
-    def __init__(self, Stages):
-        '''
-            Stages (dict): Stages handle
-        '''
+    def __init__(self):
         # Instruments will hold the different intruments types
         # eg. DC, OPT, etc. as a key to a dict where the val is
         # another dict with:  (Stage_name) -> []
         self.Instruments = {}
-        self.Stages = Stages
         self.__locked = {}
 
     def update_stages(self, stages):
@@ -62,22 +58,32 @@ class Global_MeasureHandler(object):
         else:
             self.__locked = {}
 
+        #try:
+        #    if instr_attr == 'OPT':
+        #        return self.Stages[stage_name].get_power, -60
+        #    elif instr_attr == 'DC':
+        #        return self.Stages[stage_name].get_current, None
+        #    else:
+        #        return self.Stages[stage_name].whatCanI(), None
+        #except KeyError:
+        #    pass
+
     def get_locked(self):
         '''returns a list of the locked instruments'''
         pairs = zip(self.__locked.keys(),self.__locked.values())
         return pairs
-    
+
     def checkout_instrument(self, instrument):
         '''
-        Marks an instrument as active until either checkin_instrument() or 
+        Marks an instrument as active until either checkin_instrument() or
         instrument.change_state() is called
         '''
         device = self.get_instrument(instrument)
         device.active = True
-        
+
     def checkin_instrument(self, instrument):
         '''
-        Marks an instrument as inactive until either checkout_instrument() or 
+        Marks an instrument as inactive until either checkout_instrument() or
         instrument.change_state() is called
         '''
         device = self.get_instrument(instrument)
@@ -91,7 +97,7 @@ class Global_MeasureHandler(object):
         instrumentActual = self.__checkLocked(device)
         if not instrumentActual: # if nothing was found in __checkLocked()
         # Then take a look for available instruments, if not in locked
-        
+
             for instrument in self.Stages.keys():
                 strippedInstrument = ''.join([self.clean(i) for i in instrument if not i.isdigit()])
 
@@ -133,8 +139,8 @@ class Global_MeasureHandler(object):
                         return object_
 
         # If nothing was found, return false
-        return False 
-                
+        return False
+
     def call_function(self, instrument, function, arguments = ''):
         '''
         A method used to call functions from a specifc instrument via the GMH
@@ -168,7 +174,7 @@ class Global_MeasureHandler(object):
         except KeyError:
             _print_mh('problem inserting {} in the instrument records.'.format(stage_name))
             raise
-            
+
     def get_instr(self, instr_attr, pair=False):
         '''
             returns measure function (and associated threshold)
@@ -184,7 +190,7 @@ class Global_MeasureHandler(object):
                 return v[FUNCTION]
             else:
                 return False
-                
+
     def get_instr_by_name(self, instr_name, pair=False):
         for categ, sub_dict in self.Instruments.items():
             for name, v in sub_dict.items():
@@ -208,10 +214,11 @@ class Global_MeasureHandler(object):
                 return self.Stages[stage_name].get_power, -60
             elif instr_attr == 'DC':
                 return self.Stages[stage_name].get_current, None
+            else:
+                return self.Stages[stage_name].whatCanI(), None
         except KeyError:
             pass
-        finally:
-            return self.Stages[stage_name].whatCanI(), None
+
 
 '''
 Copyright (C) 2017  Robert Polster

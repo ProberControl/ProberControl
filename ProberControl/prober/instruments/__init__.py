@@ -14,9 +14,15 @@ __all__ = [
     'HP6624A',
     'AnritsuMS2667C',
     'AndoAQ4321',
+    'AndoAQ6317',
+    'ELL8',
+    'Keithley2280S',
     'Agilent34401A',
     'AEDFA_IL_23_B_FA',
-    'Motor'
+    'Motor_KST_ZST',
+    'Motor_MST_DRV',
+    'StepMotor_KST_ZST',
+    'StepMotor_MST_DRV'
 ]
 
 '''

@@ -1,7 +1,7 @@
 # the rotating stage class for the ELL8/M motor
 # 	- wraps around Rot_Motor
 
-from instruments.ELL8 import ELL8
+from ..instruments.ELL8 import ELL8
 
 DEG_PER_CNT = 0.00137329
 
@@ -52,7 +52,7 @@ class Rotator(ELL8):
 
 		ELL8.abs_move(self, steps)
 		self.deg_pos = d
-		self.moving = False 
+		self.moving = False
 
 	def get_angle(self):
 		'''

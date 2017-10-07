@@ -70,11 +70,12 @@ class DataViewer(tk.Frame):
         ## Menu
         self.TestNameBox = tk.OptionMenu(self,self.BoxVar,[])
         self.TestNameBox.grid(column=2,row=2,columnspan = 2)
-            ## Load Button
+        
+        ## Load Button
         self.ProcButton = tk.Button(self, text='Load Test',command=self.NameLoad)
         self.ProcButton.grid(column=4,row=2)
 
-            #Create Button to clear canvas
+        #Create Button to clear canvas
         self.ClearButton = tk.Button(self, text='Clear Canvas',command=self.ClearCanvas)
         self.ClearButton.grid(column=5,row=2)
 
@@ -164,8 +165,8 @@ class DataViewer(tk.Frame):
                     exit()
             
                 for line in MeasFile:
-                    if(any(x.isupper() for x in line) or any(x.islower() for x in line)) :
-                        NameList.append(line[0:-3])
+                    if line[:2] == '##' :
+                        NameList.append(line[2:-2])
         except IOError:
             pass # No file was selected, no reason to report an error
         except Exception as e:
@@ -200,7 +201,7 @@ class DataViewer(tk.Frame):
                 if in_block and line[0:-1] == '':
                     return Data
 
-                if line[0:-3] == test_name or (test_name == 'NoName' and in_block == False):
+                if line[2:-2] == test_name or (test_name == 'NoName' and in_block == False):
                     in_block = True
 
         if in_block == True:

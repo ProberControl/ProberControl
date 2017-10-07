@@ -25,7 +25,8 @@ class InstrumentNameHere(object):
         :param address: SCPI address of instrument
         :type address: String
         '''
-        self.gpib = res_manager.open_resource(address)
+        self.active = False
+        self.gpib = res_manager.open_resource(address) #call vis
 
     def whoAmI(self):
         ''':returns: reference to device'''
@@ -38,6 +39,13 @@ class InstrumentNameHere(object):
     def __str__(self):
         '''Adds built in functionality for printing and casting'''
         return 'ClassName'
+
+    def change_state(self):
+        ''' Toggles the self.active parameter'''
+        if self.active == True:
+            self.active = False
+        else:
+            self.active = True
 
     def get_power(self):
         '''

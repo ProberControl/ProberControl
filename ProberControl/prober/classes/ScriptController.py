@@ -1,7 +1,7 @@
 import sys, os, csv
 from tqdm import tqdm
 from Global_MeasureHandler import Global_MeasureHandler
-import procedures
+from .. import procedures
 import maitre
 import inspect
 
@@ -17,9 +17,11 @@ class ScriptController(object):
     def __init__(self, maitre, stages, scriptName = '', path = ''):
 
         self.__configurePaths(scriptName)
-    
-        self.gh = Global_MeasureHandler(stages) # Handles the stages
+
+        self.gh = Global_MeasureHandler() # Handles the stages; Do not change this!
         self.maitre = maitre # Handles the structures and procedures
+        self.stages = stages
+        self.outputMode = None
 
     def read_execute(self):
         self.script = self.read_script() # Read in the script to be executed
@@ -47,28 +49,27 @@ class ScriptController(object):
             self.resultsPath = os.path.join(self.pwd, 'config\\')
 
     def execute_script(self, path = 'results.csv'):
-        '''Opens the results file and executes experiments according to the configuration files'''
-        path = os.path.join(self.resultsPath, path)
-        with open(path, 'w') as file:
+        '''Opens the results file(s) and executes experiments according to the configuration files'''
+        with self._OutputConfiguration() as out:
 
             # tqdm for progress bar
             for entry in tqdm(self.script):
 
                 # If it is a function of a particular stage
                 if 'stage' in entry.keys():
-                    self._stageFunction(entry, file)
+                    self._stageFunction(entry, out.getOutFile(entry))
 
                 # If it is a procedure
                 elif 'structure' in entry.keys() and 'procedure' in entry.keys():
-                    self._structureProcedure(entry, file)
+                    self._structureProcedure(entry, out.getOutFile(entry))
 
                 # If it is a procedure that doesn't need a structure
                 elif 'procedure' in entry.keys() and 'structure' not in entry.keys():
-                    self._procedure(entry, file)
+                    self._procedure(entry, out.getOutFile(entry))
 
                 # If executing a function or procdure on a particular chip
                 elif 'chip' in entry.keys():
-                    self._chipFunction(entry, file)
+                    self._chipFunction(entry, out.getOutFile(entry))
 
         # Release all instruments that were associated with this script
         self.gh.clear_locked(self.scriptHash)
@@ -91,7 +92,7 @@ class ScriptController(object):
         self._writeData(file, str(data), False)
 
     def _structureProcedure(self, entry, file):
-        '''Executes experiments at the structural level using Procedures''' 
+        '''Executes experiments at the structural level using Procedures'''
         if not connecting.connect_structure(
             self.stages,
             self.maitre,
@@ -100,45 +101,114 @@ class ScriptController(object):
             # Write the error to the results but keep going
             self._writeData(file, "Error Connecting {}.".format(entry['structure']), True)
         else:
-            args = [self.stages, self.maitre]
-            for elem in entry['arguments']:
-                args.append(elem)
+            args = self._prepArguments(entry)
 
             # Execute the function using maitre
             data = maitre.execute_func_name(entry['procedure'],entry['function'],args)
 
             # Write the results of the experiment to file
-            self._writeData(file, str(data), True, entry)
+            self._writeData(file, data, True, entry['measurement'])
 
     def _procedure(self, entry, file):
-        '''executes experiments that use heuristic Procedures'''
-        args = [self.stages, self.maitre]
-        for elem in entry['arguments']:
-            args.append(elem)
+        '''executes experiments that use multiple tools or generalized algorythms'''
+        args = self._prepArguments(entry)
 
         # Execute the function using maitre
-        data = maitre.execute_func_name(entry['procedure'],entry['function'],args)
+        data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
 
         # Write the results of the experiment to file
-        self._writeData(file, str(data), procedure=True, entry=entry)
+        self._writeData(file, data, procedure=True, Meas_Name=entry['measurement'])
+
+    def _prepArguments(self, entry):
+        '''
+            Prepares the arguments for the function to be executed.
+            1) Interpretes lists
+            2) Swaps Maitre and Stages in if needed by function
+        '''
+        PreArgList = entry['arguments']
+        ArgList=[]
+
+        # String Interpretation
+        for elem in PreArgList:
+            if '[' in elem:
+                SubList=elem.replace('[','').replace(']','').split(',')
+                elem=map(float,SubList)
+            if 'Stages' in elem:
+                elem = self.Stages
+            if 'Maitre' in elem:
+                elem = self.Maitre
+            if str(elem).isdigit():
+                elem=float(elem)
+            if elem != '':
+                ArgList.append(elem)
+
+                direct_list = inspect.getargspec(self.ActiveStageFuncList[self.ActiveStageFunc])[0]
+                insert_list = []
+
+                if "Stages" in direct_list:
+                    insert_list.append([direct_list.index("Stages"),self.stages])
+
+                if "stages" in direct_list:
+                    insert_list.append([direct_list.index("stages"),self.stages])
+
+                if "Maitre" in direct_list:
+                    insert_list.append([direct_list.index("Maitre"),self.maitre])
+
+                if "maitre" in direct_list:
+                    insert_list.append([direct_list.index("maitre"),self.maitre])
+
+                insert_list.sort(key=operator.itemgetter(0))
+
+                if insert_list != []:
+                    for x in insert_list:
+                        ArgList.insert(x[0],x[1])
+        return ArgList
+
 
     def _chipFunction(self, entry, file):
         '''Handles experiments at the chip level'''
         pass
 
-    def _writeData(self, openFile, data, procedure, entry = {}):
-        '''Takes data and experiment names, if applicable and writes it to a results file'''
+    def _writeData(self, openFile, data, procedure, Meas_Name=''):
+        '''Takes data in form of nested (x,y) lists and experiment names, if applicable and writes it to a results file'''
 
         if procedure:
-            openFile.write("{}:\n".format(entry['measurement']))
-            for pair in data:
-                openFile.write("{}\t{}".format(pair[0],pair[1]))
+            if self._test_dim(data) > 2:
+        		for substruct in data:
+        		    self._writeData(openFile, substruct, procedure, Meas_Name+'_'+str(data.index(substruct)))
+            elif self._test_dim(data) ==2:
+                self._write_csv(openFile, data ,Meas_Name)
+            else:
+        		print "Could not write data to file: Error in Data Format"
         else:
             for element in data.split(' '):
                 openFile.write('{}\t'.format(str(element)))
-        
-        # Seperate the experiments by two new lines
-        openFile.write('\n\n')
+
+        # Seperate the experiments by one extra new lines
+        openFile.write('\n')
+
+    def _write_csv(self, openFile, data ,name):
+        ''' Writes Single dimensional lists to file'''
+
+        openFile.write("##{}:\n".format(name))
+        for pair in data:
+            openFile.write("{}\t{} \n".format(pair[0],pair[1]))
+
+    def _test_dim(self, testlist, dim=0):
+       """tests if testlist is a list and how many dimensions it has
+       returns -1 if it is no list at all, 0 if list is empty
+       and otherwise the dimensions of it"""
+       if isinstance(testlist, list):
+          if testlist == []:
+              return dim
+          dim = dim + 1
+          dim = self._test_dim(testlist[0], dim)
+          return dim
+       else:
+          if dim == 0:
+              return -1
+          else:
+              return dim
 
     def __executeCommand(self, instrument, function, arguments):
         '''internal method for executing a particular directly with stage.function'''
@@ -148,7 +218,9 @@ class ScriptController(object):
             instrumentActual = self.gh.get_instrument(instrument)
             if instrumentActual:
                 functionActual = getattr(instrumentActual,function)
-                return str(functionActual(arguments))
+                print arguments
+                print functionActual
+                return str(functionActual(*arguments))
             else:
                 return Exception("Instrument {} not available.".format(instrument))
         except AttributeError as e:
@@ -177,29 +249,41 @@ class ScriptController(object):
 
         try:
             with open(self.configPath, 'r') as measurementFile:
+                groups = self._GroupingInfo()
+                line_no = 0
                 for line in measurementFile:
+                    line_no += 1
+
+                    # Look for output grouping mode
+                    if self._checkOutputMode(line, line_no):
+                        continue
+                    # Look for group designators
+                    if self._setGroupingMetadata(line, groups, measurement, line_no):
+                        continue
+
                     # If there isn't a key yet, assign one
                     if not key:
-                        for item in designators: # Possible keys 
+                        for item in designators: # Possible keys
                             if self._isDesignator(line, item):
                                 key = item; break
                     else:
                         line = line.strip()
-                        if key is 'arguments': # preprocess arguments into a list 
+                        if key is 'arguments': # preprocess arguments into a list
                             measurement[key]=[str(i) for i in line.split(' ')]
                         else: # Case for all others just takes data
                             measurement[key]=line
                         key = ''
-                        
+
                     if line == '\n': # When the measurement block is over; seperated by one line
-                        measurement_collection.append(measurement)
+                        if len(measurement) != 0:
+                            measurement_collection.append(measurement)
                         measurement = {}
 
                 # If the measurement config file ended without a new line character,
                 # add the last block to the collection
                 if measurement:
                     measurement_collection.append(measurement)
-                        
+
             if len(measurement_collection) == 0:
                 print("Something might be wrong with your Measurement.conf, read-in is empty.")
 
@@ -213,6 +297,136 @@ class ScriptController(object):
             return True
         else:
             return False
+
+    def _getGroupingDesignator(self, line):
+        '''helper: check if line designates wafers chips and sub-groups and return grouping key'''
+        if len(line) < 3:
+            return None
+        possibleKey = line[2:].rstrip().lower()
+        if line[0] == '>' and possibleKey in self._GroupingInfo.group_designators:
+            return possibleKey
+        else:
+            return None
+
+    def _handleGroupingDesignators(self, line, groupInfo, measurement, line_no):
+        '''
+        helper: store intermdiate grouping values before inserting them in
+        measurement dicts
+        '''
+        if not groupInfo.gettingKeyId:
+            groupKey = self._getGroupingDesignator(line)
+            if groupKey is not None:
+                groupInfo.setId(groupKey)
+                return True
+            else:
+                return False
+        if line != '\n':
+            if self._getGroupingDesignator(line) != None:
+                raise KeyError('bad grouping designator (line: {}): did not specify name'.format(line_no - 1))
+            groupInfo.keyValue = line.rstrip()
+            return True
+        if groupInfo.keyValue == None:
+            raise KeyError('bad grouping designator (line: {}): did not specify name'.format(line_no - 1))
+        else:
+            measurement[groupInfo.keyId] = groupInfo.keyValue
+            groupInfo.clear()
+            return True
+
+        return False
+
+    def _setGroupingMetadata(self, line, groupInfo, measurement, line_no):
+        '''
+        assign extra grouping information in measurement dicts that help when
+        exporting output in different files
+        Returns True if it acted signaling the read function that it should not
+        parse this line as it does regularly; False otherwise
+        '''
+        previous = groupInfo.previous
+        changed = self._handleGroupingDesignators(line, groupInfo, groupInfo.previous, line_no)
+        for key in groupInfo.previous:
+            current_res = groupInfo.previous[key]
+            if current_res is not None:
+                measurement[key] = current_res
+        if changed:
+            return True
+        else:
+            return False
+
+    def _checkOutputMode(self, line, line_no):
+        outputModeKeyWord = 'group-by: '
+        if line.startswith(outputModeKeyWord):
+            if self.outputMode is None:
+                self.outputMode = line[len(outputModeKeyWord):].rstrip().lower()
+            else:
+                raise KeyError('.meas > cannot set output mode twice (line:{})'.format(line_no))
+            return True
+        else:
+            return False
+
+    class _GroupingInfo(object):
+        '''Class to keep grouping info organized'''
+        group_designators = ['wafer', 'chip', 'group']
+
+        def __init__(self):
+            self.keyId = None
+            self.keyValue = None
+            self.gettingKeyId = False
+            self.previous = {}
+            for key in self.group_designators:
+                self.previous[key] = None
+
+        def setId(self, groupId):
+            self.keyId = groupId
+            self.gettingKeyId = True
+
+        def clear(self):
+            self.keyId = None
+            self.keyValue = None
+            self.gettingKeyId = False
+
+    class _OutputConfiguration(object):
+        '''
+        This class stores the settings for the presentation of the output.
+        e.g. splitting the measurement results to separate files according to
+        chip, wafer, etc.
+        '''
+
+        def __init__(self, name_convention='.csv', outputMode=None):
+            self.FileMap = {}
+            self.outputMode = outputMode
+            self.name_convention = name_convention
+
+        def __enter__(self):
+            '''implementing "with" semantics'''
+            return self
+
+        def _generateFileName(self, entry):
+            '''
+            helper function to generate the names of the output files from
+            information
+            '''
+            dot = self.name_convention.rfind('.')
+            default_outputMode = self.outputMode is None or self.outputMode == ''
+            identifier = '' if default_outputMode else entry[self.outputMode]
+            return self.name_convention[0:dot] + '-' + identifier + sel.name_convention[dot:]
+
+
+        def getOutFile(self, entry):
+            '''get an open file handle from measurement entry struct'''
+            filename = self._generateFileName(entry)
+            if filename in self.FileMap:
+                return self.FileMap[filename]
+            else:
+                path = os.path.join(self.resultsPath, filename)
+                file = open(path, 'w')
+                self.FileMap[filename] = file
+                return file
+
+        def __exit__(self, type, value, traceback):
+            '''implementing "with" semantics'''
+            for file in self.FileMap.values():
+                file.close()
+
 
 
 '''

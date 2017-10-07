@@ -4,9 +4,9 @@ class OptStage(XYZ_Stage):
     '''
     This class models an optical probe stage.
     '''
-    def __init__(self, ser_list,space=None,off_angle=None):
+    def __init__(self, mtr_list,space=None,off_angle=None):
         self.name = ''
-        
+
         if space == None:
             self.space = (0.127,0.127)
         else:
@@ -17,7 +17,7 @@ class OptStage(XYZ_Stage):
         else:
             self.off_angle = off_angle
 
-        XYZ_Stage.__init__(self,ser_list,self.off_angle)
+        XYZ_Stage.__init__(self,mtr_list,self.off_angle)
 
     def set_whoAmI(self, name):
         self.name = name

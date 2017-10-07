@@ -1,0 +1,499 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>instruments.StepMotor_MST_DRV &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for instruments.StepMotor_MST_DRV</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Step Motor Class</span>
+<span class="c1">#    - wraps around Motor</span>
+
+
+<span class="kn">from</span> <span class="nn">Motor_MST_DRV</span> <span class="k">import</span> <span class="n">Motor_MST_DRV</span> <span class="k">as</span> <span class="n">Motor</span><span class="p">,</span> <span class="n">hexString</span><span class="p">,</span> <span class="n">int2hexStr</span><span class="p">,</span> <span class="n">send_short_dst_src</span><span class="p">,</span> <span class="n">send_long_dst_src</span><span class="p">,</span><span class="n">send_chan_ident</span><span class="p">,</span><span class="n">prep_short_src_dst</span><span class="p">,</span><span class="n">prep_long_src_dst</span>
+
+<span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">unpack</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="n">STEPS_PER_MM</span> <span class="o">=</span> <span class="mi">51200</span>    <span class="c1"># 136533.33</span>
+<span class="n">LIMIT_SWITCH</span> <span class="o">=</span> <span class="mi">13</span>
+<span class="n">BACKLASH_STEPS</span> <span class="o">=</span> <span class="mi">2560</span>
+
+<span class="c1"># STEPS_PER_MM = 2184533.33    # 136533.33</span>
+<span class="c1"># LIMIT_SWITCH = 13</span>
+<span class="c1"># BACKLASH_STEPS = 43691</span>
+
+<span class="c1"># DEBUG</span>
+<span class="n">Constructor_Counter</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Home_Counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="StepMotor_MST_DRV"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV">[docs]</a><span class="k">class</span> <span class="nc">StepMotor_MST_DRV</span><span class="p">(</span><span class="n">Motor</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser</span><span class="p">,</span> <span class="n">bay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">chan</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Constructor</span>
+
+<span class="sd">         :param ser: (Serial) the Serial object that corresponds to the port</span>
+<span class="sd">         the motor is connected to. If the serial was successfully locked ser.write() can be called.</span>
+<span class="sd">		 If the object waits for an answer from the serial object ser.in_buffer(pattern,trail_bytes) should be used.</span>
+<span class="sd">		 :type ser: multi_serial Object</span>
+
+<span class="sd">		 :param bay: the bay of the motor controller in main frame. For stand alone system bay should be 0.</span>
+<span class="sd">		 :type ser: integer</span>
+
+<span class="sd">		 :param chan: channel of motor controller in corresponding bay</span>
+<span class="sd">		 :type chan: integer</span>
+
+<span class="sd">		 :param lock: if the step motor shares a serial connection with other motors (by being a part of a mainframe)</span>
+<span class="sd">		 the lock needs to be a threading.Lock() object shared with all objects making</span>
+<span class="sd">		 calls to the shared serial interface. Before each serial call lock.acquire() and after each call lock.realease() needs to be called</span>
+<span class="sd">		 :type lock: threading.Lock() object</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1">###</span>
+        <span class="k">global</span> <span class="n">Constructor_Counter</span>
+        <span class="n">Constructor_Counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1">###</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="n">ser</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bay</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+
+        <span class="n">Motor</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser</span><span class="p">,</span><span class="n">bay</span><span class="p">,</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">[</span><span class="s1">&#39;ClassName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;StepMotor&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">()</span>                <span class="c1"># home motor</span>
+
+        <span class="c1">#self._set_backlash(0)     # set 0 backlash correction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">=</span> <span class="mi">0</span>            <span class="c1"># position of motor, in millimieters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_zeros</span> <span class="o">=</span> <span class="mi">0</span>          <span class="c1"># the origin, in millimeters</span>
+
+
+<div class="viewcode-block" id="StepMotor_MST_DRV.home"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.home">[docs]</a>    <span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Initializes all paremeters specific to the step motor and homes the motor.</span>
+<span class="sd">		 The homing and backlash position need to be set up in a way that homing the system</span>
+<span class="sd">		 brings the system into a safe position. The backlash correction needs to be performed</span>
+<span class="sd">		 in such away that the correction is performed in the direction away from the chip</span>
+<span class="sd">		 and the other probes.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1">###</span>
+        <span class="k">global</span> <span class="n">Home_Counter</span>
+        <span class="n">Home_Counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1">###</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Homing...&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+
+
+		<span class="c1">#Acquire Lock over Serial</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+		<span class="c1">#### SETTING UP MOTOR PARAMETERS ####</span>
+
+        <span class="c1">#MGMSG_MOT_SET_LIMSWITCHPARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;23 04 10 00&#39;</span><span class="p">))</span>    	 <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;03 00&#39;</span><span class="p">))</span>                <span class="c1"># CW Hard Limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;01 00&#39;</span><span class="p">))</span>                <span class="c1"># CCW Hard Limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 84 03 00&#39;</span><span class="p">))</span>          <span class="c1"># CW SoftLimit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 64 00 00&#39;</span><span class="p">))</span>          <span class="c1"># CCW SoftLimit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;01 00&#39;</span><span class="p">))</span>          	  <span class="c1"># SoftLimit Mode</span>
+
+		<span class="c1"># CHECKING FOR ERROR MESSAGES</span>
+        <span class="c1">#response = self.ser.read(1)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(response),response))</span>
+        <span class="c1">#while map(hex,unpack(&#39;B&#39;*len(response),response)) != []:</span>
+        <span class="c1">#        response = self.ser.read(1)</span>
+        <span class="c1">#    	 print map(hex,unpack(&#39;B&#39;*len(response),response))</span>
+
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_LIMSWITCHPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;24 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#switch_response = self.ser.read(22)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(switch_response),switch_response))</span>
+
+        <span class="c1">#MGMSG_MOT_SET_VELPARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;13 04 0E 00&#39;</span><span class="p">))</span>    <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 00 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Min Vel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 32 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Acceleration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 64 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Max Velocity</span>
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_VELPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;14 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#switch_response = self.ser.read(22)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(switch_response),switch_response))</span>
+
+        <span class="c1">#MGMSG_MOT_SET_JOGPARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;16 04 16 00&#39;</span><span class="p">))</span>    <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;02 00&#39;</span><span class="p">))</span>                <span class="c1"># Jog Mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 05 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Jog Step Size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 00 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Jog Min Vel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 C8 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Jog Acceleration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 64 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Max Velocity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;02 00&#39;</span><span class="p">))</span>          	  <span class="c1"># Stop Mode</span>
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_JOGPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;17 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#switch_response = self.ser.read(28)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(switch_response),switch_response))</span>
+
+        <span class="c1">#MGMSG_MOT_SET_POWERPARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;26 04 06 00&#39;</span><span class="p">))</span>    <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;14 00&#39;</span><span class="p">))</span>                <span class="c1"># Rest Factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;64 00&#39;</span><span class="p">))</span>          	  <span class="c1"># Move Factor</span>
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_POWERPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;27 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#switch_response = self.ser.read(12)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(switch_response),switch_response))</span>
+
+        <span class="c1">#MGMSG_MOT_SET_GENMOVEPARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;3A 04 06 00&#39;</span><span class="p">))</span>    <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 0A 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Backlash Distance</span>
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_GENMOVEPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;3B 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#switch_response = self.ser.read(12)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(switch_response),switch_response))</span>
+
+        <span class="c1">#MGMSG_MOT_SET_MOVERELPARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;45 04 06 00&#39;</span><span class="p">))</span>    <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 0A 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Relative Distance Distance</span>
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_MOVERELPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;46 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#switch_response = self.ser.read(12)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(switch_response),switch_response))</span>
+
+        <span class="c1">#MGMSG_MOT_SET_MOVEABSPARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;50 04 06 00&#39;</span><span class="p">))</span>    <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;00 00 00 00&#39;</span><span class="p">))</span>          <span class="c1"># Relative Distance Distance</span>
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_MOVEABSPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;51 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#switch_response = self.ser.read(12)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(switch_response),switch_response))</span>
+
+
+        <span class="c1"># &lt; MGMSG_MOT_SET_HOMEPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;40 04 0E 00&#39;))    # header</span>
+        <span class="c1">#send_long_dst_src(self.ser,self.bay)</span>
+        <span class="c1">#send_chan_ident(self.ser, self.chan)</span>
+        <span class="c1">#self.ser.write(hexString(&#39;02 00&#39;))                # Home Dir</span>
+        <span class="c1">#self.ser.write(hexString(&#39;01 00&#39;))                # Limit Switch</span>
+        <span class="c1">#self.ser.write(&#39;00 64 00 00&#39;)		               # Home Velocity</span>
+        <span class="c1">#self.ser.write(&#39;00 32 00 00&#39;)                     # Offset Distance</span>
+
+        <span class="c1"># Check whether Parameters were written</span>
+        <span class="c1"># &lt; MGMSG_MOT_REQ_HOMEPARAMS &gt;</span>
+        <span class="c1">#self.ser.write(hexString(&#39;41 04 01 00 21 01&#39;))</span>
+        <span class="c1">#self.ser.reset_input_buffer()</span>
+        <span class="c1">#home_response = self.ser.read(20)</span>
+        <span class="c1">#print map(hex,unpack(&#39;B&#39;*len(home_response),home_response))</span>
+
+		<span class="c1"># ACTUALLY STARTING THE HOMING</span>
+
+        <span class="c1"># MGMSG_MOT_MOVE_HOME</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;43 04 </span><span class="si">{:02d}</span><span class="s1"> 00&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)))</span>
+        <span class="n">send_short_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+
+		<span class="c1"># Relase Serial</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+		<span class="c1"># Wait for Homing Completion</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="n">counter</span> <span class="o">&lt;</span> <span class="mi">60</span> <span class="ow">and</span> <span class="n">found</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># MGMSG_MOT_MOVE_HOMED</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+			    <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+            <span class="c1"># self.ser.print_buffer()</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">in_buffer</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;44 04 </span><span class="si">{:02d}</span><span class="s1"> 00 &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span><span class="o">+</span><span class="n">prep_short_src_dst</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+            <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;=</span> <span class="mi">60</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;problem homing&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;homed successfully.&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="StepMotor_MST_DRV.get_info"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Get information back form the controller</span>
+<span class="sd">         Used for debugging purposes</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+		<span class="c1">#Acquire Lock over Serial</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+        <span class="c1"># MGMSG_HW_REQ_INFO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;05 00 00 00&#39;</span><span class="p">))</span>
+        <span class="n">send_short_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+		<span class="c1"># Relase Serial</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+        <span class="nb">print</span> <span class="n">response</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_backlash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backlash_distance</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Set the backlash correction distance for backwards motor</span>
+<span class="sd">         movement</span>
+
+<span class="sd">         backlash_distance (int): in encoder steps</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+		<span class="c1">#Acquire Lock over Serial</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+        <span class="c1"># change backlash value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;3A 04 06 00&#39;</span><span class="p">))</span>        <span class="c1"># header</span>
+        <span class="n">send_long_dst_src</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bay</span><span class="p">)</span>
+        <span class="n">send_chan_ident</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">int2hexStr</span><span class="p">(</span><span class="n">backlash_distance</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>    <span class="c1"># backlash dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+        <span class="c1"># request backlash data</span>
+        <span class="c1">#self.ser.write(hexString(&#39;3B 04 01 00&#39;))</span>
+        <span class="c1">#send_short_dst_src(self.ser,self.bay)</span>
+		<span class="c1"># confirm backlash distance value</span>
+        <span class="c1">#res = self.ser.read(12)</span>
+        <span class="c1">#back_dist_r = unpack(&#39;&lt;l&#39;, res[8:12])[0]</span>
+        <span class="c1">#if back_dist_r != backlash_distance:</span>
+        <span class="c1">#    self.logger.error(&#39;Problem setting backlash distance [{}]&#39;.format(backlash_distance), extra=self.ext)</span>
+
+		<span class="c1"># Relase Serial</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<div class="viewcode-block" id="StepMotor_MST_DRV.delta_transl"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.delta_transl">[docs]</a>    <span class="k">def</span> <span class="nf">delta_transl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>    <span class="c1">#, m_callback = None, params = ()):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Relative translation on the motor</span>
+
+<span class="sd">         dist (float): the millimeters of translation (negative -&gt; backwards)</span>
+<span class="sd">         m_callback (function): (Optional) a function that will run while the motor</span>
+<span class="sd">                                will be in motion. (e.g. show camera)</span>
+<span class="sd">                                This callback&#39;s last parameter must be a callback itself,</span>
+<span class="sd">                                named &#39;callback&#39;</span>
+<span class="sd">         params (tuple): the callback&#39;s parameters</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># check weather we are within limits</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">+</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="n">LIMIT_SWITCH</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">+</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Out of bounds error (dist:</span><span class="si">{}</span><span class="s1">, pos:</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">+=</span> <span class="n">dist</span>
+        <span class="c1"># convert millimeters to steps</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dist</span> <span class="o">*</span> <span class="n">STEPS_PER_MM</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">Motor</span><span class="o">.</span><span class="n">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="n">BACKLASH_STEPS</span><span class="p">))</span>
+            <span class="c1"># manual backlash correction</span>
+            <span class="n">Motor</span><span class="o">.</span><span class="n">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">BACKLASH_STEPS</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Motor</span><span class="o">.</span><span class="n">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="StepMotor_MST_DRV.check_abs_transl"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.check_abs_transl">[docs]</a>    <span class="k">def</span> <span class="nf">check_abs_transl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dist</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Check wether a move to position &#39;dist&#39; is in range</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="n">LIMIT_SWITCH</span> <span class="ow">or</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="StepMotor_MST_DRV.abs_transl"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.abs_transl">[docs]</a>    <span class="k">def</span> <span class="nf">abs_transl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Absolute translation on the motor</span>
+
+<span class="sd">         dist (float): the millmeters of rotation (negative -&gt; backwards)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># check whether we are within limits</span>
+        <span class="k">if</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="n">LIMIT_SWITCH</span> <span class="ow">or</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Out of bounds error (abs_pos:</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+        <span class="c1"># convert degrees to steps</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dist</span> <span class="o">*</span> <span class="n">STEPS_PER_MM</span><span class="p">))</span>
+
+        <span class="c1"># manual backlash correction</span>
+        <span class="k">if</span> <span class="n">dist</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">Motor</span><span class="o">.</span><span class="n">abs_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="n">BACKLASH_STEPS</span><span class="p">))</span>
+            <span class="n">Motor</span><span class="o">.</span><span class="n">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">BACKLASH_STEPS</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Motor</span><span class="o">.</span><span class="n">abs_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">=</span> <span class="n">dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="StepMotor_MST_DRV.get_mm_pos"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.get_mm_pos">[docs]</a>    <span class="k">def</span> <span class="nf">get_mm_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         return the motors current position, in millimeters</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span></div>
+
+<div class="viewcode-block" id="StepMotor_MST_DRV.set_as_zero"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.set_as_zero">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zer_mm</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         change the origin (zero)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">n_zero</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">zer_mm</span> <span class="o">/</span> <span class="n">STEPS_PER_MM</span><span class="p">))</span>
+        <span class="n">Motor</span><span class="o">.</span><span class="n">set_as_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_zero</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_zeros</span> <span class="o">=</span> <span class="n">zer_mm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">-=</span> <span class="n">zer_mm</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         &lt;For Debugging Purposes&gt;</span>
+<span class="sd">         gives information relevant to the motor state</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;StepMotor(</span><span class="si">{}</span><span class="s1">)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">port</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  position(millimeters): &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  zeros-position(millimeters): &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mm_zeros</span><span class="p">)</span></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

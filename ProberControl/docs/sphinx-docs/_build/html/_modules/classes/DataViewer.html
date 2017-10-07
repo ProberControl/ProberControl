@@ -114,11 +114,12 @@
         <span class="c1">## Menu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">TestNameBox</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">OptionMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">BoxVar</span><span class="p">,[])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">TestNameBox</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">columnspan</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="c1">## Load Button</span>
+        
+        <span class="c1">## Load Button</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ProcButton</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Load Test&#39;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NameLoad</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ProcButton</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-            <span class="c1">#Create Button to clear canvas</span>
+        <span class="c1">#Create Button to clear canvas</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ClearButton</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Clear Canvas&#39;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ClearCanvas</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ClearButton</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
@@ -208,8 +209,8 @@
                     <span class="n">exit</span><span class="p">()</span>
             
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">MeasFile</span><span class="p">:</span>
-                    <span class="k">if</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="p">))</span> <span class="p">:</span>
-                        <span class="n">NameList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;##&#39;</span> <span class="p">:</span>
+                        <span class="n">NameList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
             <span class="k">pass</span> <span class="c1"># No file was selected, no reason to report an error</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -244,7 +245,7 @@
                 <span class="k">if</span> <span class="n">in_block</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">Data</span>
 
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_name</span> <span class="ow">or</span> <span class="p">(</span><span class="n">test_name</span> <span class="o">==</span> <span class="s1">&#39;NoName&#39;</span> <span class="ow">and</span> <span class="n">in_block</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_name</span> <span class="ow">or</span> <span class="p">(</span><span class="n">test_name</span> <span class="o">==</span> <span class="s1">&#39;NoName&#39;</span> <span class="ow">and</span> <span class="n">in_block</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">in_block</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">in_block</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
@@ -259,6 +260,23 @@
     <span class="n">main</span> <span class="o">=</span> <span class="n">DataViewer</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
     <span class="n">main</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">root</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

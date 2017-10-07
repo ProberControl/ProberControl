@@ -29,9 +29,10 @@ class InstrumentNameHere(object):
         :param address: SCPI address of instrument
         :type address: string
         '''
-    
+        self.active = False    
         self.max_wavelength = 
-        self.min_wavelength = 
+        self.min_wavelength =
+        self.gpib = res_manager.open_resource(address) #call vis
     
     def whoAmI(self):
         ''':returns: reference to device'''
@@ -44,6 +45,13 @@ class InstrumentNameHere(object):
     def __str__(self):
         '''Adds built in functionality for printing and casting'''
         return 'AndoAQ4321'
+
+    def change_state(self):
+        ''' Toggles the self.active parameter'''
+        if self.active == True:
+            self.active = False
+        else:
+            self.active = True
 
     def setwavelength(self, wavelength):
         '''
@@ -74,6 +82,26 @@ class InstrumentNameHere(object):
 
         :returns: Float
         '''
+		
+    def sweepWavelengthsTriggerSetup (self, start, end, step):
+        '''
+        Have to keep track of Triggers in main command, use Stop Sweep Command to end sweep.
+        Extra triggers do not make the laser sweep outside of specified end wavelength.
+        Remeber to shut off laser after sweep ends
+
+        :param start: Specified wavelength
+        :type start: Integer
+        :param end: Specified wavelength
+        :type end: Integer
+        :param time: Specified time
+        :type time: Float
+        '''
+
+    def trigger(self):
+        '''
+        Triggers laser
+        '''
+		
 ################################################################################
 #################### All methods below are suggested: ##########################
 ################################################################################
@@ -116,25 +144,6 @@ class InstrumentNameHere(object):
         :type end: Integer
         :param time: Specified time
         :type time: Float
-        '''
-
-    def sweepWavelengthsTriggerSetup (self, start, end, step):
-        '''
-        Have to keep track of Triggers in main command, use Stop Sweep Command to end sweep.
-        Extra triggers do not make the laser sweep outside of specified end wavelength.
-        Remeber to shut off laser after sweep ends
-
-        :param start: Specified wavelength
-        :type start: Integer
-        :param end: Specified wavelength
-        :type end: Integer
-        :param time: Specified time
-        :type time: Float
-        '''
-
-    def trigger(self):
-        '''
-        Triggers laser
         '''
 
     def checkStatus(self): 

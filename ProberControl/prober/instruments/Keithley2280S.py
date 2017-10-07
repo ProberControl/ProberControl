@@ -3,10 +3,15 @@ import sys
 import time
 
 class Keithley2280S(object):
+    '''
+    This class models a DC Source Meter 2280S from Keithley.
+    '''
 
-    def __init__(self,res_manager,address='169.254.115.242'):
+    CURRENT_CHANNEL = 1
+    def __init__(self,res_manager,address='169.254.115.242',channel=1):
         
         self.active = False
+        self.__channel = channel
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
@@ -48,7 +53,7 @@ class Keithley2280S(object):
         time.sleep(0.3)
         self.sock.sendall(':DATA' + str(channel) + ':DATA? "READ,UNIT"' + '\n')
         output = self.sock.recv(1024).split(',')
-        return output[0]
+        return float(output[0][:-1])
 	
     def get_current(self, channel = 1):
         self.sock.sendall(':SENS' + str(channel) + ':FUNC "CURR"' + '\n')
@@ -56,7 +61,7 @@ class Keithley2280S(object):
         time.sleep(0.3)
         self.sock.sendall(':DATA' + str(channel) + ':DATA? "READ,UNIT"' + '\n')
         output = self.sock.recv(1024).split(',')
-        return output[0]
+        return float(output[0][:-1])
 	
     def setvoltage(self, value = 0, channel = 1):
         data = ':SOUR' + str(channel) + ':VOLT ' + str(value) + '\n'

@@ -46,7 +46,7 @@
   <div class="section" id="stages-dictionary">
 <h1>Stages Dictionary<a class="headerlink" href="#stages-dictionary" title="Permalink to this headline">¶</a></h1>
 <p>The Stages Dictionary is the central object in the Prober Control Software. It acts as handler for all attached hardware. It is initialized in the main file: <code class="docutils literal"><span class="pre">ProberControler.py</span></code></p>
-<p>The Stages Dictionary is build up based on the <code class="docutils literal"><span class="pre">ProberConfig.conf</span></code> file that needs to be present in the base directory. Please see <a class="reference external" href="/howto/writeConfigFile.html">How to Write a Config File</a> for usages and examples.</p>
+<p>The Stages Dictionary is build up based on the <code class="docutils literal"><span class="pre">ProberConfig.conf</span></code> file that needs to be present in the base directory. Please see <a class="reference internal" href="howto/writeConfigFile.html#writeconfigfile"><span class="std std-ref">How to Write a Config File</span></a> for usages and examples.</p>
 <p>The main call of the program first calls <code class="docutils literal"><span class="pre">read_config()</span></code> to interpret the information in <code class="docutils literal"><span class="pre">ProberConfig.conf</span></code> and then passes a list of dictionaries to <code class="docutils literal"><span class="pre">Generate_Stages(StageConfigList)</span></code> to call the constructor of each connected device and the device to Stages Dictionary.</p>
 </div>
 <div class="section" id="tool-keys-in-the-stages-dictionary">

@@ -10,12 +10,14 @@ __all__ = [
     'Global_MeasureHandler',
     'GUI',
     'maitre',
+    'multi_serial',
     'newport_controller',
     'OptStage',
     'plotter',
+    'rotator_ELL8',
     'rotator',
-    'stp_mtr',
     'xyzstage',
+    'SwitchHandler',
     'ScriptController'
 ]
 

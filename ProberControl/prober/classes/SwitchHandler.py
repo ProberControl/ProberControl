@@ -1,18 +1,16 @@
 # import Polatis
 
 class SwitchHandler(object):
-    '''The intention of this class if to provide an implementation of the Polatis switch.
+    '''The intention of this class if to provide a general implementation for any kind of fiber switch.
     The key features of the class are get_switch_state(), make_new_connection() and switch_book object.'''
 
     def __init__(self, configFile, stages, resource):
 
         self._p = resource
+        self.active = False # only for compliance with ScriptController
 
-        self.switch_book = self._readIn(configFile)
+        self.switch_book = self._readIn(configFile,stages)
         self._connect()
-
-        # See note at the method definition
-        # self._integrateStages(stages)
 
     def get_switch_state(self):
         '''
@@ -22,54 +20,62 @@ class SwitchHandler(object):
         '''
         
         formatted_output = ""
-        for entry in self.switch_book:
+        for k,v in self.switch_book.items():
             formatted_output += "{:15} {:20}{:3} {:5} {:10}\n".format(
-            'Device',entry['device'],entry['ingress'],"-->",entry['egress']
+            'Device',k,v[0],"-->",v[1]
             )
         if formatted_output:
             return formatted_output
         else:
             return "No Connnections Logged"
 
-    def make_new_connection(self, ingress, egress): 
+    def make_new_connection(self, device, egress): 
         '''
-        User specified connection between device ingress port and output port.
+        User specified connection between a device and an output port.
 
-        :param ingress: Specified input port
-        :type ingress: Int
+        :param devie: Specified device Key according to Stages Dict to be reconnected
+        :type device: Str
         :param egress: Specified output port
         :type egress: Int
         '''
         
-        self._p.quick_connect(ingress, egress)
+        ingress = self.switch_book[device][0]
+		
+        self._p.quick_connect(ingress, int(egress))
+		
         self._updateSwitchBook()
 
-    def _readIn(self, configFile):
+    def _readIn(self, configFile,stages):
         '''Reads in the configFile info'''
-        switch_book_init = []
+        switch_book_init = {}
+		
         for entry in configFile:
             if entry['O'] != 'Polatis' and 'P' in entry.keys(): #skip the Polatis
-                ports = entry['P'].split('::')
-                ingress = ports[0].split(',')
-                egress = ports[1].split(',')
-                ports = zip(ingress, egress)
+                ports = entry['P'].split('>')
+                ingress = list(map(int,ports[0].split(',')))
+                egress = list(map(int,ports[1].split(',')))
+                ports = list(zip(ingress, egress))
 
+                for actualObject in zip(stages.keys(), stages.values()):
+                	if entry['O'] == str(actualObject[1]):
+                		stage_type = actualObject[1].whoAmI()
+
+				
                 for pair in ports:
-                    new_entry = {}
-                    new_entry['ingress'] = pair[0]
-                    new_entry['egress'] = pair[1]
-                    new_entry['device'] = entry['O']
-                    switch_book_init.append(new_entry)
-                
+					if 'N' in entry.keys():
+						switch_book_init[stage_type+str(entry['SysChan'])]=pair
+					else:
+						switch_book_init[stage_type]=pair
+						
         return switch_book_init
             
     def _connect(self):
         '''makes connections between ports for SwitchIntegration.__init__()'''
-        for entry in self.switch_book:
+        for k,entry in self.switch_book.items():	
             # Call function for making connections
             self._p.quick_connect(
-                ingress=entry['ingress'],
-                egress=entry['egress']
+                ingress=entry[0],
+                egress=entry[1]
             )
 
     ## Thinking about getting rid of this
@@ -77,27 +83,40 @@ class SwitchHandler(object):
     def _integrateStages(self, stages):  
         '''Integrates the stages dictionary after boot'''
         for actualObject in zip(stages.keys(), stages.values()):
-            for entry in self.switch_book:
+            for k,entry in self.switch_book.items():
                 if entry['device'] == str(actualObject[1]):
                     entry['ref'] = actualObject[0]
 
     def _updateSwitchBook(self):
         '''Updates the global switch_book following a new connection being made'''
         actual = self._p.get_zip_connections()
-        for entry in self.switch_book:
+
+        for k,entry in self.switch_book.items():
+		
             for pair in actual:
                 if self._hasChangedOutput(entry, pair): # then this device changed output
-                    entry['egress'] = pair[1]
+                    if entry[0] == pair[0]:
+                    	entry = [entry[0],pair[1]]
+                    elif entry[0] == pair[1]:
+                    	entry = [entry[0],pair[0]]
+                    else:
+                    	print 'Error encoding switch configuration'
+                    self.switch_book[k]=entry
                 elif self._hasLostOutput(entry, pair, actual): # then this device changed output
-                    entry['egress'] = ''
-                    
+                    entry =[entry[0],'']
+		
     def _hasChangedOutput(self, entry, pair):
         '''helper for _updateSwitchBook'''
-        return pair[0] == entry['ingress'] and pair[1] != entry['egress']
+        if entry[0] in pair:
+        	if entry[1] == pair[0] or entry[1] == pair[1]:
+        		return False
+        	else:
+        		return True
+        return False
 
     def _hasLostOutput(self, entry, pair, actual):
         '''helper for _updateSwitchBook'''
-        return entry['ingress'] not in [i[0] for i in actual]
+        return entry[0] not in [i[0] for i in actual] and entry[0] not in [i[1] for i in actual]
 
     def __str__(self):
         return ''

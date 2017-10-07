@@ -1,6 +1,7 @@
 #import visa
 #import time
 #import sys
+import struct
 
 class HP8163A(object):
     '''
@@ -19,8 +20,13 @@ class HP8163A(object):
         '''
         self.active = False
         self.gpib = res_manager.open_resource(address)
-        self.__channel = channel
-        
+        if '.' in channel:
+			self.__channel = int(channel.split('.')[0])
+			self.__port = int(channel.split('.')[1])
+        else:
+			self.__channel = channel
+			self.__port = 1
+			
         # Set Power Unit to dbm
         self.gpib.write('sens1:pow:unit 0')
         self.gpib.write('sens2:pow:unit 0')
@@ -39,21 +45,17 @@ class HP8163A(object):
 
     def whoAmI(self):
         ''':returns: reference to device'''
-        return 'PowerMeter'+str(self.__channel)
+        return 'PowerMeter'
 
     def whatCanI(self):
         ''':returns: instrument attributes'''
         return 'OPT'
 
     def get_power(self,wavelength=1550):
-        '''
-        Query the powermeter reading after setting correct wavelength
+        ''' return power meter reading after setting correct wavelength'''
+        self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:wav '+str(wavelength)+'nm')
+        return float(self.gpib.query('read'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow?'))
 
-        :returns: Float
-        '''
-
-        self.gpib.write('sens'+str(int(self.__channel))+':pow:wav '+str(wavelength)+'nm')
-        return float(self.gpib.query('read'+str(int(self.__channel))+':pow?'))
 
     def close(self):
         '''
@@ -71,6 +73,60 @@ class HP8163A(object):
     def __str__(self):
         '''Adds built in functionality for printing and casting'''
         return 'HP8163A'
+		
+    def config_meter(self, range):
+        if self.__port != 2:
+			range = int(range)
+		
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit 0')
+			#print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit?')
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:range:auto 0')
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:rang '+str(range)+'DBM')
+		
+    def prep_measure_on_trigger(self, samples = 64):
+		if self.__port != 2:
+			self.gpib.write('*CLS')
+			samples = int(samples)
+        
+			# self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat stab,stop') #switch stab with logg depending
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop') #switch stab with logg depending
+			self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp sme') #Set up trigger
+			print self.gpib.query('trig'+str(int(self.__channel))+':inp?')
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100us')
+			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?')
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,start')
+			
+			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
+			print self.gpib.query('syst:err?')
+
+    
+    def get_result_from_log(self,samples=64):
+	
+        if self.__port != 2:
+			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
+        
+        self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:res?')
+        data = self.gpib.read_raw()
+        print self.gpib.query('syst:err?')
+       
+
+        samples = int(samples)
+        
+        #print data
+        
+        NofDigits = int(data[1])
+
+        HexData = data[2+NofDigits:2+NofDigits+samples*4]
+
+        FloData = []
+
+        for x in range(0, samples*4-1,4):
+            dat = HexData[x:x+4]
+            val = struct.unpack('<f', struct.pack('4c', *dat))[0]
+            FloData.append(val)
+
+        #self.gpib.write('trig'+str(int(self.__channel))+':inp:rearm on')
+        return FloData[1:]
 
 
 '''

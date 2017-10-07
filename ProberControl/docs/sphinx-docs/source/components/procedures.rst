@@ -12,6 +12,14 @@ procedures\.Measure module
     :undoc-members:
     :show-inheritance:
 
+procedures\.Post\_Processing module
+-----------------------------------
+
+.. automodule:: procedures.Post_Processing
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 procedures\.connecting module
 -----------------------------
 
@@ -28,10 +36,26 @@ procedures\.fine\_allign module
     :undoc-members:
     :show-inheritance:
 
+procedures\.random module
+-------------------------
+
+.. automodule:: procedures.random
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 procedures\.raster module
 -------------------------
 
 .. automodule:: procedures.raster
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+procedures\.vision module
+-------------------------
+
+.. automodule:: procedures.vision
     :members:
     :undoc-members:
     :show-inheritance:

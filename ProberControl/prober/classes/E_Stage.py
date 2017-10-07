@@ -6,13 +6,13 @@ import math
 
 class E_Stage(XYZ_Stage):
 
-    def __init__(self, ser_list,space=None,off_angle=None):
+    def __init__(self, mtr_list,space=None,off_angle=None):
         '''
         Constructor
 
-        ser_list (list): a list with serial objects corresponding to
+        mtr_list (list): a list with serial objects corresponding to
         the x, y and z motors respectively
-        '''        
+        '''
         self.name = ''
         if space == None:
             self.space = (0.060,0.300)
@@ -24,7 +24,7 @@ class E_Stage(XYZ_Stage):
         else:
             self.off_angle = off_angle
 
-        XYZ_Stage.__init__(self,ser_list,self.off_angle)
+        XYZ_Stage.__init__(self,mtr_list,self.off_angle)
 
         self.contactDist = self.z
         self.highZ = (self.x,self.y,self.z)
@@ -38,7 +38,7 @@ class E_Stage(XYZ_Stage):
 
     def whatCanI(self):
         return self.name
-        
+
     def setHighZ(self):
         '''
         Set the height at which the probe will be from the chip while disconnected
@@ -87,7 +87,7 @@ class E_Stage(XYZ_Stage):
         self.disconnect()
         self.set_coor_2d([self.x,self.y-pitch])
         self.connect()
- 
+
     def __str__(self):
         return self.name
 

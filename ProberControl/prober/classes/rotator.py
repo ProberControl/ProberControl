@@ -1,7 +1,7 @@
 # the rotating stage class
 #     - wraps around Motor
 
-from Motor import Motor
+from ..instruments.Motor_KST_ZST import Motor_KST_ZST as Motor
 
 DEG_PER_CNT = 0.00061035
 
@@ -46,7 +46,7 @@ class Rotator(Motor):
 
         Motor.abs_move(self, steps)
         self.deg_pos = deg
-        self.moving = False 
+        self.moving = False
 
     def get_angle(self):
         '''

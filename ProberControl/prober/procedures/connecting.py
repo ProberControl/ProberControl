@@ -3,17 +3,17 @@ import fine_allign
 import Measure
 import numpy as np
 import math
-from Global_MeasureHandler import Global_MeasureHandler
+from ..classes.Global_MeasureHandler import Global_MeasureHandler
 
 # to be used for vitual leveling purposes
 
-__vl_point = []    
+__vl_point = []
 __vl_flag_disable = False
 __vl_id = None
 
 # to be used for calib_chip_rot purposes
 
-__ccr_point = []    
+__ccr_point = []
 __ccr_id = None
 
 
@@ -35,7 +35,7 @@ def calib_chip(Stages, id):
     #------------------------
     global __ccr_id
     global __ccr_point
-    
+
     if __vl_id is not None and id != __vl_id:
         print 'Calibrate Chip: Changed Stage\n\texpected: {}\n\tgot: {}'.format(__vl_id, id)
         return
@@ -46,7 +46,7 @@ def calib_chip(Stages, id):
         __vl_id = id
         #------------
         __ccr_id = id
-        
+
         if len(__vl_point) == 0:
             __vl_flag_disable = True
             print 'Calibrate Chip: getting base point. Arrow up/down next.'
@@ -61,17 +61,17 @@ def calib_chip(Stages, id):
             __vl_point.append(Stages[id].get_coordinates())
             #----------------------------------------------
             __ccr_point.append(Stages[id].get_coordinates())
-                    
+
             print 'Calibrate Chip Rotation: Computing rotation...'
             p0, p1 =  __ccr_point
             ang_x = math.degrees(math.atan( (p1[1]-p0[1])/(p1[0]-p0[0]) ))
-                        
+
             print 'Ang_x'+str(ang_x)
 
             if 'CS' in Stages:
                 print 'Calibrate Chip Rotation: Performing rotation...'
                 Stages['CS'].rot.delta_angle(ang_x)
-           
+
 
             del __ccr_point[:]
             __ccr_id = None
@@ -82,16 +82,16 @@ def calib_chip(Stages, id):
         elif len(__vl_point) == 2:
             print 'virtual_level: getting RIGHT point.'
             __vl_point.append(Stages[id].get_coordinates())
-            
+
             print 'virtual_level: performing leveling...'
             p0, p1, p2 =  __vl_point
             ang_x = math.degrees(math.atan( (p1[2]-p0[2])/(p1[0]-p0[0]) ))
             ang_y = math.degrees(math.atan( (p2[2]-p1[2])/(p2[1]-p1[1]) ))
-            
+
             print 'Ang_x'+str(ang_x)
             print 'Ang_y'+str(ang_y)
-            
-            
+
+
             # insert info to selcted stage
             Stages[id].set_level(ang_x, ang_y)
             # insert on the rest of the stages
@@ -99,11 +99,11 @@ def calib_chip(Stages, id):
             for k,v in Stages.items():
                 if k[0] in 'EO' and k != id :
                     Stages[k].set_level(*coord_c2s(Stages,c_ang, k))
-                    
+
             del __vl_point[:]
             __vl_id = None
             __vl_flag_disable = False
-            
+
             print 'Calibrate Chip: Finished.'
 
 def calib_chip_rot(Stages, id):
@@ -122,17 +122,17 @@ def calib_chip_rot(Stages, id):
 
         elif len(__ccr_point) == 1:
             __ccr_point.append(Stages[id].get_coordinates())
-                    
+
             print 'Calibrate Chip Rotation: Computing rotation...'
             p0, p1 =  __ccr_point
             ang_x = math.degrees(math.atan( (p1[1]-p0[1])/(p1[0]-p0[0]) ))
-                        
+
             print 'Ang_x'+str(ang_x)
 
             if 'CS' in Stages:
                 print 'Calibrate Chip Rotation: Performing rotation...'
                 Stages['CS'].rot.delta_angle(ang_x)
-           
+
 
             del __ccr_point[:]
             __ccr_id = None
@@ -157,16 +157,16 @@ def virtual_level(Stages, id):
         elif len(__vl_point) == 2:
             print 'virtual_level: getting RIGHT point.'
             __vl_point.append(Stages[id].get_coordinates())
-            
+
             print 'virtual_level: performing leveling...'
             p0, p1, p2 =  __vl_point
             ang_x = math.degrees(math.atan( (p1[2]-p0[2])/(p1[0]-p0[0]) ))
             ang_y = math.degrees(math.atan( (p2[2]-p1[2])/(p2[1]-p1[1]) ))
-            
+
             print 'Ang_x'+str(ang_x)
             print 'Ang_y'+str(ang_y)
-            
-            
+
+
             # insert info to selcted stage
             Stages[id].set_level(ang_x, ang_y)
             # insert on the rest of the stages
@@ -174,11 +174,11 @@ def virtual_level(Stages, id):
             for k,v in Stages.items():
                 if k[0] in 'EO' and k != id :
                     Stages[k].set_level(*coord_c2s(Stages,c_ang, k))
-                    
+
             del __vl_point[:]
             __vl_id = None
             __vl_flag_disable = False
-            
+
             print 'virtual_level: Finished.'
 
 def save_coarse_coordinates(Stages, path='PreAlign.conf'):
@@ -187,9 +187,9 @@ def save_coarse_coordinates(Stages, path='PreAlign.conf'):
     if __vl_flag_disable :
         print 'virtual_level:ERROR: cannot perform operation while leveling in progress.'
         return
-    
+
     coarse_file = open(path,"w")
-    
+
     for k,v in Stages.items():
         if k[0] == 'E' or k[0]== 'O':
             save_coords = t_add(Stages[k].get_real_coordinates(),[0,0,-0.5])
@@ -202,7 +202,7 @@ def set_coarse_coordinates(Stages, path='PreAlign.conf'):
     if __vl_flag_disable :
         print 'virtual_level:ERROR: cannot perform operation while leveling in progress.'
         return
-    
+
     #Check wheather stages are homed:
     homed = True
     for k,v in Stages.items():
@@ -238,8 +238,8 @@ def set_coarse_coordinates(Stages, path='PreAlign.conf'):
         if k not in ['Structure','SignalSource']:
                 side_coord = list(Stages[k].get_coordinates())
                 side_coord[sideward_dim] = v[sideward_dim]
-                sideward_coordinates[k] = side_coord 
-        
+                sideward_coordinates[k] = side_coord
+
                 inward_coordinates[k] = v
 
     print sideward_coordinates
@@ -265,12 +265,12 @@ def connect_structure(Stages,Maitre, path='Coordinates.conf', struct_name='0'):
     if __vl_flag_disable :
         print 'virtual_level:ERROR: cannot perform operation while leveling in progress.'
         return
-    
+
     coords = read_coords_file( path )[str(struct_name)]
     print coords
 
     gmh = Global_MeasureHandler()
-    
+
     if 'SignalSource' in coords:
         # fine_allign.set_signal_source(coords['SignalSource'])
         measurement_function = gmh.get_instr_by_name(coords['SignalSource'])
@@ -284,13 +284,13 @@ def connect_structure(Stages,Maitre, path='Coordinates.conf', struct_name='0'):
         return True
     else:
         return False
-    
+
 def calibrate_on_structure(Stages, path='Coordinates.conf', struct_name='0'):
     global __vl_flag_disable
     if __vl_flag_disable :
         print 'virtual_level:ERROR: cannot perform operation while leveling in progress.'
         return
-    
+
     coords = read_coords_file( path )[str(struct_name)]
     for k,v in coords.items():
         if k not in ['Structure','SignalSource']:
@@ -301,10 +301,10 @@ def calibrate_on_structure(Stages, path='Coordinates.conf', struct_name='0'):
 def check_coordinate_set(Stages, coordinates):
         '''
         To prevent collision dont allow a coordinate more West than the W stage, more East than the E Stage etc also add stage
-        depending buffer zones, the two dimensions of the buffer zones (dx,dy) are to be understood in the coordinate system 
+        depending buffer zones, the two dimensions of the buffer zones (dx,dy) are to be understood in the coordinate system
         of the stages
         '''
-        limits={}    
+        limits={}
         for k,v in coordinates.items():
             print limits
             print k
@@ -397,7 +397,7 @@ def connect_coordinates( coordinates, Stages, Maitre):
     for k in unused:
         if Stages[k].get_calibrated():
             coordinates[k] = coord_s2c(Stages,(round(Stages[k].get_coor_2d()[0]-Stages[k].get_real_coordinates()[0] + 0.001, 3),Stages[k].get_coor_2d()[1]),k)
-        
+
     # Step 0.25: Check whether coordinates are not leading to collisions
     #    if not check_coordinate_set(Stages, coordinates):
     #    print 'Coordinates might lead to collision'
@@ -432,9 +432,9 @@ def connect_coordinates( coordinates, Stages, Maitre):
                 side_coord = list(Stages[k].get_coor_2d())
                 side_coord[sideward_dim] = coord_c2s(Stages,v,k)[sideward_dim]
                 sideward_coordinates[k] = side_coord
-    
 
-    # Step 2: Unconnect E-Probes         
+
+    # Step 2: Unconnect E-Probes
     for k,v in Stages.items():
         if k[0] == 'E':
             Stages[k].disconnect()
@@ -470,7 +470,7 @@ def connect_coordinates( coordinates, Stages, Maitre):
 
     #    max_ind = trans[1].index(max(trans[1]))
     #    max_wavelength = data[max_ind][0]
-        
+
     #    print 'Found threshold power wavelength'
     #    print max_wavelength
 
@@ -486,7 +486,7 @@ def connect_coordinates( coordinates, Stages, Maitre):
                 failed.append(k)
             else:
                 retry = True
-                
+
     # one at least succeeded so re-allign the rest
     if retry:
         for k in failed:
@@ -507,7 +507,7 @@ def read_coords_file( path ):
     if __vl_flag_disable :
             print 'virtual_level:ERROR: cannot perform operation while leveling in progress.'
             return
-        
+
     CoordsFile = open(path, 'r')
 
     if CoordsFile is None:
@@ -522,7 +522,7 @@ def read_coords_file( path ):
 
         if line[0]=='#':
             ParaIndex = line[1:3]
-        
+
         if line[0:3]=='#Si':
             ParaIndex = 'SignalSource'
 
@@ -566,7 +566,7 @@ def coord_c2s(Stages,coords,StageKey):
     print angle
     print [math.cos(angle)*coords[0]+math.sin(angle)*coords[1],math.sin(-angle)*coords[0]+math.cos(angle)*coords[1]]
     return [math.cos(angle)*coords[0]+math.sin(angle)*coords[1],math.sin(-angle)*coords[0]+math.cos(angle)*coords[1]]
-        
+
 
 def coord_s2c(Stages,coords,StageKey):
     if StageKey[1] == 'S':

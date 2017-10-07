@@ -27,7 +27,7 @@ Components of ProberControl
 ---------------------------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     
     source/components/components
     source/components/gui
@@ -40,22 +40,23 @@ How To's
 How to do various tasks in ProberControl
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
-    source/howto/writingDocStrings
     source/howto/writeConfigFile
     source/howto/addNewInstrument
-    source/howto/docsUpdate
+    source/howto/addNewProcedure
     source/howto/interfaceMultiChannel
     source/howto/measurementScript
     source/howto/coordinateFile
+    source/howto/writingDocStrings
+    source/howto/docsUpdate
 
 Developer's Notes
 -----------------
 Descriptions and analysis of components of the ProberControl system
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     /source/dev/locking_scheme
 
@@ -63,7 +64,7 @@ Serial and GPIB Port Handling
 -----------------------------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     source/gpib_porting
 
@@ -71,7 +72,7 @@ UML Diagrams
 ------------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     source/components/uml_diagrams
 
@@ -79,7 +80,7 @@ Miscellaneous
 -------------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     source/misc
     source/components/acknowledgements

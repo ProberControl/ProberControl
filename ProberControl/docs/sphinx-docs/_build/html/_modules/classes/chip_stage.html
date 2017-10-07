@@ -49,14 +49,25 @@
 
 
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">from</span> <span class="nn">rotator</span> <span class="k">import</span> <span class="n">Rotator</span>
+<span class="c1">#from rotator import Rotator</span>
+<span class="kn">from</span> <span class="nn">rotator_ELL8</span> <span class="k">import</span> <span class="n">Rotator</span>
 <span class="kn">from</span> <span class="nn">gonio_stage</span> <span class="k">import</span> <span class="n">GonStage</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># helper functions to add/subtract tuples</span>
+<div class="viewcode-block" id="t_add"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.t_add">[docs]</a><span class="k">def</span> <span class="nf">t_add</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">))</span></div>
+    
+<div class="viewcode-block" id="t_sub"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.t_sub">[docs]</a><span class="k">def</span> <span class="nf">t_sub</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">tuple1</span><span class="p">,</span> <span class="n">tuple2</span><span class="p">))</span></div>
+<span class="c1">##</span>
 
 <div class="viewcode-block" id="ChipStage"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage">[docs]</a><span class="k">class</span> <span class="nc">ChipStage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser_list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="mi">10</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="mi">1</span>
             
             <span class="c1"># To bring the dist_measurement to valid start point</span>
             <span class="c1"># can be left at zero with wide enough chip holders</span>
@@ -71,25 +82,56 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">x_coordY</span> <span class="o">=</span> <span class="mf">8.5</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">y_coordY</span> <span class="o">=</span> <span class="mi">1</span>
             
+            <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            
             <span class="k">def</span> <span class="nf">r_init</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">rot</span> <span class="o">=</span> <span class="n">Rotator</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="k">def</span> <span class="nf">gl_init</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">gon_l</span> <span class="o">=</span> <span class="n">GonStage</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;GNL10&#39;</span><span class="p">)</span>
-            <span class="k">def</span> <span class="nf">gr_init</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">gon_r</span> <span class="o">=</span> <span class="n">GonStage</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;GNL18&#39;</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">gT_init</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span> <span class="o">=</span> <span class="n">GonStage</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;GNL10&#39;</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">gB_init</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span> <span class="o">=</span> <span class="n">GonStage</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;GNL18&#39;</span><span class="p">)</span>
 
             <span class="n">t_r</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">r_init</span><span class="p">)</span>
-            <span class="c1">#t_gl = threading.Thread(target=gl_init)</span>
-            <span class="c1">#t_gr = threading.Thread(target=gr_init)</span>
+            <span class="n">t_gT</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">gT_init</span><span class="p">)</span>
+            <span class="n">t_gB</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">gB_init</span><span class="p">)</span>
 
-            <span class="n">t_r</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="c1">#, t_gl.start(), t_gr.start()</span>
-            <span class="n">t_r</span><span class="o">.</span><span class="n">join</span><span class="p">()</span><span class="c1">#, t_gl.join(), t_gr.join()</span>
+            <span class="n">t_r</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_gB</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_gT</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">t_r</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_gB</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_gT</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ChipStage.set_stepsize"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.set_stepsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_stepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">stepsize</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_stepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">stepsize</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Updates the degree stepsize used in step() function</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">stepsize</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">stepsize</span>
+    
+<div class="viewcode-block" id="ChipStage.home"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.home">[docs]</a>    <span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Sets all chip stage motors to home&#39;&#39;&#39;</span>
+        
+        <span class="n">r</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">home</span><span class="p">())</span>
+        <span class="n">gT</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">home</span><span class="p">())</span>
+        <span class="n">gB</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">home</span><span class="p">())</span>
+        
+        <span class="c1"># Starts x-direction, then y-direction and z-direction</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">start</span><span class="p">();</span> <span class="n">gT</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">gB</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    
+        <span class="c1"># Reset isntance variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="mi">1</span></div>
+    
+<div class="viewcode-block" id="ChipStage.check_coordinates"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.check_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">check_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">):</span>
+        <span class="n">act_r</span><span class="p">,</span> <span class="n">act_t</span><span class="p">,</span> <span class="n">act_b</span> <span class="o">=</span> <span class="n">t_add</span><span class="p">(</span><span class="n">target_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">check_abs_transl</span><span class="p">(</span><span class="n">act_t</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">check_abs_transl</span><span class="p">(</span><span class="n">act_b</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+    
+<div class="viewcode-block" id="ChipStage.set_stepsize"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.set_stepsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_stepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">stepsize</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Updates the stepsize used in step() function</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">stepsiz</span></div>
 
 <div class="viewcode-block" id="ChipStage.step"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -98,13 +140,96 @@
 <span class="sd">        - direction expected to be char: L(CW),R(CCW)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">moving</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">delta_angle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">deg_pos</span>
-            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">delta_angle</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">deg_pos</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">moving</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">moving</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;F&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span></div>
+                
+<div class="viewcode-block" id="ChipStage.get_coordinates"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span></div>
     
+<div class="viewcode-block" id="ChipStage.get_rot"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.get_rot">[docs]</a>    <span class="k">def</span> <span class="nf">get_rot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">get_angle</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="ChipStage.set_coordinates"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.set_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Move to a point in the plane</span>
+<span class="sd">         </span>
+<span class="sd">         target_pos (3-tuple): (rot,g_T ,g_B) coordinates of the final point</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># actual distances sent to motors</span>
+        <span class="n">act_r</span><span class="p">,</span> <span class="n">act_t</span><span class="p">,</span> <span class="n">act_b</span> <span class="o">=</span> <span class="n">t_add</span><span class="p">(</span><span class="n">target_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeros</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">moving</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">moving</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">moving</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">check_abs_transl</span><span class="p">(</span><span class="n">act_t</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">check_abs_transl</span><span class="p">(</span><span class="n">act_b</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">target_pos</span>
+        
+            <span class="c1"># threading approach</span>
+            <span class="n">t_r</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">Rotator</span><span class="o">.</span><span class="n">abs_angle</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="p">,</span> <span class="n">act_r</span><span class="p">))</span>
+            <span class="n">t_t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">GonStage</span><span class="o">.</span><span class="n">abs_rot</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="p">,</span> <span class="n">act_t</span><span class="p">))</span>
+            <span class="n">t_b</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">GonStage</span><span class="o">.</span><span class="n">abs_rot</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="p">,</span> <span class="n">act_b</span><span class="p">))</span>
+            
+            <span class="n">t_r</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_t</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_b</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">t_r</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_t</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_b</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;chip_stage::error: Attempted move out of bounds (abs_pos:</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">act_r</span><span class="p">,</span> <span class="n">act_t</span><span class="p">,</span> <span class="n">act_b</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="ChipStage.set_rot"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.set_rot">[docs]</a>    <span class="k">def</span> <span class="nf">set_rot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Rotate the chip stage</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">((</span><span class="n">target_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">))</span></div>
+    
+<div class="viewcode-block" id="ChipStage.close"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">         Closes the underlying motors</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">rot</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+                
+<div class="viewcode-block" id="ChipStage.set_whoAmI"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.set_whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">set_whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="ChipStage.whoAmI"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+<div class="viewcode-block" id="ChipStage.whatCanI"><a class="viewcode-back" href="../../source/components/classes.html#classes.chip_stage.ChipStage.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div></div>
+
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

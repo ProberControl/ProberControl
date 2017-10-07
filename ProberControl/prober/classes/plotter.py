@@ -98,7 +98,7 @@ class NBPlot(object):
                                     args = (plotter_pipe,))
         self.plot_process.daemon = True
         self.plot_process.start()
-        self.clear = False
+        self.clear = True
         
     def set_clear(self,clear=True):
         if clear:

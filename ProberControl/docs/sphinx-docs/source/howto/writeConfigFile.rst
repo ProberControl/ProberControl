@@ -1,3 +1,4 @@
+.. _writeConfigFile:
 Writing a Configuration File
 ============================
 
@@ -19,14 +20,19 @@ The ``ProberConfig.conf`` file uses the following syntax, which is similar for a
     3) Lines starting with a single followed by one character e.g. #O define properties of that tool
         a.    #O – Orientation of Stages (E/S/N/W) or exact model for Measurement Tools
         b.    #A – address for tools e.g. COM4 or GPIB0::24::INSTR
-        c.    #X / #Y / #Z – address of x,y,z axis controller for xyz stages
+        c.    #X / #Y / #Z – info for x,y,z axis stepper motors for xyz stages
+            a. The info should look like : ``Instrument Class; Address [; additional int args]``
+            b. The first two arguments, ``Instrument class`` and ``Address`` must be provided, optionally followed by any other (integer) arguments that the constructor for that instrument takes
         d.    #A – angle deviations from perfect 90 setup
         e.    #R / #W /#E address of Chip Rotation Stage, East Gonio and West Gonio Controlers
-        f.  #N - Number of channels for a particular laser e.g. ``1,2,3,4`` for a channel occupying channels 1-4
-        g.    #P Ports corresponding to a switch, if a switch is present.
-            a. A switch entry has the following sytax: ``1,2,3::17,18,19`` where `(1,17)`, `(2,18)`, and `(3,19)` are port-to-port connections in the switch.
-            b. All input/ingress ports must be between 1-16 inclusive, then output ports 17-32 inclusive.
-
+        f.    #N -
+            a. If multiple times the same same device is present the #N parameter controls the index of the device e.g. #N 3 for a laser creates the object **MLaser3** in the ``Stages Dictionary``.
+            b. If one device has multiple channels e.g. for a laser: 1:3 maps channel 3 to the object MLaser1. If a device has more than one port per channel mapping follows: 1:4.2 - to link the object MLaser1 to channel 4 port 2. Also see :ref:`Interface with a Multi-Channel Devic <interfaceMultiChannel>`.
+            c. Multiple entries need to be saperated by ;
+        g.    #P - Ports corresponding to a switch, if a switch is present.
+            a. A switch entry has the following sytax: ``3:15,16>7,8.`` the `3:` represents the 3rd entity of the device e.g. MLaser3 if the there is only one laser present it can be neglected.
+            b. `15,16` represent the tools input ports at the switch. `7,8` are the prelimary output ports at the switch.
+            c. Multiple entries need to be saperated by ;
 Examples
 --------
 
@@ -38,8 +44,10 @@ Examples
     AnritsuMS2667C
     #A Address
     GPIB0::23::INSTR
-    #Number of Channels
-    5,6,7,8
+    #Numbering of Channels
+    5:1;6:2.1;7:2.2
+    #P Ports for switch
+    5:10>7;6:11>8;7:12>1
     ##
 
     ## Object Type
@@ -48,8 +56,6 @@ Examples
     Wiltron68145B
     #A Address
     GPIB0::7::INSTR
-    #P Ports for switch
-    5,6,7::21,22,23
     ##
 
     ## Stage Identifier (E(lec) / O(ptic) / C(chip) / P(roximity) )
@@ -57,16 +63,16 @@ Examples
     #O Orientation Identifier (N / E / S / W)
     S
     #X X-Axis interface
-    COM8
+    StepMotor_MST_DRV; COM8; 1; 1
     #Y Y-Axis interface
-    COM5
+    StepMotor_MST_DRV; COM5; 1; 2
     #Z Z-Axis interface
-    COM6
+    StepMotor_KST_ZST; COM6
     #Angle Offset to ideal axis
     0.122
     ##
 
-    ## Tunable Laser
+    ## Chip Stage
     C
     #O
     S

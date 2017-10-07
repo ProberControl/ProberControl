@@ -22,7 +22,7 @@ class ClassNameHere(object):
         :param address: SCPI address of instrument
         :type address: String
         '''
-
+        self.active = False
         self.gpib = res_manager.open_resource(address)
 
     def whoAmI(self):
@@ -37,6 +37,12 @@ class ClassNameHere(object):
         '''Adds built in functionality for printing and casting'''
         return 'ClassNameHere'
 
+    def change_state(self):
+        ''' Toggles the self.active parameter'''
+        if self.active == True:
+            self.active = False
+        else:
+            self.active = True
 
 ################################################################################
 #################### All methods below are suggested: ##########################

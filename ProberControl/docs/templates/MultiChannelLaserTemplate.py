@@ -4,9 +4,8 @@
 
 class InstrumentNameHere(object):
     '''
-    This class is a template for a multi-channel laser. The idea is that when there are several objects that refer to the same instrument, we need a way of ensuring that the channel you're intending to send traffic to, is in fact the channel that the device is set to. For this, we can use a class variable CURRENT_CHANNEL which will change based on whatever object used it last. In all of the method definitions, you have to call _checkChannel() before to confirm that you're infact on the right channel.
+    This class is a template for a multi-channel laser.
     '''
-    CURRENT_CHANNEL = 1
 
     def __init__(self, res_manager, address='YourAddressHere', channel):
         '''
@@ -20,25 +19,28 @@ class InstrumentNameHere(object):
         :type channel: Integer
         '''
         self.__channel = channel
+        self.active = False
+        self.gpib = res_manager.open_resource(address) #call visa
 
-    def _checkChannel(self):
-
-        if CURRENT_CHANNEL != self.__channel:
-            _setChannel(self.__channel)
-
-    def _setChannel(self, newChannel):
-        '''
-        The purpose of this method is to change channels
-        The syntax of usage will depend on the particular device.
-        '''
 
     def whoAmI(self):
         ''':returns: reference to device'''
-        return 'Device' + str(self.__channel)
+        return 'Device'
 
     def whatCanI(self):
         ''':returns: instrument attributes'''
         return ''
+
+    def __str__(self):
+        '''Adds built in functionality for printing and casting'''
+        return 'InstrumentNameHere'   
+
+    def change_state(self):
+        ''' Toggles the self.active parameter'''
+        if self.active == True:
+            self.active = False
+        else:
+            self.active = True
 
     def setwavelength(self, wavelength):
         '''
@@ -48,6 +50,3 @@ class InstrumentNameHere(object):
         :type waveLength: Integer
         '''
 
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'InstrumentNameHere'    

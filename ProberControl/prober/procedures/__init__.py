@@ -1,14 +1,31 @@
 import matplotlib
+from imp import find_module
 matplotlib.use('gtkagg')
 
-__all__ = [
-    'connecting',
-    'fine_allign',
-    'Measure',
-    'raster'
-]
+def _check_cv2():
+    try:
+        find_module('cv2')
+        return True
+    except ImportError:
+        return False
 
+installed = _check_cv2()
 
+if not installed:
+    __all__ = [
+        'connecting',
+        'fine_allign',
+        'Measure',
+        'raster',
+    ]
+else:
+    __all__ = [
+        'connecting',
+        'fine_allign',
+        'Measure',
+        'raster',
+		'vision'
+    ]
 '''
 Copyright (C) 2017  Robert Polster
 This program is free software: you can redistribute it and/or modify
