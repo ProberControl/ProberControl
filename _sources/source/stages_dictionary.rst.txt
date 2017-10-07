@@ -3,7 +3,7 @@ Stages Dictionary
 
 The Stages Dictionary is the central object in the Prober Control Software. It acts as handler for all attached hardware. It is initialized in the main file: ``ProberControler.py``
 
-The Stages Dictionary is build up based on the ``ProberConfig.conf`` file that needs to be present in the base directory. Please see `How to Write a Config File </howto/writeConfigFile.html>`_ for usages and examples.
+The Stages Dictionary is build up based on the ``ProberConfig.conf`` file that needs to be present in the base directory. Please see :ref:`How to Write a Config File <writeConfigFile>` for usages and examples.
 
 The main call of the program first calls ``read_config()`` to interpret the information in ``ProberConfig.conf`` and then passes a list of dictionaries to ``Generate_Stages(StageConfigList)`` to call the constructor of each connected device and the device to Stages Dictionary.
 

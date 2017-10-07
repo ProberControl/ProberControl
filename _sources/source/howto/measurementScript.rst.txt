@@ -21,7 +21,7 @@ You can also run the script via the command line which is described `here </laun
 Writing Scripts
 ---------------
 
-Writing a measuremeant script is similiar to writing a configuration file. We use the same notation, relying on the ``#`` symbol to designate certain features and a new line defining the beginning and end of an information block. For any experiment or execution of function, you'll need to write an information block. The ``direct`` and ``indirect`` information blocks are defined below. 
+Writing a measuremeant script is similiar to writing a configuration file. We use the same notation, relying on the ``#`` symbol to designate certain features and a new line defining the beginning and end of an information block. For any experiment or execution of function, you'll need to write an information block. The ``direct`` and ``indirect`` information blocks are defined below.
 
 There are two kinds of interactions that you can have when scripting. You can either interface with an instrument directly, i.e. telling a laser to have a certain wavelength or you can interface with an entire structure that you've defined in a coordinates file. You can find an example of a each in the ``templates`` folder. You can also mix these two types of interactions into one script. The defining difference is that your structure scripting will utilize methods that you've defined and placed into the ``procedures`` folder, whereas the stages interface allows you to refer to an instrument directly. We'll refer to them as ``direct`` and ``indirect``.
 
@@ -75,4 +75,51 @@ Indirect
         dc_sweep_1d
         #Arguments
         none
-        
+
+Output Configuration
+--------------------
+By default all the measurements' results are output to one file, ``results.csv``. However, the tests specified in one .meas script can span multiple device groups, chips or wafers. The author of the measurement script can, therefore, classify the various information blocks into any of the following identifiers: ``wafer``, ``chip`` and ``group``, each one enclosing the next, from left to right.
+
+The author need not specify all the identifiers for every block, but once one of those identifiers are used, every block should fall under a group denoted by this identifier. Here's is how we can use the grouping identifiers in the example provided above:
+
+.. parsed-literal::
+        group-by: group
+
+        > chip
+        OurOnlyChip
+
+        > group
+        PhaseShifters
+
+        #Measurement Name
+        Test_PhaseShifter_Spec
+        #Structure
+        phaseshift_cell_brian
+        #procedure
+        Measure
+        #Function
+        get_e_spectrum
+        #Arguments
+        10 300 10 0.1
+
+        > group
+        Rings
+
+        #Measurement Name
+        Test_Ring_Bot_Res_Shift
+        #Structure
+        ring_bot
+        #procedure
+        Measure
+        #Function
+        dc_sweep_1d
+        #Arguments
+        none
+
+The scope of the identifiers lasts up until the next identifier of the same type is identified. That means that both measurements fall under ``chip`` OurOnlyChip, but each one in different groups, ``PhaseShifters`` and ``Rings`` respectively.
+The purpose of grouping identifiers is to configure how the output will be distributed into files. The output ordering is determined by the optional first line in the measurement script:
+
+.. parsed-literal::
+        group-by: group
+
+In this example, where we partition by ``group`` two files will be output with names ``results-PhaseShifters.csv`` and ``results-Rings.csv``, containing the respective measurement results.

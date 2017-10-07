@@ -27,7 +27,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Write and Execute a Measurement Script" href="measurementScript.html" />
-    <link rel="prev" title="Updating the Documentation" href="docsUpdate.html" />
+    <link rel="prev" title="Adding a New Procedure" href="addNewProcedure.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -45,8 +45,8 @@
             
   <div class="section" id="interface-with-a-multi-channel-device">
 <h1>Interface with a Multi-Channel Device<a class="headerlink" href="#interface-with-a-multi-channel-device" title="Permalink to this headline">¶</a></h1>
-<p>Interfacing with a multi-channel device is relatively straight forward as long as the instrument class is appropraitely structured. See <a class="reference external" href="addNewInstrument.html">this page</a> for examples of a multi-channel class.</p>
-<p>In your configuration file, be sure to fill in the appropriate section <code class="docutils literal"><span class="pre">#Number</span> <span class="pre">of</span> <span class="pre">channels</span></code> which is discussed <a class="reference external" href="writeConfigFile.html">here</a>.</p>
+<p>Interfacing with a multi-channel device is relatively straight forward as long as the instrument class is appropraitely structured. See <a class="reference external" href="addNewInstrument.html">this page</a> for examples of an instrument class. For multi channel devices the constructor needs to be initialized like :  __init__(self,res_manager,address=‘169.254.115.242’,channel=1). The channel parameter will parsed as string following ‘Channel.Port’. Port will be only present if denoted in the config file.</p>
+<p>In your configuration file, be sure to fill in the appropriate section <code class="docutils literal"><span class="pre">#Numbering</span> <span class="pre">of</span> <span class="pre">channels</span></code> which is discussed <a class="reference external" href="writeConfigFile.html">here</a>.</p>
 <p>When you launch <code class="docutils literal"><span class="pre">ProberControl</span></code> you’ll see that 2 devices are listed in the <code class="docutils literal"><span class="pre">Stage</span> <span class="pre">Function</span> <span class="pre">to</span> <span class="pre">Exec</span></code>. You can treat both devices as two different instruments, if that helps you conceptualize the channels– as that’s how ProberControl sees them.</p>
 <a class="reference internal image-reference" href="../../_images/MultiChannelUsageExample.png"><img alt="../../_images/MultiChannelUsageExample.png" class="align-center" src="../../_images/MultiChannelUsageExample.png" style="width: 350px; height: 500px;" /></a>
 </div>
@@ -63,7 +63,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="docsUpdate.html" title="previous chapter">Updating the Documentation</a></li>
+      <li>Previous: <a href="addNewProcedure.html" title="previous chapter">Adding a New Procedure</a></li>
       <li>Next: <a href="measurementScript.html" title="next chapter">Write and Execute a Measurement Script</a></li>
   </ul></li>
 </ul>

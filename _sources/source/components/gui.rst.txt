@@ -49,6 +49,14 @@ Directly Executing Code From the GUI:
     The entry field **item 9** offers the possibility to execute code as if the GUI would execute this code. Hitting the execute button next to it called CommandButton calls the function ``CommandButton()``. Which directly executes the string in the entry field. 
     This allows most importantly to call ``self.Maitre.refresh()``, which will re import the procedures folder and helps debugging those functions at a living setup.
 
+Running Scripts:
+--------------------------------------
+    To run measurement scripts choose use your script using the ``Browse Scripts`` Button in **Line B**. The current scipt name is shown in the text bocks. The script can be executed using the ``Execute Script`` Button.
+
 Opening the Dataviewer:
 ----------------------------------
-    **Line** also holds the button ``DataViewer`` to start a new window that shows the ``DataViewer`` explained in detail later.
+    **Line 1**  also holds the button ``DataViewer`` to start a new window that shows the ``DataViewer`` explained in detail later.
+
+Refreshing in the Stages Dictionary:
+------------------------------------
+    **Line 1**  also holds the button ``Refresh`` to restart the initialization process of connected equipment. Using the button  tools that have not been added to the stages dictionary at start up can be added later.

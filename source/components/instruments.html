@@ -634,6 +634,61 @@ Remeber to shut off laser after sweep ends</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-instruments.AndoAQ6317">
+<span id="instruments-andoaq6317-module"></span><h2>instruments.AndoAQ6317 module<a class="headerlink" href="#module-instruments.AndoAQ6317" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.AndoAQ6317.AndoAQ6317">
+<em class="property">class </em><code class="descclassname">instruments.AndoAQ6317.</code><code class="descname">AndoAQ6317</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=’GPIB0::2::INSTR’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class models the AndoAQ4321 optical soectrum Analyzer.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently this class and therefore get_o_spectrum() is explicitly written to set up the connection and work only with the AQ4321 Laser.</p>
+</div>
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.change_state">
+<code class="descname">change_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.change_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.change_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.checkStatus">
+<code class="descname">checkStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.checkStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.checkStatus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.get_o_spectrum">
+<code class="descname">get_o_spectrum</code><span class="sig-paren">(</span><em>start</em>, <em>stop</em>, <em>step</em>, <em>result_path=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.get_o_spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.get_o_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.whatCanI">
+<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.whatCanI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">reference to device</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-instruments.AnritsuMS2667C">
 <span id="instruments-anritsums2667c-module"></span><h2>instruments.AnritsuMS2667C module<a class="headerlink" href="#module-instruments.AnritsuMS2667C" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -1091,18 +1146,25 @@ nb (int): the number of bytes</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="instruments.HP8163A.HP8163A.config_meter">
+<code class="descname">config_meter</code><span class="sig-paren">(</span><em>range</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.config_meter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.config_meter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="instruments.HP8163A.HP8163A.get_power">
 <code class="descname">get_power</code><span class="sig-paren">(</span><em>wavelength=1550</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.get_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.get_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query the powermeter reading after setting correct wavelength</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Float</td>
-</tr>
-</tbody>
-</table>
+<dd><p>return power meter reading after setting correct wavelength</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="instruments.HP8163A.HP8163A.get_result_from_log">
+<code class="descname">get_result_from_log</code><span class="sig-paren">(</span><em>samples=64</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.get_result_from_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.get_result_from_log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.HP8163A.HP8163A.prep_measure_on_trigger">
+<code class="descname">prep_measure_on_trigger</code><span class="sig-paren">(</span><em>samples=64</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.prep_measure_on_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.prep_measure_on_trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="instruments.HP8163A.HP8163A.whatCanI">
@@ -1137,8 +1199,14 @@ nb (int): the number of bytes</p>
 <span id="instruments-keithley2280s-module"></span><h2>instruments.Keithley2280S module<a class="headerlink" href="#module-instruments.Keithley2280S" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="instruments.Keithley2280S.Keithley2280S">
-<em class="property">class </em><code class="descclassname">instruments.Keithley2280S.</code><code class="descname">Keithley2280S</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=‘169.254.115.242’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Keithley2280S.html#Keithley2280S"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Keithley2280S.Keithley2280S" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">instruments.Keithley2280S.</code><code class="descname">Keithley2280S</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=‘169.254.115.242’</em>, <em>channel=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Keithley2280S.html#Keithley2280S"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Keithley2280S.Keithley2280S" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class models a DC Source Meter 2280S from Keithley.</p>
+<dl class="attribute">
+<dt id="instruments.Keithley2280S.Keithley2280S.CURRENT_CHANNEL">
+<code class="descname">CURRENT_CHANNEL</code><em class="property"> = 1</em><a class="headerlink" href="#instruments.Keithley2280S.Keithley2280S.CURRENT_CHANNEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="instruments.Keithley2280S.Keithley2280S.change_state">
 <code class="descname">change_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Keithley2280S.html#Keithley2280S.change_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Keithley2280S.Keithley2280S.change_state" title="Permalink to this definition">¶</a></dt>
@@ -1515,16 +1583,16 @@ nb (int): the number of bytes</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-instruments.Motor">
-<span id="instruments-motor-module"></span><h2>instruments.Motor module<a class="headerlink" href="#module-instruments.Motor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-instruments.Motor_KST_ZST">
+<span id="instruments-motor-kst-zst-module"></span><h2>instruments.Motor_KST_ZST module<a class="headerlink" href="#module-instruments.Motor_KST_ZST" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="instruments.Motor.Motor">
-<em class="property">class </em><code class="descclassname">instruments.Motor.</code><code class="descname">Motor</code><span class="sig-paren">(</span><em>serial</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST">
+<em class="property">class </em><code class="descclassname">instruments.Motor_KST_ZST.</code><code class="descname">Motor_KST_ZST</code><span class="sig-paren">(</span><em>serial</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>This class models a motor for stages</p>
 <dl class="method">
-<dt id="instruments.Motor.Motor.abs_move">
-<code class="descname">abs_move</code><span class="sig-paren">(</span><em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor.abs_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor.abs_move" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST.abs_move">
+<code class="descname">abs_move</code><span class="sig-paren">(</span><em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST.abs_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST.abs_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Relative rotation on the motor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1537,14 +1605,14 @@ nb (int): the number of bytes</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Motor.Motor.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor.close" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>releases motor resources</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Motor.Motor.delta_move">
-<code class="descname">delta_move</code><span class="sig-paren">(</span><em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor.delta_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor.delta_move" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST.delta_move">
+<code class="descname">delta_move</code><span class="sig-paren">(</span><em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST.delta_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST.delta_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Relative rotation onpos the motor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1557,27 +1625,27 @@ nb (int): the number of bytes</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Motor.Motor.get_position">
-<code class="descname">get_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor.get_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor.get_position" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST.get_position">
+<code class="descname">get_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST.get_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST.get_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>return the motors current position</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Motor.Motor.move_complete">
-<code class="descname">move_complete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor.move_complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor.move_complete" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST.move_complete">
+<code class="descname">move_complete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST.move_complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST.move_complete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Waits until the MOVE_COMPLETE message is received by the controller.
 Helper-function for delta_move() and abs_move() functions.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Motor.Motor.set_as_zero">
-<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>new_zero</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor.set_as_zero" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST.set_as_zero">
+<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>new_zero</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST.set_as_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>change the origin (zero)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Motor.Motor.set_vel_params">
-<code class="descname">set_vel_params</code><span class="sig-paren">(</span><em>vel_init</em>, <em>accel</em>, <em>vel_fin</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#Motor.set_vel_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.Motor.set_vel_params" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.Motor_KST_ZST.set_vel_params">
+<code class="descname">set_vel_params</code><span class="sig-paren">(</span><em>vel_init</em>, <em>accel</em>, <em>vel_fin</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#Motor_KST_ZST.set_vel_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.Motor_KST_ZST.set_vel_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the velocity parameters for the motor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1597,15 +1665,15 @@ Helper-function for delta_move() and abs_move() functions.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="instruments.Motor.hexString">
-<code class="descclassname">instruments.Motor.</code><code class="descname">hexString</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#hexString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.hexString" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.hexString">
+<code class="descclassname">instruments.Motor_KST_ZST.</code><code class="descname">hexString</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#hexString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.hexString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a string that is a byte sequense of the hex values input
 :param data: Example is ‘0A 23 34 56’</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="instruments.Motor.int2hexStr">
-<code class="descclassname">instruments.Motor.</code><code class="descname">int2hexStr</code><span class="sig-paren">(</span><em>integer</em>, <em>numberOfBytes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor.html#int2hexStr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor.int2hexStr" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Motor_KST_ZST.int2hexStr">
+<code class="descclassname">instruments.Motor_KST_ZST.</code><code class="descname">int2hexStr</code><span class="sig-paren">(</span><em>integer</em>, <em>numberOfBytes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_KST_ZST.html#int2hexStr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_KST_ZST.int2hexStr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert an integer to its corresponding bytearray</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1623,6 +1691,141 @@ Helper-function for delta_move() and abs_move() functions.</p>
 </tbody>
 </table>
 </dd></dl>
+
+</div>
+<div class="section" id="module-instruments.Motor_MST_DRV">
+<span id="instruments-motor-mst-drv-module"></span><h2>instruments.Motor_MST_DRV module<a class="headerlink" href="#module-instruments.Motor_MST_DRV" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV">
+<em class="property">class </em><code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">Motor_MST_DRV</code><span class="sig-paren">(</span><em>serial</em>, <em>bay=0</em>, <em>chan=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class models a motor for stages</p>
+<dl class="method">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV.abs_move">
+<code class="descname">abs_move</code><span class="sig-paren">(</span><em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV.abs_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV.abs_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative rotation on the motor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>steps</strong> (<em>Integer</em>) – the endpoint of motion</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>releases motor resources</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV.delta_move">
+<code class="descname">delta_move</code><span class="sig-paren">(</span><em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV.delta_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV.delta_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative rotation onpos the motor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>steps</strong> (<em>Integer</em>) – the number of steps to move (negative -&gt; backwards)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV.get_position">
+<code class="descname">get_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV.get_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV.get_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the motors current position</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV.move_complete">
+<code class="descname">move_complete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV.move_complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV.move_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits until the MOVE_COMPLETE message is received by the controller.
+Helper-function for delta_move() and abs_move() functions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV.set_as_zero">
+<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>new_zero</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV.set_as_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>change the origin (zero)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Motor_MST_DRV.Motor_MST_DRV.set_vel_params">
+<code class="descname">set_vel_params</code><span class="sig-paren">(</span><em>vel_init</em>, <em>accel</em>, <em>vel_fin</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#Motor_MST_DRV.set_vel_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.Motor_MST_DRV.set_vel_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the velocity parameters for the motor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vel_init</strong> (<em>Integer</em>) – initial velocity (steps / sec)</li>
+<li><strong>accel</strong> (<em>Integer</em>) – acceleration (steps / sec^2)</li>
+<li><strong>vel_fin</strong> (<em>Integer</em>) – max(final) velocity (steps / sec)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="instruments.Motor_MST_DRV.hexString">
+<code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">hexString</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#hexString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.hexString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a string that is a byte sequense of the hex values input
+:param data: Example is ‘0A 23 34 56’</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="instruments.Motor_MST_DRV.int2hexStr">
+<code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">int2hexStr</code><span class="sig-paren">(</span><em>integer</em>, <em>numberOfBytes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#int2hexStr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.int2hexStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an integer to its corresponding bytearray</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>integer</strong> (<em>Integer</em>) – the number we want to convert</li>
+<li><strong>numberOfBytes</strong> (<em>Integer</em>) – The number of bytes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Mutable sequence of integers of type bytearray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="instruments.Motor_MST_DRV.prep_long_src_dst">
+<code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">prep_long_src_dst</code><span class="sig-paren">(</span><em>bay=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#prep_long_src_dst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.prep_long_src_dst" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="instruments.Motor_MST_DRV.prep_short_src_dst">
+<code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">prep_short_src_dst</code><span class="sig-paren">(</span><em>bay=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#prep_short_src_dst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.prep_short_src_dst" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="instruments.Motor_MST_DRV.send_chan_ident">
+<code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">send_chan_ident</code><span class="sig-paren">(</span><em>ser</em>, <em>chan=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#send_chan_ident"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.send_chan_ident" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="instruments.Motor_MST_DRV.send_long_dst_src">
+<code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">send_long_dst_src</code><span class="sig-paren">(</span><em>ser</em>, <em>bay=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#send_long_dst_src"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.send_long_dst_src" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="instruments.Motor_MST_DRV.send_short_dst_src">
+<code class="descclassname">instruments.Motor_MST_DRV.</code><code class="descname">send_short_dst_src</code><span class="sig-paren">(</span><em>ser</em>, <em>bay=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Motor_MST_DRV.html#send_short_dst_src"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Motor_MST_DRV.send_short_dst_src" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-instruments.Polatis">
@@ -2294,6 +2497,133 @@ Remeber to shut off laser after sweep ends.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-instruments.StepMotor_KST_ZST">
+<span id="instruments-stepmotor-kst-zst-module"></span><h2>instruments.StepMotor_KST_ZST module<a class="headerlink" href="#module-instruments.StepMotor_KST_ZST" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST">
+<em class="property">class </em><code class="descclassname">instruments.StepMotor_KST_ZST.</code><code class="descname">StepMotor_KST_ZST</code><span class="sig-paren">(</span><em>ser</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#instruments.Motor_KST_ZST.Motor_KST_ZST" title="instruments.Motor_KST_ZST.Motor_KST_ZST"><code class="xref py py-class docutils literal"><span class="pre">instruments.Motor_KST_ZST.Motor_KST_ZST</span></code></a></p>
+<dl class="method">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.abs_transl">
+<code class="descname">abs_transl</code><span class="sig-paren">(</span><em>dist</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST.abs_transl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.abs_transl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Absolute translation on the motor</p>
+<p>dist (float): the millmeters of rotation (negative -&gt; backwards)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.check_abs_transl">
+<code class="descname">check_abs_transl</code><span class="sig-paren">(</span><em>dist</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST.check_abs_transl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.check_abs_transl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check wether a move to position ‘dist’ is in range</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.delta_transl">
+<code class="descname">delta_transl</code><span class="sig-paren">(</span><em>dist</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST.delta_transl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.delta_transl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative translation on the motor</p>
+<p>dist (float): the millimeters of translation (negative -&gt; backwards)
+m_callback (function): (Optional) a function that will run while the motor</p>
+<blockquote>
+<div>will be in motion. (e.g. show camera)
+This callback’s last parameter must be a callback itself,
+named ‘callback’</div></blockquote>
+<p>params (tuple): the callback’s parameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information back form the controller
+Used for debugging purposes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.get_mm_pos">
+<code class="descname">get_mm_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST.get_mm_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.get_mm_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the motors current position, in millimeters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.home">
+<code class="descname">home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST.home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.home" title="Permalink to this definition">¶</a></dt>
+<dd><p>Puts the motor to backward limit position, so that the
+position markers make sense</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.set_as_zero">
+<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>zer_mm</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_KST_ZST.html#StepMotor_KST_ZST.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_KST_ZST.StepMotor_KST_ZST.set_as_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>change the origin (zero)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.StepMotor_MST_DRV">
+<span id="instruments-stepmotor-mst-drv-module"></span><h2>instruments.StepMotor_MST_DRV module<a class="headerlink" href="#module-instruments.StepMotor_MST_DRV" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV">
+<em class="property">class </em><code class="descclassname">instruments.StepMotor_MST_DRV.</code><code class="descname">StepMotor_MST_DRV</code><span class="sig-paren">(</span><em>ser</em>, <em>bay=0</em>, <em>chan=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#instruments.Motor_MST_DRV.Motor_MST_DRV" title="instruments.Motor_MST_DRV.Motor_MST_DRV"><code class="xref py py-class docutils literal"><span class="pre">instruments.Motor_MST_DRV.Motor_MST_DRV</span></code></a></p>
+<dl class="method">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.abs_transl">
+<code class="descname">abs_transl</code><span class="sig-paren">(</span><em>dist</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.abs_transl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.abs_transl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Absolute translation on the motor</p>
+<p>dist (float): the millmeters of rotation (negative -&gt; backwards)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.check_abs_transl">
+<code class="descname">check_abs_transl</code><span class="sig-paren">(</span><em>dist</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.check_abs_transl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.check_abs_transl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check wether a move to position ‘dist’ is in range</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.delta_transl">
+<code class="descname">delta_transl</code><span class="sig-paren">(</span><em>dist</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.delta_transl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.delta_transl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative translation on the motor</p>
+<p>dist (float): the millimeters of translation (negative -&gt; backwards)
+m_callback (function): (Optional) a function that will run while the motor</p>
+<blockquote>
+<div>will be in motion. (e.g. show camera)
+This callback’s last parameter must be a callback itself,
+named ‘callback’</div></blockquote>
+<p>params (tuple): the callback’s parameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information back form the controller
+Used for debugging purposes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.get_mm_pos">
+<code class="descname">get_mm_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.get_mm_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.get_mm_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the motors current position, in millimeters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.home">
+<code class="descname">home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.home" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Initializes all paremeters specific to the step motor and homes the motor.</dt>
+<dd>The homing and backlash position need to be set up in a way that homing the system
+brings the system into a safe position. The backlash correction needs to be performed
+in such away that the correction is performed in the direction away from the chip
+and the other probes.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.set_as_zero">
+<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>zer_mm</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.set_as_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>change the origin (zero)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-instruments.WT68145B">
 <span id="instruments-wt68145b-module"></span><h2>instruments.WT68145B module<a class="headerlink" href="#module-instruments.WT68145B" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -2570,16 +2900,20 @@ Remeber to shut off laser after sweep ends.</p>
 <li><a class="reference internal" href="#module-instruments.AEDFA_IL_23_B_FA">instruments.AEDFA_IL_23_B_FA module</a></li>
 <li><a class="reference internal" href="#module-instruments.Agilent34401A">instruments.Agilent34401A module</a></li>
 <li><a class="reference internal" href="#module-instruments.AndoAQ4321">instruments.AndoAQ4321 module</a></li>
+<li><a class="reference internal" href="#module-instruments.AndoAQ6317">instruments.AndoAQ6317 module</a></li>
 <li><a class="reference internal" href="#module-instruments.AnritsuMS2667C">instruments.AnritsuMS2667C module</a></li>
 <li><a class="reference internal" href="#module-instruments.ELL8">instruments.ELL8 module</a></li>
 <li><a class="reference internal" href="#module-instruments.HP6624A">instruments.HP6624A module</a></li>
 <li><a class="reference internal" href="#module-instruments.HP8163A">instruments.HP8163A module</a></li>
 <li><a class="reference internal" href="#module-instruments.Keithley2280S">instruments.Keithley2280S module</a></li>
 <li><a class="reference internal" href="#module-instruments.Keithley2400">instruments.Keithley2400 module</a></li>
-<li><a class="reference internal" href="#module-instruments.Motor">instruments.Motor module</a></li>
+<li><a class="reference internal" href="#module-instruments.Motor_KST_ZST">instruments.Motor_KST_ZST module</a></li>
+<li><a class="reference internal" href="#module-instruments.Motor_MST_DRV">instruments.Motor_MST_DRV module</a></li>
 <li><a class="reference internal" href="#module-instruments.Polatis">instruments.Polatis module</a></li>
 <li><a class="reference internal" href="#module-instruments.RSY01">instruments.RSY01 module</a></li>
 <li><a class="reference internal" href="#module-instruments.Santec_TSL_210H">instruments.Santec_TSL_210H module</a></li>
+<li><a class="reference internal" href="#module-instruments.StepMotor_KST_ZST">instruments.StepMotor_KST_ZST module</a></li>
+<li><a class="reference internal" href="#module-instruments.StepMotor_MST_DRV">instruments.StepMotor_MST_DRV module</a></li>
 <li><a class="reference internal" href="#module-instruments.WT68145B">instruments.WT68145B module</a></li>
 <li><a class="reference internal" href="#module-instruments">Module contents</a></li>
 </ul>

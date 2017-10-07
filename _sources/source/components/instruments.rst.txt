@@ -28,6 +28,14 @@ instruments\.AndoAQ4321 module
     :undoc-members:
     :show-inheritance:
 
+instruments\.AndoAQ6317 module
+------------------------------
+
+.. automodule:: instruments.AndoAQ6317
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.AnritsuMS2667C module
 ----------------------------------
 
@@ -76,10 +84,18 @@ instruments\.Keithley2400 module
     :undoc-members:
     :show-inheritance:
 
-instruments\.Motor module
--------------------------
+instruments\.Motor\_KST\_ZST module
+-----------------------------------
 
-.. automodule:: instruments.Motor
+.. automodule:: instruments.Motor_KST_ZST
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.Motor\_MST\_DRV module
+-----------------------------------
+
+.. automodule:: instruments.Motor_MST_DRV
     :members:
     :undoc-members:
     :show-inheritance:
@@ -104,6 +120,22 @@ instruments\.Santec\_TSL\_210H module
 -------------------------------------
 
 .. automodule:: instruments.Santec_TSL_210H
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.StepMotor\_KST\_ZST module
+---------------------------------------
+
+.. automodule:: instruments.StepMotor_KST_ZST
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.StepMotor\_MST\_DRV module
+---------------------------------------
+
+.. automodule:: instruments.StepMotor_MST_DRV
     :members:
     :undoc-members:
     :show-inheritance:

@@ -56,12 +56,12 @@
 <span class="n">STEPS_PER_MM</span> <span class="o">=</span> <span class="mi">34304</span>
 
 <span class="c1"># GNL18 data</span>
-<span class="n">GNL18_ZERO_2_FIVE</span> <span class="o">=</span> <span class="mf">5.6</span>    <span class="c1"># in mm</span>
+<span class="n">GNL18_ZERO_2_FIVE</span> <span class="o">=</span> <span class="mi">7</span>    <span class="c1"># in mm</span>
 <span class="n">GNL18_STEPS_PER_DEG</span> <span class="o">=</span> <span class="n">STEPS_PER_MM</span> <span class="o">*</span> <span class="n">GNL18_ZERO_2_FIVE</span> <span class="o">/</span> <span class="mi">5</span>
 <span class="n">GNL18_STOP_LIMIT</span> <span class="o">=</span> <span class="mi">5</span>
 
 <span class="c1"># GNL10 data</span>
-<span class="n">GNL10_TEN_2_ZERO</span> <span class="o">=</span> <span class="mf">6.6999</span>    <span class="c1"># in mm</span>
+<span class="n">GNL10_TEN_2_ZERO</span> <span class="o">=</span> <span class="mf">7.6</span>    <span class="c1"># in mm</span>
 <span class="n">GNL10_STEPS_PER_DEG</span> <span class="o">=</span> <span class="n">STEPS_PER_MM</span> <span class="o">*</span> <span class="n">GNL10_TEN_2_ZERO</span> <span class="o">/</span> <span class="mi">10</span>
 <span class="n">GNL10_STOP_LIMIT</span> <span class="o">=</span> <span class="mi">10</span>
 
@@ -74,7 +74,8 @@
 <span class="sd">         self (serial.Serial): the serial object bound to the device</span>
 <span class="sd">         model (string): the goniometer stage model (&#39;GNL10&#39; or &#39;GNL18&#39;)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-    
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="n">ser</span>
         <span class="n">Motor</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">[</span><span class="s1">&#39;ClassName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GonStage&#39;</span>    <span class="c1"># for logging</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">()</span>
@@ -91,8 +92,11 @@
         <span class="c1"># move to middle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deg_zero</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_as_zero</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;GNL10&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span> <span class="o">=</span> <span class="n">GNL10_TEN_2_ZERO</span>
         
         
 <div class="viewcode-block" id="GonStage.home"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.home">[docs]</a>    <span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -102,7 +106,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         
         <span class="c1"># NOTE: Might need to call &lt; MGMSG_MOT_SET_TSTACTUATORTYPE &gt; first</span>
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># MGMSG_MOT_MOVE_HOME</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hexString</span><span class="p">(</span><span class="s1">&#39;43 04 01 00 50 01&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">reset_input_buffer</span><span class="p">()</span>
@@ -111,7 +115,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;problem homing&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">()</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;homed successfully.&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;homed successfully.&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span></div>
         
 <div class="viewcode-block" id="GonStage.delta_rot"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.delta_rot">[docs]</a>    <span class="k">def</span> <span class="nf">delta_rot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degs</span><span class="p">):</span>     <span class="c1">#, m_callback = None, params = ()):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -120,16 +125,20 @@
 <span class="sd">         degs (float): the millimeters of rotation (negative -&gt; backwards)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># check that we will be within limits</span>
-        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+</span> <span class="n">degs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+</span> <span class="n">degs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+</span> <span class="n">degs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;input would cause out of bounds error [</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+</span> <span class="n">degs</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">+=</span> <span class="n">degs</span>
         <span class="c1"># convert millimeters to steps</span>
         <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">degs</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">STEPS_PER_DEG</span><span class="p">))</span>
         
-        <span class="n">Motor</span><span class="o">.</span><span class="n">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span></div>
+        <span class="n">Motor</span><span class="o">.</span><span class="n">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
         
 <div class="viewcode-block" id="GonStage.abs_rot"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.abs_rot">[docs]</a>    <span class="k">def</span> <span class="nf">abs_rot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -139,15 +148,19 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         
         <span class="c1"># check limits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">degs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;out of bounds error [</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degs</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
         
         <span class="c1"># convert degrees to steps</span>
         <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">degs</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">STEPS_PER_DEG</span><span class="p">))</span>
         
         <span class="n">Motor</span><span class="o">.</span><span class="n">abs_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">=</span> <span class="n">degs</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">=</span> <span class="n">degs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
         
 <div class="viewcode-block" id="GonStage.get_deg_pos"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.get_deg_pos">[docs]</a>    <span class="k">def</span> <span class="nf">get_deg_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -155,6 +168,16 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span></div>
+    
+<div class="viewcode-block" id="GonStage.check_abs_transl"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.check_abs_transl">[docs]</a>    <span class="k">def</span> <span class="nf">check_abs_transl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dist</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Check wether a move to position &#39;dist&#39; is in range </span>
+<span class="sd">        </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">STOP_LIMIT</span> <span class="ow">or</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
         
 <div class="viewcode-block" id="GonStage.set_as_zero"><a class="viewcode-back" href="../../source/components/classes.html#classes.gonio_stage.GonStage.set_as_zero">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zer_deg</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -167,6 +190,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deg_zero</span> <span class="o">=</span> <span class="n">zer_deg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deg_pos</span> <span class="o">-=</span> <span class="n">zer_deg</span></div></div>
         
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

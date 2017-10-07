@@ -1,0 +1,185 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>procedures.vision &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for procedures.vision</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">_convertTheta</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Changes reference of the cv2.HoughLines line theta</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">theta</span><span class="o">*</span><span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">90</span>
+            
+<div class="viewcode-block" id="setChipAngle"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.vision.setChipAngle">[docs]</a><span class="k">def</span> <span class="nf">setChipAngle</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">video</span><span class="p">,</span> <span class="n">chip</span><span class="p">,</span> <span class="n">desired_angle</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set angle of chip edge as seen by video feed using chip stage</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_beginScript</span><span class="p">()</span>
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_showLines</span><span class="p">()</span>
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_setRes</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+    <span class="n">max_moves</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">script_running</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
+            <span class="n">actual_angle</span> <span class="o">=</span> <span class="n">_convertTheta</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">mismatch</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">desired_angle</span><span class="p">)</span> <span class="o">-</span> <span class="n">actual_angle</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">res</span><span class="p">:</span>
+                <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                <span class="k">break</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">stages</span><span class="p">[</span><span class="n">chip</span><span class="p">]</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">success</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                <span class="nb">print</span> <span class="s1">&#39;Procedure cannot be performed: Movement out of bounds&#39;</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="setFiberChipOffset"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.vision.setFiberChipOffset">[docs]</a><span class="k">def</span> <span class="nf">setFiberChipOffset</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">video</span><span class="p">,</span> <span class="n">chip_stage</span><span class="p">,</span> <span class="n">desired_offset</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_setRegion</span><span class="p">()</span>
+    
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_beginScript</span><span class="p">()</span>
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_showRegionLines</span><span class="p">()</span>
+    
+    <span class="k">while</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">script_running</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">assignment</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">chip_angle</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">fiber_angle</span> <span class="o">=</span> <span class="kc">None</span>
+            
+            <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">chip_angle</span> <span class="o">=</span> <span class="n">_convertTheta</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;chip&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">fiber_angle</span> <span class="o">=</span> <span class="n">_convertTheta</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;fiber&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="c1">#maybe replace the try with a if Boolean statement</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">if</span> <span class="n">chip_angle</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">fiber_angle</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">t1</span><span class="o">-</span><span class="n">t0</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+                        <span class="nb">print</span> <span class="s2">&quot;Could not find both angles | Chip: </span><span class="si">{}</span><span class="s2">, Fiber: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chip_angle</span><span class="p">,</span><span class="n">fiber_angle</span><span class="p">)</span>
+                        <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">assignment</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+                     
+            <span class="k">if</span> <span class="n">assignment</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">break</span>
+                
+            <span class="n">actual_offset</span> <span class="o">=</span> <span class="n">chip_angle</span> <span class="o">-</span> <span class="n">fiber_angle</span>
+            <span class="n">mismatch</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">desired_offset</span><span class="p">)</span> <span class="o">-</span> <span class="n">actual_offset</span>
+            
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">res</span><span class="p">:</span>
+                <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                <span class="k">break</span>
+            
+            <span class="n">success</span> <span class="o">=</span> <span class="n">stages</span><span class="p">[</span><span class="n">chip_stage</span><span class="p">]</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">success</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                <span class="nb">print</span> <span class="s1">&#39;Procedure cannot be performed: Movement out of bounds&#39;</span>
+                <span class="k">break</span></div>
+    
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span> 
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

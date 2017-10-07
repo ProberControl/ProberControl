@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Updating the Documentation" href="docsUpdate.html" />
+    <link rel="next" title="Adding a New Procedure" href="addNewProcedure.html" />
     <link rel="prev" title="Writing a Configuration File" href="writeConfigFile.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -64,7 +64,16 @@
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>There are 2 levels of requirements: requirements of <strong>all</strong> instrument classes and requirements for <strong>specific</strong> instrument classes. The requirements for <strong>all</strong> instrument classes are having a <code class="docutils literal"><span class="pre">whoAmI()</span></code>, <code class="docutils literal"><span class="pre">whatCanI()</span></code>, and <code class="docutils literal"><span class="pre">__str__()</span></code> methods.</p>
+<p>There are 2 levels of requirements: requirements of <strong>all</strong> instrument classes and requirements for <strong>specific</strong> instrument classes. The requirements for <strong>all</strong> instrument classes are having a <code class="docutils literal"><span class="pre">whoAmI()</span></code> method, <code class="docutils literal"><span class="pre">whatCanI()</span></code> method, a boolean <code class="docutils literal"><span class="pre">self.active</span></code> parameter, a <code class="docutils literal"><span class="pre">change_state()</span></code> method that toggles the active parameter , and the <code class="docutils literal"><span class="pre">__str__()</span></code> methods.</p>
+<p>The finished driver needs to be placed into the <strong>prober/instruments</strong> folder. Furthermore, the <strong>__init__.py</strong> file contains the list of all files inside the folder, which must be updated with the new driver.</p>
+</div>
+<div class="section" id="important-links-to-other-parts-of-the-software">
+<h2>Important Links to other parts of the Software<a class="headerlink" href="#important-links-to-other-parts-of-the-software" title="Permalink to this headline">¶</a></h2>
+<p>The Model Parameter that is used in the config file is defined as the return value of your <code class="docutils literal"><span class="pre">__str__()</span></code> method.</p>
+<p>The return  value of <code class="docutils literal"><span class="pre">whoAmI()</span></code> defines as what type of tool the device will show up in the stages dictionary and therefore in the GUI.</p>
+<p>The return value of <code class="docutils literal"><span class="pre">whatCanI()</span></code> defines the capabilities of the tool. All capabilities are read into the Global Measurement Handler that can be used to distribut access to tools depending on their capabilities.</p>
+<p>The <code class="docutils literal"><span class="pre">self.active</span></code> parameter is accessed by the Script Controller and Global Measurement Handler to check whether a tool is busy. When non atomic functions are performed by the driver (e.g. all communication with the tool) the driver function should set the device as busy while performing the function.</p>
+<p>The constructur needs to accept the following arguments: <code class="docutils literal"><span class="pre">__init__(self,res_manager,</span> <span class="pre">address='YourAddressHere')</span></code> even if the res_manager is not needed (e.g. for ethernet communication - see the Keithley2280S driver for an ethernet exaple). For multi channel devices a channel parameter must be added.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ClassNameHere</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;Purpose of this class here&#39;&#39;&#39;</span>
@@ -79,6 +88,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span> <span class="o">=</span> <span class="n">res_manager</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
@@ -91,6 +101,13 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;ClassNameHere&#39;</span>
+
+    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Toggles the self.active parameter&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
 </pre></div>
 </div>
 </div>
@@ -111,6 +128,7 @@
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#templates">Templates</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#important-links-to-other-parts-of-the-software">Important Links to other parts of the Software</a></li>
 </ul>
 </li>
 </ul>
@@ -119,7 +137,7 @@
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="writeConfigFile.html" title="previous chapter">Writing a Configuration File</a></li>
-      <li>Next: <a href="docsUpdate.html" title="next chapter">Updating the Documentation</a></li>
+      <li>Next: <a href="addNewProcedure.html" title="next chapter">Adding a New Procedure</a></li>
   </ul></li>
 </ul>
 </div>

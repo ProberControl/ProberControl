@@ -45,6 +45,7 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">cv2</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 
 <span class="n">MAIN_CAM</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">DEBUG_MODE</span> <span class="o">=</span> <span class="kc">True</span>
@@ -71,24 +72,303 @@
 
 <div class="viewcode-block" id="Camera"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera">[docs]</a><span class="k">class</span> <span class="nc">Camera</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cam_desc</span><span class="p">,</span> <span class="n">cam_ctrl</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cam_id</span><span class="p">,</span> <span class="n">cam_ctrl</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Constructor</span>
 <span class="sd">         </span>
-<span class="sd">         cam_desc (int): the camera file descriptor</span>
+<span class="sd">         cam_id (int): the camera file descriptor</span>
+<span class="sd">         cam_name : the name assigned to camera</span>
 <span class="sd">         cam_ctrl (CameraController)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         
         <span class="c1"># get feed from the specified camera</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">cam_desc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">cam_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span> <span class="o">=</span> <span class="s1">&#39;list&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="c1"># bind the object to a controller (experimantal)</span>
         <span class="k">if</span> <span class="n">cam_ctrl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No controller bound to camera object: disp() will not function properly.&#39;</span><span class="p">)</span>
+            <span class="c1">#logging.warning(&#39;No controller bound to camera object: disp() will not function properly.&#39;)</span>
+            <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span> <span class="o">=</span> <span class="n">cam_ctrl</span>
+       
+<div class="viewcode-block" id="Camera.read"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="Camera.whoAmI"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+    
+<div class="viewcode-block" id="Camera.set_whoAmI"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.set_whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">set_whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+    
+<div class="viewcode-block" id="Camera.whatCanI"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
         
+    <span class="k">def</span> <span class="nf">_threadCamera</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+        <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">ret</span><span class="p">,</span><span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="n">frame</span><span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">27</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_threadCamera2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+        <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">300</span><span class="p">,:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_getImageLines</span><span class="p">(</span><span class="n">votes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drawLines</span><span class="p">()</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">27</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Camera.showCamera"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.showCamera">[docs]</a>    <span class="k">def</span> <span class="nf">showCamera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threadCamera</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;: Press Esc to close&#39;</span><span class="p">,))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="Camera.showCamera2"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.showCamera2">[docs]</a>    <span class="k">def</span> <span class="nf">showCamera2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threadCamera2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;: Press Esc to close&#39;</span><span class="p">,))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+    
+    <span class="c1"># HELPER FUNCTIONS</span>
+    
+    <span class="k">def</span> <span class="nf">_beginScript</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_running</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="k">def</span> <span class="nf">_endScript</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_running</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="k">def</span> <span class="nf">_getIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Returns the index of the line with lowest rho value generated</span>
+<span class="sd">            by cv2.HoughLines </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rho</span><span class="p">,</span><span class="n">theta</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_drawLines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Draws specified line in the output array of cv2.HoughLines</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span><span class="o">==</span><span class="s1">&#39;list&#39;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+                    
+                    <span class="n">x0</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">rho</span>
+                    <span class="n">y0</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">rho</span>
+                    
+                    <span class="n">x1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x0</span> <span class="o">+</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">))</span>
+                    <span class="n">y1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y0</span> <span class="o">+</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+                    <span class="n">x2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">))</span>
+                    <span class="n">y2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y0</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+                    <span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="p">,(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">),(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span> <span class="o">==</span> <span class="s1">&#39;dict&#39;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span>
+                    <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span>
+                    
+                    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+                    
+                    <span class="n">x0</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">rho</span>
+                    <span class="n">y0</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">rho</span>
+                    
+                    <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s1">&#39;chip&#39;</span><span class="p">:</span>
+                        <span class="n">y0</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span>
+                    
+                    <span class="n">x1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x0</span> <span class="o">+</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">))</span>
+                    <span class="n">y1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y0</span> <span class="o">+</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+                    <span class="n">x2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">))</span>
+                    <span class="n">y2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y0</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+                    
+                    <span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="p">,(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">),(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">_filterLines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">max_theta</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Takes the output of HoughLines and filters its results based on</span>
+<span class="sd">            some pre-defined angle limits</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convertTheta</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">theta</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">max_theta</span><span class="p">:</span>
+                <span class="n">i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+            <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">rho</span><span class="p">,</span> <span class="n">theta</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">r</span>
+        
+    <span class="k">def</span> <span class="nf">_convertTheta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Changes reference of the cv2.HoughLines line theta</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">theta</span><span class="o">*</span><span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">90</span>
+
+    <span class="k">def</span> <span class="nf">_getImageLines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">votes</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_theta</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            run cv2.HoughLines algorithm on specified region of frame</span>
+<span class="sd">            returns array of lines</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># converting BGR to HSV</span>
+        <span class="n">hsv</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+         
+        <span class="c1"># define range of red color in HSV</span>
+        <span class="n">lower_red</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span><span class="mi">50</span><span class="p">])</span>
+        <span class="n">upper_red</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">180</span><span class="p">])</span>
+         
+        <span class="c1"># create a red HSV colour boundary and </span>
+        <span class="c1"># threshold HSV image</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">inRange</span><span class="p">(</span><span class="n">hsv</span><span class="p">,</span> <span class="n">lower_red</span><span class="p">,</span> <span class="n">upper_red</span><span class="p">)</span>
+     
+        <span class="c1"># Bitwise-AND mask and original image</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">img</span><span class="p">,</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span> <span class="n">mask</span><span class="p">)</span>
+        
+        <span class="c1"># finds edges in the input image image and</span>
+        <span class="c1"># marks them in the output map edges</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Canny</span><span class="p">(</span><span class="n">img</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">HoughLines</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span><span class="n">votes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filterLines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">max_theta</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">lines</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span> <span class="o">==</span> <span class="s1">&#39;dict&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">_setRegVar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
+    
+<div class="viewcode-block" id="Camera.getRegionLines"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.getRegionLines">[docs]</a>    <span class="k">def</span> <span class="nf">getRegionLines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            return the data for all lines gathered in each region of image</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">region</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;fiber&#39;</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getImageLines</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">80</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getImageLines</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getIndex</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+                <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="n">region</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="n">rho</span><span class="p">,</span> <span class="n">theta</span><span class="p">))</span></div>
+    
+    <span class="k">def</span> <span class="nf">_showRegionLines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Show the image with detected lines drawn. Used for detecting fiber</span>
+<span class="sd">            and chip lines simultaneously.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span> <span class="o">=</span> <span class="s1">&#39;dict&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_showImg</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Running...&#39;</span><span class="p">,))</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_updateLineDict</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_showImg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">title</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Used to display camera feed while scripts are running</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">while</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_running</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drawLines</span><span class="p">()</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_updateLineList</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Updates list of detected lines for the entire image</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">while</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_running</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_getImageLines</span><span class="p">()</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="p">])]</span>
+
+    <span class="k">def</span> <span class="nf">_updateLineDict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Updates dictionary of detected lines when more than one region</span>
+<span class="sd">            being processed</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">while</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_running</span><span class="p">):</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">chip</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">:,:]</span>
+            <span class="n">fiber</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;chip&#39;</span><span class="p">,</span> <span class="n">chip</span><span class="p">],[</span><span class="s1">&#39;fiber&#39;</span><span class="p">,</span><span class="n">fiber</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getRegionLines</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Resets the parameters changed for running line detection</span>
+<span class="sd">            scripts</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span><span class="o">=</span><span class="s1">&#39;list&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="mf">0.1</span>
+    
+    <span class="k">def</span> <span class="nf">_setRes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">res</span>
+    
+    <span class="k">def</span> <span class="nf">_showLines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Show the image with detected lines drawn. Used for detecting first </span>
+<span class="sd">            line drawn in an image.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_type</span><span class="o">=</span><span class="s1">&#39;list&#39;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_showImg</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Running Script...&#39;</span><span class="p">,))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_updateLineList</span><span class="p">)</span>
+        <span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_setRegion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Takes user input on how to split the recieved image for fiber/chip</span>
+<span class="sd">            alignment scripts</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Set Split&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">namedWindow</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">setMouseCallback</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setSplit</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="n">frame</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>    
+    
+    <span class="k">def</span> <span class="nf">_setSplit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">event</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">flags</span><span class="p">,</span><span class="n">param</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Handler function for setting the split of an image</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">cv2</span><span class="o">.</span><span class="n">EVENT_LBUTTONDOWN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="n">y</span>
+            
     <span class="c1"># EXPERIMENTAL</span>
-<div class="viewcode-block" id="Camera.displ"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.displ">[docs]</a>    <span class="k">def</span> <span class="nf">displ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_displ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Display camera feed until thread is done</span>
 <span class="sd">         </span>
@@ -156,13 +436,13 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">box_data</span> <span class="o">=</span> <span class="n">box</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">t_rects</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span><span class="o">.</span><span class="n">t_rects</span><span class="p">:</span>
-                <span class="k">break</span></div>
+                <span class="k">break</span>
         
     
     <span class="c1"># The wait functionallity of the following method is depricated,</span>
     <span class="c1"># because the function is too heavy.</span>
     <span class="c1"># It should only be used when its really needed.</span>
-<div class="viewcode-block" id="Camera.get_coord"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.get_coord">[docs]</a>    <span class="k">def</span> <span class="nf">get_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">boxCoor</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">thrd</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">boxCoor</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">thrd</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Find the orientation of the chip and return the coordinates</span>
 <span class="sd">         of the rectangle surrounding it</span>
@@ -256,10 +536,10 @@
         <span class="k">if</span> <span class="n">boxCoor</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
             
-        <span class="k">return</span> <span class="n">box</span></div>
+        <span class="k">return</span> <span class="n">box</span>
         
     
-<div class="viewcode-block" id="Camera.get_from_map"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.get_from_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_filename</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_filename</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">         Finds which side the chip has to turn to according to the map</span>
 <span class="sd">         provided. The user makes the selection.</span>
@@ -340,7 +620,7 @@
                 <span class="c1"># resize</span>
                 <span class="n">map_roi</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">map_roi</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">key_pressed</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
-                <span class="k">return</span> <span class="o">-</span><span class="n">final_angle</span></div>
+                <span class="k">return</span> <span class="o">-</span><span class="n">final_angle</span>
                 
     
 <div class="viewcode-block" id="Camera.close"><a class="viewcode-back" href="../../source/components/classes.html#classes.camera.Camera.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -382,6 +662,22 @@
             
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">box_data</span></div></div>
             
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

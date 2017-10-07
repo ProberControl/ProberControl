@@ -124,6 +124,14 @@ classes\.maitre module
     :undoc-members:
     :show-inheritance:
 
+classes\.multi\_serial module
+-----------------------------
+
+.. automodule:: classes.multi_serial
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 classes\.newport\_controller module
 -----------------------------------
 
@@ -152,14 +160,6 @@ classes\.rotator\_ELL8 module
 -----------------------------
 
 .. automodule:: classes.rotator_ELL8
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-classes\.stp\_mtr module
-------------------------
-
-.. automodule:: classes.stp_mtr
     :members:
     :undoc-members:
     :show-inheritance:

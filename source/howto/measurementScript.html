@@ -117,6 +117,51 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="output-configuration">
+<h2>Output Configuration<a class="headerlink" href="#output-configuration" title="Permalink to this headline">¶</a></h2>
+<p>By default all the measurements’ results are output to one file, <code class="docutils literal"><span class="pre">results.csv</span></code>. However, the tests specified in one .meas script can span multiple device groups, chips or wafers. The author of the measurement script can, therefore, classify the various information blocks into any of the following identifiers: <code class="docutils literal"><span class="pre">wafer</span></code>, <code class="docutils literal"><span class="pre">chip</span></code> and <code class="docutils literal"><span class="pre">group</span></code>, each one enclosing the next, from left to right.</p>
+<p>The author need not specify all the identifiers for every block, but once one of those identifiers are used, every block should fall under a group denoted by this identifier. Here’s is how we can use the grouping identifiers in the example provided above:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">group</span><span class="o">-</span><span class="n">by</span><span class="p">:</span> <span class="n">group</span>
+
+<span class="o">&gt;</span> <span class="n">chip</span>
+<span class="n">OurOnlyChip</span>
+
+<span class="o">&gt;</span> <span class="n">group</span>
+<span class="n">PhaseShifters</span>
+
+<span class="c1">#Measurement Name</span>
+<span class="n">Test_PhaseShifter_Spec</span>
+<span class="c1">#Structure</span>
+<span class="n">phaseshift_cell_brian</span>
+<span class="c1">#procedure</span>
+<span class="n">Measure</span>
+<span class="c1">#Function</span>
+<span class="n">get_e_spectrum</span>
+<span class="c1">#Arguments</span>
+<span class="mi">10</span> <span class="mi">300</span> <span class="mi">10</span> <span class="mf">0.1</span>
+
+<span class="o">&gt;</span> <span class="n">group</span>
+<span class="n">Rings</span>
+
+<span class="c1">#Measurement Name</span>
+<span class="n">Test_Ring_Bot_Res_Shift</span>
+<span class="c1">#Structure</span>
+<span class="n">ring_bot</span>
+<span class="c1">#procedure</span>
+<span class="n">Measure</span>
+<span class="c1">#Function</span>
+<span class="n">dc_sweep_1d</span>
+<span class="c1">#Arguments</span>
+<span class="n">none</span>
+</pre></div>
+</div>
+<p>The scope of the identifiers lasts up until the next identifier of the same type is identified. That means that both measurements fall under <code class="docutils literal"><span class="pre">chip</span></code> OurOnlyChip, but each one in different groups, <code class="docutils literal"><span class="pre">PhaseShifters</span></code> and <code class="docutils literal"><span class="pre">Rings</span></code> respectively.
+The purpose of grouping identifiers is to configure how the output will be distributed into files. The output ordering is determined by the optional first line in the measurement script:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">group</span><span class="o">-</span><span class="n">by</span><span class="p">:</span> <span class="n">group</span>
+</pre></div>
+</div>
+<p>In this example, where we partition by <code class="docutils literal"><span class="pre">group</span></code> two files will be output with names <code class="docutils literal"><span class="pre">results-PhaseShifters.csv</span></code> and <code class="docutils literal"><span class="pre">results-Rings.csv</span></code>, containing the respective measurement results.</p>
+</div>
 </div>
 
 
@@ -135,6 +180,7 @@
 <li><a class="reference internal" href="#writing-scripts">Writing Scripts</a></li>
 <li><a class="reference internal" href="#direct">Direct</a></li>
 <li><a class="reference internal" href="#indirect">Indirect</a></li>
+<li><a class="reference internal" href="#output-configuration">Output Configuration</a></li>
 </ul>
 </li>
 </ul>
