@@ -22,7 +22,8 @@ __all__ = [
     'Motor_KST_ZST',
     'Motor_MST_DRV',
     'StepMotor_KST_ZST',
-    'StepMotor_MST_DRV'
+    'StepMotor_MST_DRV',
+    'AgilentE3643A'
 ]
 
 '''
