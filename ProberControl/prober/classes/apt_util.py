@@ -1,6 +1,9 @@
 # APT controllers generic helper functions
-import multi_serial
-import serial
+try:
+    import multi_serial
+    import serial
+except:
+    pass
 
 def c2r(COM_port, rate=115200):
     '''returns a serial object for the spec. port with the APT configuration'''

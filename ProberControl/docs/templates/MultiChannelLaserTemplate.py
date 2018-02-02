@@ -12,7 +12,7 @@ class InstrumentNameHere(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: string
         :param channel: Channel that this laser object refers to.
@@ -26,14 +26,6 @@ class InstrumentNameHere(object):
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'Device'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'InstrumentNameHere'   
 
     def change_state(self):
         ''' Toggles the self.active parameter'''
@@ -49,4 +41,3 @@ class InstrumentNameHere(object):
         :param waveLength: Specified wavelength
         :type waveLength: Integer
         '''
-

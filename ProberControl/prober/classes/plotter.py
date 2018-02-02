@@ -6,10 +6,13 @@ except ImportError:
     from processing import Process, Pipe
 
 import numpy as np
-import matplotlib
-matplotlib.use('GtkAgg')
-import matplotlib.pyplot as plt
-import gobject
+
+class close_handler(object):
+    def __init__(self, shelled_handle):
+        self.sh = shelled_handle
+
+    def __call__(self, evt):
+        self.sh[0].after_cancel(self.sh[1])
 
 class ProcessPlotter(object):
 
@@ -19,13 +22,16 @@ class ProcessPlotter(object):
         self.ylabel = ''
         self.DataList = []
         self.clear = False
+        self.sh = [None, None]
 
     def terminate(self):
+        import matplotlib.pyplot as plt
+        self.fig.canvas.manager.window.after_cancel()
         plt.close('all')
 
-    def poll_draw(self):
 
-        def call_back():
+    def update_fig(self):
+            import matplotlib.pyplot as plt
             while 1:
                 if not self.pipe.poll():
                     break
@@ -37,17 +43,17 @@ class ProcessPlotter(object):
                     return False
 
                 else:
-                
+
                     self.DataList=command[0][:]
-                    
+
                     self.title  = command[1]
                     self.xlabel = command[2]
                     self.ylabel = command[3]
                     self.clear  = command[4]
-                    
+
                     if self.clear:
                         self.fig.clear()
-                        self.ax = self.fig.add_subplot(111)    
+                        self.ax = self.fig.add_subplot(111)
 
                     plt.title(self.title)
                     plt.xlabel(self.xlabel)
@@ -56,25 +62,35 @@ class ProcessPlotter(object):
                     self.ax.plot(zip(*self.DataList)[0], zip(*self.DataList)[1], 'b')
 
             self.fig.canvas.draw()
+            try:
+                self.sh[1] = self.fig.canvas.manager.window.after(1000,self.update_fig)
+            except Exception as e:
+                print(e)
             return True
 
-        return call_back
+
 
     def __call__(self, pipe):
         self.pipe = pipe
-        
-        while not self.pipe.poll():
-            time.sleep(0.15)        
-        
-        while 1:
-            print('starting plotter...')
-            self.fig = plt.figure()
 
+        while not self.pipe.poll():
+            time.sleep(0.15)
+
+        import matplotlib
+        matplotlib.use('TkAgg')
+        import matplotlib.pyplot as plt
+
+        while 1:
+
+            print('starting plotter...')
+            handle_close = close_handler(self.sh)
+            self.fig = plt.figure()
+            self.sh[0] = self.fig.canvas.manager.window
+            self.fig.canvas.mpl_connect('close_event', handle_close)
             self.ax = self.fig.add_subplot(111)
-            self.gid = gobject.timeout_add(1000, self.poll_draw())
-        
+            self.update_fig()
+
             plt.show()
-            
             while not self.pipe.poll():
                 time.sleep(0.15)
 
@@ -87,8 +103,8 @@ class Singleton(object):
         if self.instance == None:
             self.instance = self.u_class(*args, **kwargs)
         return self.instance
-        
-        
+
+
 @Singleton        # apply the Singleton decorator
 class NBPlot(object):
     def __init__(self):
@@ -99,7 +115,7 @@ class NBPlot(object):
         self.plot_process.daemon = True
         self.plot_process.start()
         self.clear = True
-        
+
     def set_clear(self,clear=True):
         if clear:
             self.clear = True

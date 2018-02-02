@@ -54,7 +54,7 @@
 <span class="sd">        Constructor method</span>
 
 <span class="sd">        :param res_manager: PyVisa resource manager</span>
-<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
 <span class="sd">        :param address: SCPI address of instrument</span>
 <span class="sd">        :type address: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -70,10 +70,6 @@
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;DCSource&#39;</span></div>
 
-<div class="viewcode-block" id="HP6624A.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;DC&#39;</span></div>
-
 <div class="viewcode-block" id="HP6624A.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
@@ -81,7 +77,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="HP6624A.setvoltage"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.setvoltage">[docs]</a>    <span class="k">def</span> <span class="nf">setvoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>    
+<div class="viewcode-block" id="HP6624A.setvoltage"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.setvoltage">[docs]</a>    <span class="k">def</span> <span class="nf">setvoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set the voltage</span>
 
@@ -100,7 +96,7 @@
 <span class="sd">        :type value: Integer</span>
 <span class="sd">        :param channel: Specified channel to set</span>
 <span class="sd">        :type channel: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span>    
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;ISET &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="HP6624A.setovervoltage"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.setovervoltage">[docs]</a>    <span class="k">def</span> <span class="nf">setovervoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
@@ -111,7 +107,7 @@
 <span class="sd">        :type value: Integer</span>
 <span class="sd">        :param channel: Specified channel to set</span>
 <span class="sd">        :type channel: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span> 
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OVSET &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="HP6624A.setOCSwitch"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.setOCSwitch">[docs]</a>    <span class="k">def</span> <span class="nf">setOCSwitch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
@@ -122,9 +118,9 @@
 <span class="sd">        :type value: Integer</span>
 <span class="sd">        :param channel: Specified channel to set</span>
 <span class="sd">        :type channel: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span> 
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OCP &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
-        
+
 <div class="viewcode-block" id="HP6624A.setOutputSwitch"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.setOutputSwitch">[docs]</a>    <span class="k">def</span> <span class="nf">setOutputSwitch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set the output Switch</span>
@@ -133,7 +129,7 @@
 <span class="sd">        :type value: Integer</span>
 <span class="sd">        :param channel: Specified channel to set</span>
 <span class="sd">        :type channel: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span>     
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OUT &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="HP6624A.getsetvoltage"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.HP6624A.HP6624A.getsetvoltage">[docs]</a>    <span class="k">def</span> <span class="nf">getsetvoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
@@ -218,11 +214,7 @@
 <span class="sd">        :param mem: Specified space to query</span>
 <span class="sd">        :type mem: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RCL &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">))</span></div>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;HP6624A&#39;</span>    </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RCL &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">))</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

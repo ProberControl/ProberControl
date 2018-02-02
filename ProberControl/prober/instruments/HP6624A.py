@@ -10,7 +10,7 @@ class HP6624A(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -26,10 +26,6 @@ class HP6624A(object):
         ''':returns: reference to device'''
         return 'DCSource'
 
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return 'DC'
-
     def change_state(self):
 
         if self.active == True:
@@ -37,7 +33,7 @@ class HP6624A(object):
         else:
             self.active = True
 
-    def setvoltage(self, value = 0, channel = 1):    
+    def setvoltage(self, value = 0, channel = 1):
         '''
         Set the voltage
 
@@ -56,7 +52,7 @@ class HP6624A(object):
         :type value: Integer
         :param channel: Specified channel to set
         :type channel: Integer
-        '''    
+        '''
         self.gpib.write('ISET '+str(channel)+','+str(value))
 
     def setovervoltage(self, value = 0, channel = 1):
@@ -67,7 +63,7 @@ class HP6624A(object):
         :type value: Integer
         :param channel: Specified channel to set
         :type channel: Integer
-        ''' 
+        '''
         self.gpib.write('OVSET '+str(channel)+','+str(value))
 
     def setOCSwitch(self, value = 0, channel = 1):
@@ -78,9 +74,9 @@ class HP6624A(object):
         :type value: Integer
         :param channel: Specified channel to set
         :type channel: Integer
-        ''' 
+        '''
         self.gpib.write('OCP '+str(channel)+','+str(value))
-        
+
     def setOutputSwitch(self, value = 0, channel = 1):
         '''
         Set the output Switch
@@ -89,7 +85,7 @@ class HP6624A(object):
         :type value: Integer
         :param channel: Specified channel to set
         :type channel: Integer
-        '''     
+        '''
         self.gpib.write('OUT '+str(channel)+','+str(value))
 
     def getsetvoltage(self, channel = 1):
@@ -175,10 +171,6 @@ class HP6624A(object):
         :type mem: Integer
         '''
         self.gpib.write('RCL '+str(mem))
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'HP6624A'    
 
 
 '''

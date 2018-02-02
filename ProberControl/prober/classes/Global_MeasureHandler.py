@@ -1,9 +1,16 @@
 import inspect
+import threading
+import object_chain
 
 # instrument_info indexes
 FUNCTION = 0
 THRESH = 1
 USER = 2
+
+debug = 0
+def sdebug(msg):
+    if debug > 0:
+        print 'G_Mh:: {}'.format(msg)
 
 class Singleton(object):
     ''' Singleton paradigm implementation '''
@@ -18,6 +25,17 @@ class Singleton(object):
 def _print_mh(msg):
     print 'Global_MeasureHandler:: {}'.format(msg)
 
+def _look_for_obj(obj_list, comparator):
+    '''
+    comparator func(obj) -> bool : functions that returns if condition is
+        met for obj
+    '''
+    for obj in obj_list:
+        sdebug('comp: {}'.format(obj))
+        if comparator(obj):
+            return obj
+    return None
+
 @Singleton
 class Global_MeasureHandler(object):
 
@@ -26,54 +44,59 @@ class Global_MeasureHandler(object):
         # eg. DC, OPT, etc. as a key to a dict where the val is
         # another dict with:  (Stage_name) -> []
         self.Instruments = {}
+        self.__old_locked_dict = {}
+        self.TriggerInfo = {}
+        self.Stages = {}
         self.__locked = {}
+        self.__chainSets = {}
+        self.__access_lock = threading.Lock()
+        self.switchHandler = None
 
     def update_stages(self, stages):
         self.Stages = stages
+        if 'SwitchHandler' in self.Stages.keys():
+            self.switchHandler = self.Stages['SwitchHandler']
 
     def add_locked_instrument(self, scriptHash, instrument):
         '''Marks an instrument has locked for a particular script'''
-        if scriptHash not in self.__locked.keys():
-            self.__locked[scriptHash] = [self.get_instrument(instrument)]
+        if scriptHash not in self.__old_locked_dict.keys():
+            self.__old_locked_dict[scriptHash] = [self.get_instrument(instrument)]
 
         else:
             instrumentActual = self.get_instrument(instrument)
 
-            if instrumentActual in self.__locked[scriptHash]:
+            if instrumentActual in self.__old_locked_dict[scriptHash]:
                 # Get another instrument
                 # This is the case of the duplicates
                 # Need to handle
                 pass
             else:
-                self.__locked[scriptHash].append(instrumentActual)
+                self.__old_locked_dict[scriptHash].append(instrumentActual)
 
-    def clear_locked(self, id_=''):
-        '''
-        clears the locked instruments, if id_ is passed as a parameter,
-        this function clears all instruments associated with that script id
-        '''
-        if id_:
-            self.__locked.pop(id_)
-            print self.__locked
-        else:
-            self.__locked = {}
-
-        #try:
-        #    if instr_attr == 'OPT':
-        #        return self.Stages[stage_name].get_power, -60
-        #    elif instr_attr == 'DC':
-        #        return self.Stages[stage_name].get_current, None
-        #    else:
-        #        return self.Stages[stage_name].whatCanI(), None
-        #except KeyError:
-        #    pass
 
     def get_locked(self):
-        '''returns a list of the locked instruments'''
-        pairs = zip(self.__locked.keys(),self.__locked.values())
-        return pairs
+        with self.__access_lock:
+            return self._get_locked()
 
-    def checkout_instrument(self, instrument):
+    def _get_locked(self):
+        '''returns a list of the locked instruments pair(name, object)'''
+        locked_objects = [instr for locked_per_user in self.__locked.values() for instr in locked_per_user]
+        names = [self._get_name_from_instrument(instr) for instr in locked_objects]
+        return zip(names, locked_objects)
+
+    def is_locked(self, instrument):
+        '''
+        intended for external entities, e.g. GUI
+        NOT for instrument users (i.e. Measure functions)
+        Note: It is not completely safe to use object if !is_locked(),
+              you would actually have to lock it (!!)
+        '''
+        with self.__access_lock:
+            return instrument in [i[1] for i in self._get_locked()]
+
+
+
+    def checkout_instrument(self, instrument):     #
         '''
         Marks an instrument as active until either checkin_instrument() or
         instrument.change_state() is called
@@ -81,7 +104,7 @@ class Global_MeasureHandler(object):
         device = self.get_instrument(instrument)
         device.active = True
 
-    def checkin_instrument(self, instrument):
+    def checkin_instrument(self, instrument):      #
         '''
         Marks an instrument as inactive until either checkout_instrument() or
         instrument.change_state() is called
@@ -89,59 +112,242 @@ class Global_MeasureHandler(object):
         device = self.get_instrument(instrument)
         device.active = False
 
-    def get_instrument(self, specifiedDevice):
-        '''Finds and returns an unactive instrument corresponding to the one specified'''
-        device = self.clean(specifiedDevice)
-
-        # Try the locked instruments first
-        instrumentActual = self.__checkLocked(device)
-        if not instrumentActual: # if nothing was found in __checkLocked()
-        # Then take a look for available instruments, if not in locked
-
-            for instrument in self.Stages.keys():
-                strippedInstrument = ''.join([self.clean(i) for i in instrument if not i.isdigit()])
-
-                # If we find a device that fits and it isn't active right now
-                if device in strippedInstrument and not self.Stages[instrument].active:
-                    return self.Stages[instrument]
-
-        #If you make it here, no available instrument
-        return instrumentActual
-
-    def clean(self, word):
-        return word.lower()
-
-    def __checkLocked(self, instrument):
-        '''
-        Function that traces the stack back to ScriptController, then uses
-        the id() of that particular object to confirm who is calling on that
-        particular instrument
-        '''
-
-        # As of August 6, 2017
-        # The only functions that would be calling for objects/functions
-        functions = ['_structureProcedure','__executeCommand','_procedure']
-        id_ = ''
-
-        # Iterate over the stack, finding the ID of the unique ScriptController object
+    def _get_owner(self):
+        # REMEBER to update this if the way the get_instruments calls occur
+        # through additional code paths
+        functions = ['_structureProcedure','__executeCommand','_procedure', 'execute_script']
         for entry in inspect.stack(context=0):
             if entry[3] in functions:
-                id_ = id(entry[0].f_locals['self'])
+                return id(entry[0].f_locals['self'])
+        raise LookupError('Global_MeasureHandler not called within {}. The stack tracing was inconclusive on the instrument owner.'.format(functions))
 
-            # If the ID of the caller is in the locked objects
-            if (id_ in self.__locked.keys()):
-                locked_objects = self.__locked[id_]
+    def _lock_instrument(self, instr, owner_id):
+        owned = self.__locked.get(owner_id)
+        if owned is None:
+            self.__locked[owner_id] = [instr]
+        else:
+            owned.append(instr)
 
-                # check instruments locked with that particular script
-                for object_ in locked_objects:
-                    cleanInstrument = ''.join([self.clean(i) for i in str(object_) if not i.isdigit()])
-                    if instrument == cleanInstrument:
-                        return object_
+    def _connect_fiber(self, instrument, owner_id, fiber_id, isFiberIn):
+        chainSet = self.__chainSets.get(owner_id)
+        if chainSet is None:
+            chainSet = {}
+            self.__chainSets[owner_id] = chainSet
+        chain = chainSet.get(fiber_id)
+        if chain is None:
+            chain = object_chain.ChainList(isFiberIn)
+            chainSet[fiber_id] = chain
 
-        # If nothing was found, return false
-        return False
+        prev_inst, next_inst = chain.insert(insert)
+        if prev_inst != None or next_inst != None:
+            raise RuntimeError('tried to choose fiber {} after acquiring instruemnts'.format(fiber_id))
 
-    def call_function(self, instrument, function, arguments = ''):
+    def _connect_to_chain(self, instrument, owner_id, fiber_id):
+        if self.switchHandler is None:
+            # maybe a warning here??
+            return
+        chainSet = self.__chainSets.get(owner_id)
+        if chainSet is None:
+            raise RuntimeError('tried to get instrument {} before geting a fiber'.format(self._get_name_from_instrument(instrument)))
+        chain = chainSet.get(fiber_id)
+        if chain is None:
+            raise RuntimeError('tried to get instrument {} before geting a fiber'.format(self._get_name_from_instrument(instrument)))
+
+        prev_inst, next_inst = chain.insert(insert)
+        # make the actual connections on the switch
+        inst_name = self._get_name_from_instrument(instrument)
+        if prev_inst is not None:
+            prev_inst_name = self._get_name_from_instrument(prev_inst)
+            self.switchHandler.connect_devices(prev_inst_name, inst_name)
+        if next_inst is not None:
+            next_inst_name = self._get_name_from_instrument(next_inst)
+            self.switchHandler.connect_devices(next_inst_name, inst_name)
+
+    def _get_name_from_instrument(self, instrument):
+        return self.Stages.keys()[self.Stages.values().index(instrument)]
+
+    def _choose_fiber(self, fiber_id, isFiberIn):
+        '''
+        lets the user choose the fiber needed
+        Returns an id for the fiber to be passed to the get_instrument family of
+        functions
+        '''
+        inst_type = 'Fiber'
+        with self.__access_lock:
+            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            def isUnused(instrument):
+                return instrument not in used and instrument.whoAmI == inst_type and instrument.fiber_id == fiber_id
+
+            found = _look_for_obj(self.Stages.values(), isUnused)
+            if found != None:
+                self._lock_instrument(found, owner_id)
+                # self._connect_fiber(found, owner_id, fiber_id, isFiberIn)
+            return found
+
+    def choose_fiber_in(self, fiber_id):
+        self._choose_fiber(fiber_id, True)
+
+    def choose_fiber_out(self, fiber_id):
+        self._choose_fiber(fiber_id, False)
+
+    def get_instrument(self, specifiedDevice, additional=False):
+        '''
+        Finds and returns an unactive instrument corresponding to the one specified
+        Returns None if such instrument was found/available.
+        NOTE: used to have fiber_id param after specifiedDevice!
+        '''
+
+        owner_id = self._get_owner()
+        sdebug('\nget_instrument > looking for: {}'.format(specifiedDevice))
+
+        # serialize access to global ownership dictionary
+        with self.__access_lock:
+
+            if not additional:
+                # Try the owned instruments first
+                owned_list = self.__locked.get(owner_id)
+                sdebug('OwnedList<{}>: {}'.format(owner_id, owned_list))
+                if owned_list != None:
+                    found = _look_for_obj(owned_list, lambda x: x.whoAmI() == specifiedDevice)
+                    if found != None:
+                        return found
+
+            # Then take a look for available instruments
+            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            sdebug('used instruments: {}'.format(used))
+            def isUnused(instrument):
+                sdebug('{} | {} - {}'.format('used' if instrument in used else 'not used', instrument.whoAmI(), specifiedDevice))
+                return instrument not in used and instrument.whoAmI() == specifiedDevice
+
+            found = _look_for_obj(self.Stages.values(), isUnused)
+            if found != None:
+                self._lock_instrument(found, owner_id)
+                # self._connect_to_chain(found, owner_id, fiber_id)
+            return found
+
+    def _get_instrument_triggerX(self, triggerObject, specifiedDevice, returnTriggerable, fiber_id, additional=False):
+        owner_id = self._get_owner()
+
+        # doing reverse lookup on the Stages dict here; no that good, but correct!
+        triggerObjectName = self.Stages.keys()[self.Stages.values().index(triggerObject)]
+        triggers = self.TriggerInfo.get(triggerObjectName)
+        if triggers == None:
+            _print_mh('no trigger info associated with {}'.format(triggerObjectName))
+            return None
+        TrigNet = triggers[1] if returnTriggerable else triggers[0]
+        if TrigNet == None:
+            _print_mh('entry {} does not have {} defined'.format('TriggerOut' if returnTriggerable else 'TriggerOut'))
+            return None
+
+        # serialize access to global ownership dictionary
+        with self.__access_lock:
+
+            if not additional:
+                # Try the owned instruments first
+                owned_list = self.__locked.get(owner_id)
+                if owned_list != None:
+                    def findOwnedTriggerMatch(instrument):
+                        instrument_name = self.Stages.keys()[self.Stages.values().index(instrument)]
+                        triggerInfo = self.TriggerInfo.get(instrument_name)
+                        if triggerInfo is None:
+                            return False
+                        canDoWantedTriggerAction = triggerInfo[0 if returnTriggerable else 1] == TrigNet
+                        return instrument.whoAmI() == specifiedDevice and canDoWantedTriggerAction
+
+                    found = _look_for_obj(owned_list, findOwnedTriggerMatch)
+                    if found != None:
+                        return found
+
+            # Then take a look for available instruments
+            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            def findOtherTriggerMatch(instrument):
+                instrument_name = self.Stages.keys()[self.Stages.values().index(instrument)]
+                triggerInfo = self.TriggerInfo.get(instrument_name)
+                if triggerInfo is None:
+                    return False
+                canDoWantedTriggerAction = triggerInfo[0 if returnTriggerable else 1] == TrigNet
+                return instrument not in used and instrument.whoAmI() == specifiedDevice and canDoWantedTriggerAction
+
+            found = _look_for_obj(self.Stages.values(), findOtherTriggerMatch)
+            if found != None:
+                self._lock_instrument(found, owner_id)
+                # self._connect_to_chain(found, owner_id, fiber_id)
+            return found
+
+    def get_instrument_triggered_by(self, triggerSource, specifiedDevice, additional=False):
+        '''
+        Finds and returns an unactive instrument, corresponding to the one
+        specified, that can be triggered by trigger_source
+        NOTE: used to have fiber_id param after specifiedDevice!
+        '''
+        return self._get_instrument_triggerX(triggerSource, specifiedDevice, True, -1, additional)
+
+    def get_instrument_triggering(self, triggerTarget, specifiedDevice, additional=False):
+        '''
+        Finds and returns an unactive instrument, corresponding to the one
+        specified, that can trigger by trigger_target
+        NOTE: used to have fiber_id param after specifiedDevice!
+        '''
+        return self._get_instrument_triggerX(triggerTarget, specifiedDevice, False, -1, additional)
+
+    def _check_owned(self, owner_id, instrument):
+        owned_list = self.__locked.get(owner_id)
+        return instrument in owned_list
+
+    def connect_instruments(self, transmitting_instrument, receiving_instrument):
+        owner_id = self._get_owner()
+
+        # serialize access to global ownership dictionary
+        with self.__access_lock:
+            if self.switchHandler is None:
+                # maybe WARNING
+                sdebug('cannot connect > switchHandler is None | self: {}'.format(self))
+                return
+            if not self._check_owned(owner_id, transmitting_instrument):
+                raise RuntimeError('tried to connect un-owned instrument {}'.format(self._get_name_from_instrument(transmitting_instrument)))
+            if not self._check_owned(owner_id, receiving_instrument):
+                raise RuntimeError('tried to connect un-owned instrument {}'.format(self._get_name_from_instrument(receiving_instrument)))
+            tran_inst_name = self._get_name_from_instrument(transmitting_instrument)
+            recv_inst_name = self._get_name_from_instrument(receiving_instrument)
+            sdebug('connecting {} with {}'.format(tran_inst_name, recv_inst_name))
+            self.switchHandler.connect_devices(tran_inst_name, recv_inst_name)
+
+    def release_current_user_instruments(self):
+        '''
+        Releases all current user instruments
+        Should be called at the end of a test entity and NOT normally
+        inside Measure functions
+        '''
+        owner_id = self._get_owner()
+
+        with self.__access_lock:
+            owned = self.__locked.get(owner_id)
+            chain = self.__chainSets.get(owner_id)
+            if owned is not None:
+                self.__locked[owner_id] = []
+            if chain is not None:
+                self.__chainSets[owner_id] = ChainList()
+
+    def release_instrument(self, instrumentToRelease):
+        '''
+        Release a specified instrument if owned by current user
+        Can be used inside Measure functions for a sparse and heavily used
+        resource - might cause problems with CONNECTION CHAIN !
+        (To Fix: If a single object is released then the surronding elements in
+        the chain have to connect together.)
+        '''
+        owner_id = self._get_owner()
+
+        with self.__access_lock:
+            owned = self.__locked.get(owner_id)
+            if owned is not None:
+                if instrumentToRelease in owned:
+                    # remove instrument from owned list
+                    owned.pop(owned.index(instrumentToRelease))
+                    return
+            raise KeyError('{} not owned by current user. Should not hold ref to that instance!'.format(instrumentToRelease))
+
+    def call_function(self, instrument, function, *arguments):
         '''
         A method used to call functions from a specifc instrument via the GMH
 
@@ -154,70 +360,17 @@ class Global_MeasureHandler(object):
         if instrumentActual:
             functionActual = getattr(instrumentActual,function)
             if len(arguments) == 1:
-                return functionActual(arguments)
-            elif len(arguments) > 1:
                 return functionActual(*arguments)
-            else:
-                return functionActual()
         else:
             return None # returns nothing becuase the instrument wasn't available
 
-    def insert_instr(self, stage_name, instr_attr):
+    def insert_instr(self, stage_name, triggers = None):
         '''
             Add an instrument to the handler
+            << Carried from older Global_MeasureHandler version, now used
+            only to define trigger network >>
         '''
-        if instr_attr not in self.Instruments.keys():
-            self.Instruments[instr_attr] = {}
-
-        try:
-            self.Instruments[instr_attr][stage_name] = list(self._choose_fun(stage_name, instr_attr)) + [None]
-        except KeyError:
-            _print_mh('problem inserting {} in the instrument records.'.format(stage_name))
-            raise
-
-    def get_instr(self, instr_attr, pair=False):
-        '''
-            returns measure function (and associated threshold)
-        '''
-        if instr_attr in  self.Instruments:
-            relevant_instruments = self.Instruments[instr_attr]
-        else:
-            return False
-        for k, v in relevant_instruments.items():
-            if v[USER] is None:
-                if pair:
-                    return v[FUNCTION], v[THRESH]
-                return v[FUNCTION]
-            else:
-                return False
-
-    def get_instr_by_name(self, instr_name, pair=False):
-        for categ, sub_dict in self.Instruments.items():
-            for name, v in sub_dict.items():
-                if instr_name == name:
-                    if v[USER] is None:
-                        if pair:
-                            return v[FUNCTION], v[THRESH]
-                        else:
-                            return v[FUNCTION]
-                    else:
-                        # return self.get_instr(categ, pair) -> return next available one
-                        return False
-
-    def _choose_fun(self, stage_name, instr_attr):
-        '''
-            Helper function. Will not be used in the future
-        '''
-
-        try:
-            if instr_attr == 'OPT':
-                return self.Stages[stage_name].get_power, -60
-            elif instr_attr == 'DC':
-                return self.Stages[stage_name].get_current, None
-            else:
-                return self.Stages[stage_name].whatCanI(), None
-        except KeyError:
-            pass
+        self.TriggerInfo[stage_name] = triggers
 
 
 '''

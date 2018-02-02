@@ -28,12 +28,16 @@ Components of ProberControl
 
 .. toctree::
     :maxdepth: 1
-    
+
     source/components/components
     source/components/gui
     source/components/maitre
     source/components/measure_handler
     source/components/plotter
+    source/components/scriptbuilder
+    source/components/DataIO
+    source/components/ScriptController
+    source/components/DataViewer
 
 How To's
 --------

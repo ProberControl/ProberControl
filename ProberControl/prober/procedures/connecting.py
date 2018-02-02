@@ -277,7 +277,7 @@ def connect_structure(Stages,Maitre, path='Coordinates.conf', struct_name='0'):
         fine_allign.set_meas_fun(measurement_function)
     else:
         # fine_allign.set_signal_source()
-        measurement_function = gmh.get_instr('OPT')
+        measurement_function = gmh.get_instrument('PowerMeter').get_power
         fine_allign.set_meas_fun(measurement_function)
 
     if connect_coordinates( coords, Stages, Maitre):

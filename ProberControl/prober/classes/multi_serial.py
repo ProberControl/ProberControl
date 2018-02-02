@@ -1,4 +1,7 @@
-from serial import Serial
+try:
+	from serial import Serial
+except:
+	pass
 from struct import unpack
 import time
 import threading

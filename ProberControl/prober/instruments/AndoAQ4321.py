@@ -14,7 +14,7 @@ class AndoAQ4321(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: string
         '''
@@ -23,7 +23,7 @@ class AndoAQ4321(object):
 
         self.max_wavelength = 1579.9
         self.min_wavelength = 1520
-    
+
         self.gpib = res_manager.open_resource(address)
         self.gpib.write('PASSWORD4321')
 
@@ -49,10 +49,6 @@ class AndoAQ4321(object):
         ''':returns: reference to device'''
         return 'Laser'
 
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
-
     def change_state(self):
 
         if self.active == True:
@@ -67,7 +63,7 @@ class AndoAQ4321(object):
         :returns: Integer
         '''
         return self.max_wavelength
-    
+
     def get_min_wavelength(self):
         '''
         Queries the minimum allowed wavelength
@@ -75,7 +71,7 @@ class AndoAQ4321(object):
         :returns: Integer
         '''
         return self.min_wavelength
-    
+
     def setwavelength(self, wavelength):
         '''
         Loads a single wavelength and sets output high
@@ -166,11 +162,11 @@ class AndoAQ4321(object):
             self.gpib.write('TSWET ' + str(time))
             self.gpib.write ('L1')
             self.gpib.write('TSGL') #Single Sweep
-    
+
             while self.checkStatus() == False:
                 pass
             print ('Sweep Wavelength Continuous Complete')
-            
+
     def sweepWavelengthsTriggerSetup (self, start, end, step):
         '''
         Have to keep track of Triggers in main command, use Stop Sweep Command to end sweep.
@@ -214,7 +210,7 @@ class AndoAQ4321(object):
         self.gpib.write('TRIG')
         time.sleep(0.05)
 
-    def checkStatus(self): 
+    def checkStatus(self):
         '''
         Checks the status of the laser. Handles timeout exception
 
@@ -232,9 +228,9 @@ class AndoAQ4321(object):
         except Exception:
             time.sleep(0.2)
             return self.checkStatus()
-        
-    
-    def checkStatusSingle(self): 
+
+
+    def checkStatusSingle(self):
         '''
         Checks the status of the laser. Handles timeout exception
 
@@ -278,8 +274,8 @@ class AndoAQ4321(object):
         '''
         Use after pause to resume, still have to call trigger() for next data point if using with trigger sweep
         '''
-        self.gpib.write('TCONT')        
-        
+        self.gpib.write('TCONT')
+
     def outputOFF(self):
         '''
         Turns output of laser source OFF
@@ -296,7 +292,7 @@ class AndoAQ4321(object):
         '''
         self.gpib.write('TWL?')
         return float(self.gpib.read())
-    
+
     def setpower(self,power = 0 ):
         '''
         Sets power in dbm
@@ -305,7 +301,7 @@ class AndoAQ4321(object):
         :type power: Integer
         '''
         self.gpib.write('TPDB ' + str(power))
-        
+
     def getpower(self):
         '''
         Gets output power in dbm
@@ -314,10 +310,6 @@ class AndoAQ4321(object):
         '''
         self.gpib.write('TPDB?')
         return float(self.gpib.read())
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'AndoAQ4321'    
 
 
 '''

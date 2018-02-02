@@ -49,41 +49,45 @@
 <span class="c1">#        - lin. transl. stage to move the sensor</span>
 
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">from</span> <span class="nn">dist_sensor</span> <span class="k">import</span> <span class="n">DSensor</span>
-<span class="kn">from</span> <span class="nn">stp_mtr</span> <span class="k">import</span> <span class="n">StepMotor</span>
-<span class="kn">from</span> <span class="nn">newport_controller</span> <span class="k">import</span> <span class="n">NewportPM500</span>
 
 <div class="viewcode-block" id="DMesStage"><a class="viewcode-back" href="../../source/components/classes.html#classes.DMesStage.DMesStage">[docs]</a><span class="k">class</span> <span class="nc">DMesStage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser_list</span><span class="p">):</span>
-        
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtr_list</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param mtr_list: a list containing the following objects</span>
+<span class="sd">            [</span>
+<span class="sd">            distance_sensor,</span>
+<span class="sd">            step_motor&lt;X&gt;,</span>
+<span class="sd">            stepper&lt;Y&gt;,</span>
+<span class="sd">            vetrical_stage</span>
+<span class="sd">            ]</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">caliAngleX</span> <span class="o">=</span> <span class="mf">0.4713</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caliAngleY</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.175</span>
-        
-        <span class="k">def</span> <span class="nf">s_init</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sensor</span> <span class="o">=</span> <span class="n">DSensor</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">def</span> <span class="nf">stp_x_init</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stepper_x</span> <span class="o">=</span> <span class="n">StepMotor</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">def</span> <span class="nf">stp_y_init</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stepper_y</span> <span class="o">=</span> <span class="n">StepMotor</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-        <span class="k">def</span> <span class="nf">np_init</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vertical</span> <span class="o">=</span> <span class="n">NewportPM500</span><span class="p">(</span><span class="n">ser_list</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-            
-        <span class="n">t_s</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">s_init</span><span class="p">)</span>
-        <span class="n">t_stp_x</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">stp_x_init</span><span class="p">)</span>
-        <span class="n">t_stp_y</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">stp_y_init</span><span class="p">)</span>
-        <span class="n">t_np</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">np_init</span><span class="p">)</span>
-        
-        <span class="n">t_s</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_stp_x</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span><span class="n">t_stp_y</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">t_np</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">t_s</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_stp_x</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span><span class="n">t_stp_y</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">t_np</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-    
+
+        <span class="c1"># def s_init():</span>
+        <span class="c1">#     self.sensor = DSensor(ser_list[0])</span>
+        <span class="c1"># def stp_x_init():</span>
+        <span class="c1">#     self.stepper_x = StepMotor_KST_ZST(ser_list[1])</span>
+        <span class="c1"># def stp_y_init():</span>
+        <span class="c1">#     self.stepper_y = StepMotor_KST_ZST(ser_list[2])</span>
+        <span class="c1"># def np_init():</span>
+        <span class="c1">#     self.vertical = NewportPM500(ser_list[3])</span>
+        <span class="c1">#</span>
+        <span class="c1"># t_s = threading.Thread(target=s_init)</span>
+        <span class="c1"># t_stp_x = threading.Thread(target=stp_x_init)</span>
+        <span class="c1"># t_stp_y = threading.Thread(target=stp_y_init)</span>
+        <span class="c1"># t_np = threading.Thread(target=np_init)</span>
+        <span class="c1">#</span>
+        <span class="c1"># t_s.start(), t_stp_x.start(),t_stp_y.start(), t_np.start()</span>
+        <span class="c1"># t_s.join(), t_stp_x.join(),t_stp_y.join(), t_np.join()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepper_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepper_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical</span> <span class="o">=</span> <span class="n">mtr_list</span>
+
 <div class="viewcode-block" id="DMesStage.whoAmI"><a class="viewcode-back" href="../../source/components/classes.html#classes.DMesStage.DMesStage.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;:returns: type of instrument&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;Distance&#39;</span></div>
+        <span class="k">return</span> <span class="s1">&#39;Distance&#39;</span></div></div>
 
-<div class="viewcode-block" id="DMesStage.whatCanI"><a class="viewcode-back" href="../../source/components/classes.html#classes.DMesStage.DMesStage.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: device attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div></div>
 
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Copyright (C) 2017  Robert Polster</span>

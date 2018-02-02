@@ -20,7 +20,7 @@ class InstrumentNameHere(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -31,14 +31,6 @@ class InstrumentNameHere(object):
         ''':returns: reference to device'''
         return 'DCSource'
 
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return 'DC'
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'ClassName'
-
     def change_state(self):
         ''' Toggles the self.active parameter'''
         if self.active == True:
@@ -47,10 +39,10 @@ class InstrumentNameHere(object):
             self.active = True
 
     def get_voltage(self):
-        '''Get the voltage''' 
+        '''Get the voltage'''
 
     def get_current(self):
-        '''Get the current''' 
+        '''Get the current'''
 
     def close(self):
         '''Release resources'''
@@ -61,7 +53,7 @@ class InstrumentNameHere(object):
 
         :param value: Specified voltage value, defaults to 0
         :type value: Integer
-        ''' 
+        '''
 
     def setCurrent(self, value = 0):
         '''
@@ -81,7 +73,7 @@ class InstrumentNameHere(object):
 
         :param value: Specified voltage value, defaults to 0
         :type value: Integer
-        ''' 
+        '''
 
     def setovercurrent(self, value = 0):
         '''
@@ -89,8 +81,8 @@ class InstrumentNameHere(object):
 
         :param value: Specified current value, defaults to 0
         :type value: Integer
-        '''    
-      
+        '''
+
     def setOutputSwitch(self, value = 0):
         '''
         Set the output switch to 1 -> ON or 0 -> OFF
@@ -102,35 +94,35 @@ class InstrumentNameHere(object):
     def getsetvoltage(self):
         '''
         Queries the current voltage
-        
+
         :returns: String
         '''
 
     def getsetcurrent(self):
         '''
         Queries the current
-        
+
         :returns: String
         '''
 
     def getoutvoltage(self):
         '''
         Queries the current out-voltage
-        
+
         :returns: Float
         '''
 
     def getoutcurrent(self):
         '''
         Queries the current out-current
-        
+
         :returns: Float
         '''
 
     def getoutswitch(self):
         '''
         Queries the current out-switch
-        
+
         :returns: String
         '''
 

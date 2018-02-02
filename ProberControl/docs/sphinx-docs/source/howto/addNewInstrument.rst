@@ -3,7 +3,7 @@ Adding a New Instrument
 
 Overview
 --------
-There may be a point where you'll want to add a new instrument to the ProberControl's library. This can be implemented easily by using one of the templates and following the requirements for an instrument class. 
+There may be a point where you'll want to add a new instrument to the ProberControl's library. This can be implemented easily by using one of the templates and following the requirements for an instrument class.
 
 Templates
 ---------
@@ -22,15 +22,11 @@ The finished driver needs to be placed into the **prober/instruments** folder. F
 
 Important Links to other parts of the Software
 ----------------------------------------------
-The Model Parameter that is used in the config file is defined as the return value of your ``__str__()`` method.
-
 The return  value of ``whoAmI()`` defines as what type of tool the device will show up in the stages dictionary and therefore in the GUI.
-
-The return value of ``whatCanI()`` defines the capabilities of the tool. All capabilities are read into the Global Measurement Handler that can be used to distribut access to tools depending on their capabilities.
 
 The ``self.active`` parameter is accessed by the Script Controller and Global Measurement Handler to check whether a tool is busy. When non atomic functions are performed by the driver (e.g. all communication with the tool) the driver function should set the device as busy while performing the function.
 
-The constructur needs to accept the following arguments: ``__init__(self,res_manager, address='YourAddressHere')`` even if the res_manager is not needed (e.g. for ethernet communication - see the Keithley2280S driver for an ethernet exaple). For multi channel devices a channel parameter must be added.
+The constructor needs to accept the following arguments: ``__init__(self,res_manager, address='YourAddressHere')`` even if the res_manager is not needed (e.g. for ethernet communication - see the Keithley2280S driver for an ethernet exaple). For multi channel devices a channel parameter must be added.
 
 Example:
 
@@ -43,7 +39,7 @@ Example:
             Constructor method
 
             :param res_manager: PyVisa resource manager
-            :type res_manager: PyVisa resourceManager object 
+            :type res_manager: PyVisa resourceManager object
             :param address: SCPI address of instrument
             :type address: String
             '''
@@ -54,14 +50,6 @@ Example:
         def whoAmI(self):
             ''':returns: reference to device'''
             return 'RFSource'
-
-        def whatCanI(self):
-            ''':returns: instrument attributes'''
-            return ''
-
-        def __str__(self):
-            '''Adds built in functionality for printing and casting'''
-            return 'ClassNameHere'
 
         def change_state(self):
             ''' Toggles the self.active parameter'''

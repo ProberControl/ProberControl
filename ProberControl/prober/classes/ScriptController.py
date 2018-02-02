@@ -4,17 +4,21 @@ from Global_MeasureHandler import Global_MeasureHandler
 from .. import procedures
 import maitre
 import inspect
+import tkMessageBox
+from Queue import Queue
+
+from DataIO import DataIO
 
 class ScriptController(object):
     '''
     The purpose of this class is to read-in a measurement script, then
-    execute the script when appropriate. It also handles  sending
+    execute the script when appropriate. It also handles sending
     information to the Global_MeasureHandler about which stages are locked
     for usage. It communicates with GMH directly and the GMH returns data from
     instruments.
     '''
 
-    def __init__(self, maitre, stages, scriptName = '', path = ''):
+    def __init__(self, maitre, stages, scriptName = '', path = '', queue = None):
 
         self.__configurePaths(scriptName)
 
@@ -22,17 +26,15 @@ class ScriptController(object):
         self.maitre = maitre # Handles the structures and procedures
         self.stages = stages
         self.outputMode = None
+        self.defaultBinFunc = None
+        self.binningMode = None
+        self.upQueue = queue
+        self.downQueue = Queue()
 
     def read_execute(self):
         self.script = self.read_script() # Read in the script to be executed
         self.scriptHash = id(self) # get the hash for the script
-        self.__reportLocked()
         self.execute_script()
-
-    def __reportLocked(self):
-        for entry in self.script:
-            if 'lock' in entry.keys():
-                self.gh.add_locked_instrument(self.scriptHash, entry['stage'])
 
     def __configurePaths(self, scriptName):
         # This will be different depending on how the program was launched
@@ -44,70 +46,249 @@ class ScriptController(object):
             self.resultsPath = self.pwd
         else: # conventional launch
             self.pwd = os.path.abspath(path='.\\..\\')
-            self.configPath = os.path.join(self.pwd, 'config\\'+scriptName)
-            self.coordinatePath = os.path.join(self.pwd, 'config\\Coordinates.conf')
-            self.resultsPath = os.path.join(self.pwd, 'config\\')
+            self.configPath = os.path.join(self.pwd, 'ProberControl\\config\\'+scriptName)
+            self.coordinatePath = os.path.join(self.pwd, 'ProberControl\\config\\Coordinates.conf')
+            self.resultsPath = os.path.join(self.pwd, 'ProberControl\\config\\')
+
+    def _promptForErrorHandling(self,text):
+          self.upQueue.put((tkMessageBox.askquestion,('Prober Error', 'Could the Error be manually resolved ? \n Details: \n'+text),{},self.downQueue))
+          return 'yes' == self.downQueue.get()
 
     def execute_script(self, path = 'results.csv'):
         '''Opens the results file(s) and executes experiments according to the configuration files'''
-        with self._OutputConfiguration() as out:
+        with self._OutputConfiguration(self._GroupingInfo.group_designators,self.resultsPath, 'ResultsForID.csv', self.outputMode) as out:
+
+            # Save initial chip and wafer
+            # Load first Chip
+            if 'chip' in self.script[0].keys():
+                # Before loading first chip check state of MProber if connected
+                if not self._checkProberState():
+                    return
+                # Load chip
+                if not self._loadChip(self.script[0]['chip']):
+                    return
+
+                old_chip = self.script[0]['chip']
+
+            if 'wafer' in self.script[0].keys():
+                old_wafer = self.script[0]['wafer']
 
             # tqdm for progress bar
             for entry in tqdm(self.script):
 
-                # If it is a function of a particular stage
-                if 'stage' in entry.keys():
-                    self._stageFunction(entry, out.getOutFile(entry))
+                # Check whether the binning mode is chip and if a new chip block has begun
+                # If yes possibly start local or default binning function
+                # Store Old Die
+                # Load New Die
+                if self.binningMode == 'chip' and 'chip' in entry.keys():
+                    if old_chip != entry['chip']:
+                        print "\n Finished Measurement Block of "+old_chip
+
+                        args = [old_chip]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
+                        binningResult = self._callBinningFunction(old_entry,args)
+                        self._storeBinningResult(old_chip, binningResult)
+
+                        self._storeChip(old_chip,binningResult)
+                        self._loadChip(entry['chip'])
+
+                        old_chip = entry['chip']
+
+                # Check whether the binning mode is 'wafer' and if a new wafer block has begun
+                # If yes possible start local or default binning function
+                if self.binningMode == 'wafer' and 'wafer' in entry.keys():
+                    if old_wafer != entry['wafer']:
+                        print "\n Finished Measurement Block of "+old_wafer
+
+                        args = [old_wafer]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
+                        binningResult = self._callBinningFunction(old_entry,args)
+                        self._storeBinningResult(old_wafer, binningResult)
+
+                        old_wafer = entry['wafer']
 
                 # If it is a procedure
                 elif 'structure' in entry.keys() and 'procedure' in entry.keys():
-                    self._structureProcedure(entry, out.getOutFile(entry))
+                    if not self._structureProcedure(entry, out.getOutFile(entry)):
+                        break
 
                 # If it is a procedure that doesn't need a structure
                 elif 'procedure' in entry.keys() and 'structure' not in entry.keys():
                     self._procedure(entry, out.getOutFile(entry))
 
-                # If executing a function or procdure on a particular chip
-                elif 'chip' in entry.keys():
-                    self._chipFunction(entry, out.getOutFile(entry))
+                # Safe old entry if wafer/chip stage is happening in next entry
+                old_entry = entry
 
-        # Release all instruments that were associated with this script
-        self.gh.clear_locked(self.scriptHash)
+                # release locked user instruments
+                self.gh.release_current_user_instruments()
 
-    def _stageFunction(self, entry, file):
-        '''Executes experiment for at the stage level'''
-        t = tuple([entry['stage'],entry['function'],entry['arguments']])
-        data = "{}\t{}\t{}\n".format(t[0],t[1],t[2])
-        try:
-            # Execute the function
-            data += self.__executeCommand(t[0],t[1],t[2])
-            data += '\n'
+        # check whether last wafer/chip needs to be binned and stored
+        if self.binningMode == 'wafer' and old_wafer:
+            print "Finished Measurement Block of "+old_wafer
+            args = [old_wafer]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
+            binningResult = self._callBinningFunction(old_entry,args)
+            self._storeBinningResult(old_wafer, binningResult)
 
-        except KeyError as e:
-            data = "\
-            Experiment not executed on {}\
-            \nError with configuration file:\n{}".format(t[0], e)
+            self._freeProber()
+        elif self.binningMode == 'chip' and old_chip:
+            print "Finished Measurement Block of "+old_chip
+            args = [old_chip]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
+            binningResult = self._callBinningFunction(old_entry,args)
+            self._storeBinningResult(old_chip,binningResult)
 
-        # Write the results of experiment to file
-        self._writeData(file, str(data), False)
+            self._storeDie(old_chip,binningResult)
+
+
+    def _loadChip(self,chipId):
+        '''
+        Function sends the command to load chip with certain id on measurement platform.
+
+        If Prober is present and provides load_chip() function
+        '''
+        if 'MProber' in self.stages.keys():
+            if 'load_chip' in dir(self.stages['MProber']):
+                if self.stages['MProber'].load_chip(chipId) == 'ready':
+                    return True
+                else:
+                    return self._promptForErrorHandling('Prober signals error when loading chip')
+            return True
+        return True
+
+
+    def _checkProberState(self):
+        '''
+        Function checks the states of the Prober if:
+            - a Prober is in the stages lists
+            - the driver provides a get_state() function
+
+        Expected returns are:
+            - ready : the function returns true and the script proceeds
+            - uncalibrated: the function calls the driver to calibrate or prompts an error for manual handling
+            - error: the function prompts for an error
+        '''
+        if 'MProber' in self.stages.keys():
+            if 'get_state' in dir(self.stages['MProber']):
+                state = self.stages['MProber'].get_state()
+
+                if state == 'ready':
+                    return True
+                elif state == 'uncalibrated':
+                    if 'calibrate' in dir(self.stages['MProber']):
+                        if 'ready' == self.stages['MProber'].calibrate():
+                            return True
+                        else:
+                            return self._promptForErrorHandling('Please Manually Calibrate the Machine')
+                    else:
+                        return self._promptForErrorHandling('Please Manually Calibrate the Machine')
+                elif state == 'error':
+                    return self._promptForErrorHandling('Prober responded with an error to get_state()')
+            else:
+                return True
+        else:
+            return True
+
+    def _freeProber(self):
+        if 'MProber' in self.stages.keys():
+            if 'free_prober' in dir(self.stages['MProber']):
+                if 'ready' == self.stages['MProber'].free_prober():
+                    return True
+                else:
+                    return self._promptForErrorHandling('Prober responded with an error when freeing all loading platforms')
+            else:
+                return True
+        else:
+            return True
+
+    def _storeDie(self, itemID, binningResult=None):
+        '''
+        Function sends the command to store the die. If Prober is presented and provides store_chip()
+
+        If a binningResults is provided _getContainer is called to link bin to containerID
+        Afterwards the prober is called to the store chip. If no ContainerID is provided the chip should be stored to original position
+        '''
+        if 'MProber' in self.stages.keys():
+            if 'store_chip' in dir(self.stages['MProber']):
+                container = None
+                if binningResult:
+                    container = _getContainer(itemID, binningResult)
+                if container:
+                    if 'ready' == self.stages['MProber'].store_chip(container):
+                        return True
+                    else:
+                        return self._promptForErrorHandling('Prober responded with an error when storing chip')
+                else:
+                    if 'ready' == self.stages['MProber'].store_chip():
+                        return True
+                    else:
+                        return self._promptForErrorHandling('Prober responded with an error when storing chip')
+            else:
+                return True
+        else:
+            return True
+
+    def _getContainer(self, itemID, binningResult):
+        '''
+            Fetch from Database where to put the item depending on binningResult
+        '''
+        return None
+
+    def _storeBinningResult(self, itemID, binningResult):
+        pass
+
+    def _callBinningFunction(self,entry,args):
+        # Call Group Specific Binning Function if it exists
+        if 'bin' in entry.keys():
+            return self.maitre.execute_func_name(entry['bin'].split(':')[0],entry['bin'].strip().split(':')[1],args)
+        # Call General Binning Function if it exists
+        elif self.defaultBinFunc != None:
+            return self.maitre.execute_func_name(self.defaultBinFunc.split(':')[0],self.defaultBinFunc.strip().split(':')[1],args)
 
     def _structureProcedure(self, entry, file):
-        '''Executes experiments at the structural level using Procedures'''
-        if not connecting.connect_structure(
-            self.stages,
-            self.maitre,
-            self.coordinatePath,
-            entry['structure'] ):
-            # Write the error to the results but keep going
-            self._writeData(file, "Error Connecting {}.".format(entry['structure']), True)
-        else:
+        '''Executes experiments at the structural level using Procedures:
+            The function is split into two cases:
+            1) MProber is present
+            2) ProberControl controls stages itself
+            '''
+
+        if 'MProber' in self.stages.keys():
+            # Case when 'MProber' is present
+            if 'ready' != self.stages['MProber'].connect_structure(entry['chip'],entry['structure']):
+                if not self._promptForErrorHandling('Prober responded with error when coupling structure'):
+                    if self._promptForErrorHandling('Do you want to proceed to next structure ?'):
+                        # Write the error to the results but keep going
+                        DataIO.writeData(file, "Error Connecting {}.".format(entry['structure']))
+                        return True
+                    else:
+                        return False
+
             args = self._prepArguments(entry)
 
             # Execute the function using maitre
-            data = maitre.execute_func_name(entry['procedure'],entry['function'],args)
+            data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
 
             # Write the results of the experiment to file
-            self._writeData(file, data, True, entry['measurement'])
+            DataIO.writeData(file, data, entry['measurement'])
+            return True
+
+
+
+        else:
+            # Case when ProberControl controls connected stages
+            if not connecting.connect_structure(
+                self.stages,
+                self.maitre,
+                self.coordinatePath,
+                entry['structure'] ):
+                # Write the error to the results but keep going
+                DataIO.writeData(file, "Error Connecting {}.".format(entry['structure']))
+                return True
+            else:
+                args = self._prepArguments(entry)
+
+                # Execute the function using maitre
+                data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
+
+                # Write the results of the experiment to file
+                DataIO.writeData(file, data, entry['measurement'])
+                return True
 
     def _procedure(self, entry, file):
         '''executes experiments that use multiple tools or generalized algorythms'''
@@ -117,7 +298,7 @@ class ScriptController(object):
         data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
 
         # Write the results of the experiment to file
-        self._writeData(file, data, procedure=True, Meas_Name=entry['measurement'])
+        DataIO.writeData(file, data, Data_Name=entry['measurement'])
 
     def _prepArguments(self, entry):
         '''
@@ -133,100 +314,16 @@ class ScriptController(object):
             if '[' in elem:
                 SubList=elem.replace('[','').replace(']','').split(',')
                 elem=map(float,SubList)
-            if 'Stages' in elem:
+            elif 'tages' in elem:
                 elem = self.Stages
-            if 'Maitre' in elem:
+            elif 'aitre' in elem:
                 elem = self.Maitre
-            if str(elem).isdigit():
+            elif str(elem).isdigit():
                 elem=float(elem)
             if elem != '':
                 ArgList.append(elem)
 
-                direct_list = inspect.getargspec(self.ActiveStageFuncList[self.ActiveStageFunc])[0]
-                insert_list = []
-
-                if "Stages" in direct_list:
-                    insert_list.append([direct_list.index("Stages"),self.stages])
-
-                if "stages" in direct_list:
-                    insert_list.append([direct_list.index("stages"),self.stages])
-
-                if "Maitre" in direct_list:
-                    insert_list.append([direct_list.index("Maitre"),self.maitre])
-
-                if "maitre" in direct_list:
-                    insert_list.append([direct_list.index("maitre"),self.maitre])
-
-                insert_list.sort(key=operator.itemgetter(0))
-
-                if insert_list != []:
-                    for x in insert_list:
-                        ArgList.insert(x[0],x[1])
         return ArgList
-
-
-    def _chipFunction(self, entry, file):
-        '''Handles experiments at the chip level'''
-        pass
-
-    def _writeData(self, openFile, data, procedure, Meas_Name=''):
-        '''Takes data in form of nested (x,y) lists and experiment names, if applicable and writes it to a results file'''
-
-        if procedure:
-            if self._test_dim(data) > 2:
-        		for substruct in data:
-        		    self._writeData(openFile, substruct, procedure, Meas_Name+'_'+str(data.index(substruct)))
-            elif self._test_dim(data) ==2:
-                self._write_csv(openFile, data ,Meas_Name)
-            else:
-        		print "Could not write data to file: Error in Data Format"
-        else:
-            for element in data.split(' '):
-                openFile.write('{}\t'.format(str(element)))
-
-        # Seperate the experiments by one extra new lines
-        openFile.write('\n')
-
-    def _write_csv(self, openFile, data ,name):
-        ''' Writes Single dimensional lists to file'''
-
-        openFile.write("##{}:\n".format(name))
-        for pair in data:
-            openFile.write("{}\t{} \n".format(pair[0],pair[1]))
-
-    def _test_dim(self, testlist, dim=0):
-       """tests if testlist is a list and how many dimensions it has
-       returns -1 if it is no list at all, 0 if list is empty
-       and otherwise the dimensions of it"""
-       if isinstance(testlist, list):
-          if testlist == []:
-              return dim
-          dim = dim + 1
-          dim = self._test_dim(testlist[0], dim)
-          return dim
-       else:
-          if dim == 0:
-              return -1
-          else:
-              return dim
-
-    def __executeCommand(self, instrument, function, arguments):
-        '''internal method for executing a particular directly with stage.function'''
-        try:
-
-            # retrieve the instrument from global_measure_handler object
-            instrumentActual = self.gh.get_instrument(instrument)
-            if instrumentActual:
-                functionActual = getattr(instrumentActual,function)
-                print arguments
-                print functionActual
-                return str(functionActual(*arguments))
-            else:
-                return Exception("Instrument {} not available.".format(instrument))
-        except AttributeError as e:
-            return "Attribute Error Executing: {}\t{}".format(function,e)
-        except Exception as e:
-            return "Error at __executeCommand(): {}".format(e)
 
     def read_script(self):
         return self.__readScript()
@@ -257,6 +354,9 @@ class ScriptController(object):
                     # Look for output grouping mode
                     if self._checkOutputMode(line, line_no):
                         continue
+                    # Look for default binning function
+                    if self._checkBinningFunc(line, line_no):
+                        continue
                     # Look for group designators
                     if self._setGroupingMetadata(line, groups, measurement, line_no):
                         continue
@@ -286,10 +386,28 @@ class ScriptController(object):
 
             if len(measurement_collection) == 0:
                 print("Something might be wrong with your Measurement.conf, read-in is empty.")
+            else:
+                self._setBinningMode(measurement_collection)
+
+            print "Detected Binning Group / Mode: " + str(self.binningMode)
+            print "Detected Default Binning Function: " + str(self.defaultBinFunc)
 
             return measurement_collection
         except IOError as e:
             raise IOError("Error reading in configuration file:\n{}".format(e))
+
+    def _setBinningMode(self,script):
+        ''' Finds the grouping wise hierarchically highest entry in the script  (wafer,chip,etc..) and sets it as the binningMode'''
+
+        for elem in script:
+            groups = list( set(elem.keys()) & set(self._GroupingInfo.group_designators))
+            counter = 999
+            for group in groups:
+                counter = self._GroupingInfo.group_designators.index(group) if self._GroupingInfo.group_designators.index(group) < counter else counter
+
+            if counter != 999:
+                self.binningMode = self._GroupingInfo.group_designators[counter]
+
 
     def _isDesignator(self, line, designation):
         '''Helper function for designators'''
@@ -302,7 +420,7 @@ class ScriptController(object):
         '''helper: check if line designates wafers chips and sub-groups and return grouping key'''
         if len(line) < 3:
             return None
-        possibleKey = line[2:].rstrip().lower()
+        possibleKey = line[1:].strip().lower()
         if line[0] == '>' and possibleKey in self._GroupingInfo.group_designators:
             return possibleKey
         else:
@@ -317,6 +435,20 @@ class ScriptController(object):
             groupKey = self._getGroupingDesignator(line)
             if groupKey is not None:
                 groupInfo.setId(groupKey)
+
+                # Finding Boundaries of Binning Group if Costume Binning was activated
+                if groupInfo.binningGroup == groupKey and groupInfo.costumeBinning:
+                    # Deactivate CostumeBinning
+                    groupInfo.clearBinningGroup()
+                    if 'bin' in measurement.keys():
+                    # Delete Binning Entry
+                        measurement['bin'] = None
+                # Saving last binning GroupDesignator in case  costumeBinning gets activated
+                if not groupInfo.costumeBinning and groupKey != 'bin':
+                    groupInfo.setBinningGroup(groupKey)
+                # A '> bin' will active costume binning
+                if groupKey == 'bin':
+                    groupInfo.setCostumeBinning()
                 return True
             else:
                 return False
@@ -352,11 +484,22 @@ class ScriptController(object):
         else:
             return False
 
+    def _checkBinningFunc(self, line, line_no):
+        BinningKeyWord = 'bin-by:'
+        if line.startswith(BinningKeyWord):
+            if self.defaultBinFunc is None:
+                self.defaultBinFunc = line[len(BinningKeyWord):].strip()
+            else:
+                raise KeyError('.meas > cannot set default binning mode twice (line:{})'.format(line_no))
+            return True
+        else:
+            return False
+
     def _checkOutputMode(self, line, line_no):
-        outputModeKeyWord = 'group-by: '
+        outputModeKeyWord = 'group-by:'
         if line.startswith(outputModeKeyWord):
             if self.outputMode is None:
-                self.outputMode = line[len(outputModeKeyWord):].rstrip().lower()
+                self.outputMode = line[len(outputModeKeyWord):].strip().lower()
             else:
                 raise KeyError('.meas > cannot set output mode twice (line:{})'.format(line_no))
             return True
@@ -365,15 +508,27 @@ class ScriptController(object):
 
     class _GroupingInfo(object):
         '''Class to keep grouping info organized'''
-        group_designators = ['wafer', 'chip', 'group']
+        group_designators = ['wafer', 'chip', 'group','bin']
 
         def __init__(self):
             self.keyId = None
             self.keyValue = None
             self.gettingKeyId = False
             self.previous = {}
+            self.binningGroup = None
+            self.costumeBinning = False
             for key in self.group_designators:
                 self.previous[key] = None
+
+        def setBinningGroup(self,key):
+            self.binningGroup = key
+
+        def setCostumeBinning(self):
+            self.costumeBinning = True
+
+        def clearBinningGroup(self):
+            self.binningGroup = None
+            self.costumeBinning = False
 
         def setId(self, groupId):
             self.keyId = groupId
@@ -391,10 +546,12 @@ class ScriptController(object):
         chip, wafer, etc.
         '''
 
-        def __init__(self, name_convention='.csv', outputMode=None):
+        def __init__(self,group_designators,resultsPath='', name_convention='.csv', outputMode=None):
+            self.group_designators = group_designators
             self.FileMap = {}
             self.outputMode = outputMode
             self.name_convention = name_convention
+            self.resultsPath = resultsPath
 
         def __enter__(self):
             '''implementing "with" semantics'''
@@ -408,8 +565,7 @@ class ScriptController(object):
             dot = self.name_convention.rfind('.')
             default_outputMode = self.outputMode is None or self.outputMode == ''
             identifier = '' if default_outputMode else entry[self.outputMode]
-            return self.name_convention[0:dot] + '-' + identifier + sel.name_convention[dot:]
-
+            return self.name_convention[0:dot] + '-' + identifier + self.name_convention[dot:]
 
         def getOutFile(self, entry):
             '''get an open file handle from measurement entry struct'''
@@ -421,6 +577,24 @@ class ScriptController(object):
                 file = open(path, 'w')
                 self.FileMap[filename] = file
                 return file
+
+        def getRelatedFiles(self,script,key,entry):
+            # if binning key equals outputmode or in a lower hierarchy level than the outputMode (bin chips but output wafers) return current file path in a list
+            if self.group_designators.index(key) >= self.group_designators.index(self.outputMode):
+                return [os.path.join(self.resultsPath, self._generateFileName(entry))]
+            else:
+                # generate list of entries in which the current binning entity exists
+                sub_entries = []
+                for elem in script:
+                    if elem[key] == entry[key]:
+                        sub_entries.append(elem)
+                # generate list with all related file names
+                paths = []
+                for elem in sub_entries:
+                    paths.append(os.path.join(self.resultsPath, self._generateFileName(elem)))
+                # clean paths of dubble sub_entries and return
+                return list(set(paths))
+
 
         def __exit__(self, type, value, traceback):
             '''implementing "with" semantics'''

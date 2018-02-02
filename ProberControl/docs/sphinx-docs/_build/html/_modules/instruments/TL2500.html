@@ -1,0 +1,254 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>instruments.TL2500 &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for instruments.TL2500</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="TL2500"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500">[docs]</a><span></span><span class="k">class</span> <span class="nc">TL2500</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This class handles the communication with the fiContec TL2500 system.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Add all code needed to start the communication with the TL2500.</span>
+
+<span class="sd">            The interface-handler (interface) object is provided by the framework and will depend whether the system is controlled via gpib,ethernet or serial. All communication can be performed using interface.write() .read() .query().</span>
+
+<span class="sd">            Non public functions are defined by leading _ in the function name e.g. _sum()</span>
+
+<span class="sd">            The self.active is needed by the framework and should be toggled by the functions whenever they start to perform non atomic code and toggled back to false afterwads</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="TL2500.whoAmI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;Prober&#39;</span></div>
+
+    <span class="k">def</span> <span class="nf">__changeState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="c1">################## TOOL COMMANDS ###############################</span>
+
+<div class="viewcode-block" id="TL2500.get_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Returns the state of the prober. Minimal set of returns: error, uncalibrated, ready</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;ready&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.load_chip"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.load_chip">[docs]</a>    <span class="k">def</span> <span class="nf">load_chip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">reticle_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober loads reticle onto single die probing station. Sets state so that following coupling commands are executed depending whether chip is in waferfor or die form.</span>
+
+<span class="sd">            (1) Prober fetches position and state of chip from DB</span>
+<span class="sd">            (2a)  If die is on already loaded wafer do nothing</span>
+<span class="sd">            (2b)  If die is on new wafer possibly store current wafer back to foup</span>
+<span class="sd">            (2c)  If die is in chip state and measurement platform is currently occupied restore current die to original location</span>
+<span class="sd">            (3) Prober checks its configuration whether its equipped for chip state (wafer or die)</span>
+<span class="sd">            (4) Prober loads wafer or picks die either from bluetape or gel pack</span>
+<span class="sd">            (5) If needed Prober places die on probing station</span>
+<span class="sd">            (6) Prober returns &#39;ready&#39; or &#39;error&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;ready&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.store_chip"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.store_chip">[docs]</a>    <span class="k">def</span> <span class="nf">store_chip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pack_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober stores active chip in pack.</span>
+<span class="sd">            * If no pack_id defined:</span>
+<span class="sd">            (1) Return chip to previous location</span>
+<span class="sd">            (2) Prober returns error/ready message.</span>
+
+<span class="sd">            * If pack_id defined:</span>
+<span class="sd">            (1) Prober checks location and fill-stage of pack_id</span>
+<span class="sd">            (2) Prober stores chip in pack if possible</span>
+<span class="sd">            (3) Prober updates database with location of chip about pack_id and location in pack</span>
+<span class="sd">            (4) Prober returns error/ready message.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.load_bluetape"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.load_bluetape">[docs]</a>    <span class="k">def</span> <span class="nf">load_bluetape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bluetape_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober loads bluetape to die ejector position. Sets state so that following coupling commands are executed for single die coupling.</span>
+
+<span class="sd">            (1) Prober checks configuration</span>
+<span class="sd">            (2) Prober checks whether ejector is free. If not stores loaded bluetape in casssette</span>
+<span class="sd">            (3) Prober reads location of bluetape_id from database</span>
+<span class="sd">            (4) Prober loads bluetape to die ejector</span>
+<span class="sd">            (5) Prober returns error/success message</span>
+
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.store_bluetape"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.store_bluetape">[docs]</a>    <span class="k">def</span> <span class="nf">store_bluetape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober stores currently loaded bluetape in cassette.</span>
+<span class="sd">            (2) Prober returns error/success message</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.load_wafer"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.load_wafer">[docs]</a>    <span class="k">def</span> <span class="nf">load_wafer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wafer_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober loads bluetape to die ejector position. Sets state so that following coupling commands are executed for wafer scale coupling.</span>
+
+<span class="sd">            (1) Prober checks configuration</span>
+<span class="sd">            (2) Prober checks whether wafer chuck is free. If not stores loaded wafer in casssette</span>
+<span class="sd">            (3) Prober reads location of wafer_id from database</span>
+<span class="sd">            (4) Prober loads wafer to wafer chuck</span>
+<span class="sd">            (5) Prober returns error/success message</span>
+
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.store_wafer"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.store_wafer">[docs]</a>    <span class="k">def</span> <span class="nf">store_wafer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober stores currently loaded wafer in cassette.</span>
+<span class="sd">            (2) Prober returns error/success message</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.connect_structure"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.connect_structure">[docs]</a>    <span class="k">def</span> <span class="nf">connect_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">chip_id</span><span class="p">,</span><span class="n">structure_id</span><span class="p">,</span><span class="n">active_align</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober connects probes and performs active alignment of optical probes.</span>
+
+<span class="sd">            (1) Prober reads coordinates of structure IO from internal database - coordinates include type of IO and feedback signal source for active alignment</span>
+<span class="sd">            (2) Prober checks whether it is configured to couple the structure</span>
+<span class="sd">            (3) Prober couples structure and performs active alignment</span>
+<span class="sd">            (4) Prober returns &#39;error&#39;/&#39;ready&#39; message</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;error&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.calibrate"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.calibrate">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Calibrate machine for current configuration</span>
+
+<span class="sd">            Should be blocking until machine is calibrated</span>
+
+<span class="sd">            return ready or error</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;ready&#39;</span></div>
+
+
+<div class="viewcode-block" id="TL2500.set_chuck_temp"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.set_chuck_temp">[docs]</a>    <span class="k">def</span> <span class="nf">set_chuck_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temp</span><span class="p">,</span><span class="n">lock</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober sets wafer chuck temperature in degree Celsius</span>
+
+<span class="sd">            (2) If lock = True  - tool driver returns functions only when temp is reached.</span>
+<span class="sd">            (3) If lock = False - tool driver only initiates heating process</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.get_chuck_temp"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.get_chuck_temp">[docs]</a>    <span class="k">def</span> <span class="nf">get_chuck_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober return wafer chuck temperature in degree Celsius</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.set_chip_temp"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.set_chip_temp">[docs]</a>    <span class="k">def</span> <span class="nf">set_chip_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temp</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober sets reticle holder temperature in degree Celsius</span>
+
+<span class="sd">            (2) If lock = True  - tool driver returns functions only when temp is reached.</span>
+<span class="sd">            (3) If lock = False - tool driver only initiates heating process</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.get_chip_temp"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.get_chip_temp">[docs]</a>    <span class="k">def</span> <span class="nf">get_chip_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober returns reticle holder temperature in degree Celsius</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="TL2500.free_prober"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.free_prober">[docs]</a>    <span class="k">def</span> <span class="nf">free_prober</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober returns all loaded devices (wafer and/or chip) to original location</span>
+
+<span class="sd">            returns &#39;ready&#39; / &#39;error&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;ready&#39;</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

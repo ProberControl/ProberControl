@@ -55,7 +55,7 @@
 <span class="sd">        Constructor method</span>
 
 <span class="sd">        :param res_manager: PyVisa resource manager</span>
-<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
 <span class="sd">        :param address: SCPI address of instrument</span>
 <span class="sd">        :type address: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -70,10 +70,6 @@
 <div class="viewcode-block" id="Keithley2400.whoAmI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;DCSource&#39;</span></div>
-
-<div class="viewcode-block" id="Keithley2400.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;DC&#39;</span></div>
 
 <div class="viewcode-block" id="Keithley2400.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -91,7 +87,7 @@
 <span class="sd">        :param resolution: Specified resoultion to query, defaults to 0.01</span>
 <span class="sd">        :type resolution: Float</span>
 <span class="sd">        :returns: Float</span>
-<span class="sd">        &#39;&#39;&#39;</span> 
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;:MEAS:VOLT:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">query_range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Keithley2400.get_current"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.get_current">[docs]</a>    <span class="k">def</span> <span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">query_range</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">):</span>
@@ -103,7 +99,7 @@
 <span class="sd">        :param resolution: Specified resoultion to query, defaults to 0.000001</span>
 <span class="sd">        :type resolution: Float</span>
 <span class="sd">        :returns: Float</span>
-<span class="sd">        &#39;&#39;&#39;</span> 
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;:MEAS:CURR:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">query_range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Keithley2400.close"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -116,7 +112,7 @@
 
 <span class="sd">        :param value: Specified voltage value, defaults to 0</span>
 <span class="sd">        :type value: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span> 
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SOUR:FUNC VOLT&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SOUR:VOLT &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
@@ -126,7 +122,7 @@
 
 <span class="sd">        :param value: Specified voltage value, defaults to 0</span>
 <span class="sd">        :type value: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span>    
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SOUR:FUNC CURR&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SOUR:CURR &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
@@ -136,7 +132,7 @@
 
 <span class="sd">        :param value: Specified voltage value, defaults to 0</span>
 <span class="sd">        :type value: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span> 
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SENS:VOLT:PROT &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Keithley2400.setovercurrent"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.setovercurrent">[docs]</a>    <span class="k">def</span> <span class="nf">setovercurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
@@ -145,9 +141,9 @@
 
 <span class="sd">        :param value: Specified current value, defaults to 0</span>
 <span class="sd">        :type value: Integer</span>
-<span class="sd">        &#39;&#39;&#39;</span>    
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SENS:CURR:PROT &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
-      
+
 <div class="viewcode-block" id="Keithley2400.setOutputSwitch"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.setOutputSwitch">[docs]</a>    <span class="k">def</span> <span class="nf">setOutputSwitch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set the output switch to 1 -&gt; ON or 0 -&gt; OFF</span>
@@ -163,7 +159,7 @@
 <div class="viewcode-block" id="Keithley2400.getsetvoltage"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.getsetvoltage">[docs]</a>    <span class="k">def</span> <span class="nf">getsetvoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the current voltage</span>
-<span class="sd">        </span>
+
 <span class="sd">        :returns: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SOUR:VOLT?&#39;</span><span class="p">)</span>
@@ -172,7 +168,7 @@
 <div class="viewcode-block" id="Keithley2400.getsetcurrent"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.getsetcurrent">[docs]</a>    <span class="k">def</span> <span class="nf">getsetcurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the current</span>
-<span class="sd">        </span>
+
 <span class="sd">        :returns: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:SOUR:CURR?&#39;</span><span class="p">)</span>
@@ -181,15 +177,15 @@
 <div class="viewcode-block" id="Keithley2400.getoutvoltage"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.getoutvoltage">[docs]</a>    <span class="k">def</span> <span class="nf">getoutvoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the current out-voltage</span>
-<span class="sd">        </span>
+
 <span class="sd">        :returns: Float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;:MEAS:VOLT:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Resolution</span><span class="p">)))</span>     </div>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;:MEAS:VOLT:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Resolution</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Keithley2400.getoutcurrent"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.getoutcurrent">[docs]</a>    <span class="k">def</span> <span class="nf">getoutcurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the current out-current</span>
-<span class="sd">        </span>
+
 <span class="sd">        :returns: Float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;:MEAS:CURR:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Resolution</span><span class="p">)))</span></div>
@@ -197,7 +193,7 @@
 <div class="viewcode-block" id="Keithley2400.getoutswitch"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Keithley2400.Keithley2400.getoutswitch">[docs]</a>    <span class="k">def</span> <span class="nf">getoutswitch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the current out-switch</span>
-<span class="sd">        </span>
+
 <span class="sd">        :returns: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:OUTP?&#39;</span><span class="p">)</span>
@@ -219,11 +215,7 @@
 <span class="sd">        :param mem: Specified space to query</span>
 <span class="sd">        :type mem: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;*RCL &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">))</span></div>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;Keithley2400&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;*RCL &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">))</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

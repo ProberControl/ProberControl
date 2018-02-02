@@ -2,7 +2,7 @@
 #    - wraps around Motor
 
 from Motor_KST_ZST import Motor_KST_ZST as Motor, hexString, int2hexStr
-import serial
+#import serial
 import logging
 import time
 from struct import unpack

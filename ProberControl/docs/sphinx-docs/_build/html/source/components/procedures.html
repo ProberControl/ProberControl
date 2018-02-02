@@ -46,6 +46,9 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-procedures.Binning">
+<span id="procedures-binning-module"></span><h2>procedures.Binning module<a class="headerlink" href="#module-procedures.Binning" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="procedures-measure-module">
 <h2>procedures.Measure module<a class="headerlink" href="#procedures-measure-module" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -110,6 +113,9 @@
 </div>
 <div class="section" id="procedures-random-module">
 <h2>procedures.random module<a class="headerlink" href="#procedures-random-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="procedures-randomwalk-module">
+<h2>procedures.randomWalk module<a class="headerlink" href="#procedures-randomwalk-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-procedures.raster">
 <span id="procedures-raster-module"></span><h2>procedures.raster module<a class="headerlink" href="#module-procedures.raster" title="Permalink to this headline">¶</a></h2>
@@ -179,14 +185,24 @@ the voltage on the optimal point</dd>
 <div class="section" id="module-procedures.vision">
 <span id="procedures-vision-module"></span><h2>procedures.vision module<a class="headerlink" href="#module-procedures.vision" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="procedures.vision.calibrateProbe">
+<code class="descclassname">procedures.vision.</code><code class="descname">calibrateProbe</code><span class="sig-paren">(</span><em>Stages</em>, <em>calibrating_stage</em>, <em>video</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#calibrateProbe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.calibrateProbe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="procedures.vision.setChipAngle">
 <code class="descclassname">procedures.vision.</code><code class="descname">setChipAngle</code><span class="sig-paren">(</span><em>stages</em>, <em>video</em>, <em>chip</em>, <em>desired_angle</em>, <em>res=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#setChipAngle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.setChipAngle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set angle of chip edge as seen by video feed using chip stage</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="procedures.vision.setFiberChipOffset">
-<code class="descclassname">procedures.vision.</code><code class="descname">setFiberChipOffset</code><span class="sig-paren">(</span><em>stages</em>, <em>video</em>, <em>chip_stage</em>, <em>desired_offset</em>, <em>res=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#setFiberChipOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.setFiberChipOffset" title="Permalink to this definition">¶</a></dt>
+<dt id="procedures.vision.setEWOffset">
+<code class="descclassname">procedures.vision.</code><code class="descname">setEWOffset</code><span class="sig-paren">(</span><em>stages</em>, <em>video</em>, <em>chip_stage</em>, <em>res=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#setEWOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.setEWOffset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="procedures.vision.setNSOffset">
+<code class="descclassname">procedures.vision.</code><code class="descname">setNSOffset</code><span class="sig-paren">(</span><em>stages</em>, <em>video</em>, <em>chip_stage</em>, <em>desired_offset</em>, <em>res=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#setNSOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.setNSOffset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -208,11 +224,13 @@ the voltage on the optimal point</dd>
   <ul>
 <li><a class="reference internal" href="#">procedures package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-procedures.Binning">procedures.Binning module</a></li>
 <li><a class="reference internal" href="#procedures-measure-module">procedures.Measure module</a></li>
 <li><a class="reference internal" href="#module-procedures.Post_Processing">procedures.Post_Processing module</a></li>
 <li><a class="reference internal" href="#procedures-connecting-module">procedures.connecting module</a></li>
 <li><a class="reference internal" href="#procedures-fine-allign-module">procedures.fine_allign module</a></li>
 <li><a class="reference internal" href="#procedures-random-module">procedures.random module</a></li>
+<li><a class="reference internal" href="#procedures-randomwalk-module">procedures.randomWalk module</a></li>
 <li><a class="reference internal" href="#module-procedures.raster">procedures.raster module</a></li>
 <li><a class="reference internal" href="#module-procedures.vision">procedures.vision module</a></li>
 <li><a class="reference internal" href="#module-contents">Module contents</a></li>

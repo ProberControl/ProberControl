@@ -1,0 +1,588 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>instruments.AragonBOSA400 &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for instruments.AragonBOSA400</h1><div class="highlight"><pre>
+<span></span><span class="c1">#import visa</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">OK</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">OK_MSG</span> <span class="o">=</span> <span class="s1">&#39;OK&#39;</span>
+<span class="n">ERROR_BGN</span> <span class="o">=</span> <span class="s1">&#39;Command&#39;</span>
+
+<div class="viewcode-block" id="AragonBOSA400"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400">[docs]</a><span class="k">class</span> <span class="nc">AragonBOSA400</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This class models the AndoAQ4321 laser.</span>
+
+<span class="sd">    .. note:: When using any laser command, remember to send shut-off-laser command at the end of each sweep command set.</span>
+<span class="sd">        For Trigger Sweep, send shut-off-laser command after sweep ends (sweep end condition noted in TriggerSweepSetup function)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res_manager</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="s1">&#39;128.59.65.231&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor method</span>
+
+<span class="sd">        :param res_manager: PyVisa resource manager</span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
+<span class="sd">        :param address: SCPI address of instrument</span>
+<span class="sd">        :type address: string</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_wavelength</span> <span class="o">=</span> <span class="mf">1579.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_wavelength</span> <span class="o">=</span> <span class="mi">1520</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">osa</span> <span class="o">=</span> <span class="n">BOSA</span><span class="p">(</span><span class="s2">&quot;LAN&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AragonBOSA400.whoAmI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;OSA&#39;</span></div>
+
+
+<div class="viewcode-block" id="AragonBOSA400.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span></div>
+
+<span class="c1">############## LASER FUNCTION CALLS</span>
+
+<div class="viewcode-block" id="AragonBOSA400.get_max_wavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.get_max_wavelength">[docs]</a>    <span class="k">def</span> <span class="nf">get_max_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Queries the maximum allowed wavelength</span>
+
+<span class="sd">        :returns: Integer</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_wavelength</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.get_min_wavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.get_min_wavelength">[docs]</a>    <span class="k">def</span> <span class="nf">get_min_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Queries the minimum allowed wavelength</span>
+
+<span class="sd">        :returns: Integer</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_wavelength</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.setwavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.setwavelength">[docs]</a>    <span class="k">def</span> <span class="nf">setwavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Loads a single wavelength (in nanometers) and sets output high</span>
+
+<span class="sd">        :param waveLength: Specified wavelength</span>
+<span class="sd">        :type waveLength: Integer</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:stat </span><span class="si">{}</span><span class="s1"> nm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.setpower"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.setpower">[docs]</a>    <span class="k">def</span> <span class="nf">setpower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            BOSA cannot adjust output power - raise exception</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;Cannot adjust output power.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.sweepWavelengthsTriggerSetup"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.sweepWavelengthsTriggerSetup">[docs]</a>    <span class="k">def</span> <span class="nf">sweepWavelengthsTriggerSetup</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Have to keep track of Triggers in main command, use Stop Sweep Command to end sweep.</span>
+<span class="sd">        Extra triggers do not make the laser sweep outside of specified end wavelength.</span>
+<span class="sd">        Remeber to shut off laser after sweep ends</span>
+
+<span class="sd">        :param start: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type start: Integer</span>
+<span class="sd">        :param end: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type end: Integer</span>
+<span class="sd">        :param step: Specified step in nm</span>
+<span class="sd">        :type step: Float</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_wavelength</span><span class="p">()</span> <span class="ow">or</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_wavelength</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;start wavelength Out of Bounds.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_wavelength</span><span class="p">()</span> <span class="ow">or</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_wavelength</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;end wavelength Out of Bounds.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">end</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;start wavelength must be smaller than end.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># set single sweep</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:single on&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span>
+        <span class="c1"># set start waveLength</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:star </span><span class="si">{}</span><span class="s1"> nm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span>
+        <span class="c1"># set end wavelength</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:stop </span><span class="si">{}</span><span class="s1"> nm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span>
+        <span class="c1"># set sweep speed</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:speed </span><span class="si">{}</span><span class="s1"> nm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.trigger"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.trigger">[docs]</a>    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Triggers laser - Now this just starts the sweep&#39;&#39;&#39;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:sweep on&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.stopSweep"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.stopSweep">[docs]</a>    <span class="k">def</span> <span class="nf">stopSweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Stop sweep&#39;&#39;&#39;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:sweep off&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.outputOFF"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.outputOFF">[docs]</a>    <span class="k">def</span> <span class="nf">outputOFF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Turns output of laser source OFF</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:switch off&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.outputON"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.outputON">[docs]</a>    <span class="k">def</span> <span class="nf">outputON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Turns output of laser source OFF</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:switch on&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span>
+
+        <span class="c1"># wait until the laser is on</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:switch?&#39;</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;on&#39;</span><span class="p">):</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.getwavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.getwavelength">[docs]</a>    <span class="k">def</span> <span class="nf">getwavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Queries wavelength of the laser</span>
+
+<span class="sd">        :returns: Float</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:stat?&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="n">response</span>  <span class="c1"># TODO finalize how to parse and return a nmber</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.getpower"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.getpower">[docs]</a>    <span class="k">def</span> <span class="nf">getpower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Gets output power in dbm</span>
+
+<span class="sd">        :returns: Float</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.getAuxInputPower"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.getAuxInputPower">[docs]</a>    <span class="k">def</span> <span class="nf">getAuxInputPower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.sweepWavelengthsContinuous"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.sweepWavelengthsContinuous">[docs]</a>    <span class="k">def</span> <span class="nf">sweepWavelengthsContinuous</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Executes a sweep with respect to a specified time</span>
+
+<span class="sd">        :param start: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type start: Integer</span>
+<span class="sd">        :param end: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type end: Integer</span>
+<span class="sd">        :param time: Specified time</span>
+<span class="sd">        :type time: Float</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+<span class="c1">###### Function Calls Component Analyzer</span>
+<div class="viewcode-block" id="AragonBOSA400.getIL"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.getIL">[docs]</a>    <span class="k">def</span> <span class="nf">getIL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">polarization</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Executes a sweep with respect to a specified time and collect injection loss information</span>
+
+<span class="sd">        :param start: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type start: Integer</span>
+<span class="sd">        :param end: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type end: Integer</span>
+<span class="sd">        :param step: Specified step</span>
+<span class="sd">        :type step: Float</span>
+<span class="sd">        :param step: polarization mode</span>
+<span class="sd">        :type step: String</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="AragonBOSA400.getRL"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.getRL">[docs]</a>    <span class="k">def</span> <span class="nf">getRL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">polarization</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Executes a sweep with respect to a specified time and collect reflection loss information</span>
+
+<span class="sd">        :param start: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type start: Integer</span>
+<span class="sd">        :param end: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type end: Integer</span>
+<span class="sd">        :param step: Specified step</span>
+<span class="sd">        :type step: Float</span>
+<span class="sd">        :param step: polarization mode</span>
+<span class="sd">        :type step: String</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
+
+<span class="c1">##### Function Calls OSA</span>
+<div class="viewcode-block" id="AragonBOSA400.getSpectrum"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.AragonBOSA400.getSpectrum">[docs]</a>    <span class="k">def</span> <span class="nf">getSpectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">polarization</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Executes a sweep with respect to a specified time and collect reflection loss information</span>
+
+<span class="sd">        :param start: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type start: Integer</span>
+<span class="sd">        :param end: Specified wavelength between 1520-1580</span>
+<span class="sd">        :type end: Integer</span>
+<span class="sd">        :param step: Specified step</span>
+<span class="sd">        :type step: Float</span>
+<span class="sd">        :param step: polarization mode</span>
+<span class="sd">        :type step: String</span>
+
+<span class="sd">        NOTE: polarization arg doesn&#39;t do anything yet!</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_wavelength</span><span class="p">()</span> <span class="ow">or</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_wavelength</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;start wavelength Out of Bounds.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_wavelength</span><span class="p">()</span> <span class="ow">or</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_wavelength</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;end wavelength Out of Bounds.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">end</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;start wavelength must be smaller than end.&#39;</span><span class="p">)</span>
+
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">nm_to_ghz</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+
+        <span class="c1"># set start</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:star </span><span class="si">{}</span><span class="s1"> nm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span>
+        <span class="c1"># set stop</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:stop </span><span class="si">{}</span><span class="s1"> nm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span>
+        <span class="c1"># set resolution</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;sens:wav:res </span><span class="si">{}</span><span class="s1"> ghz&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="p">)</span>
+
+        <span class="c1"># command = &#39;trace:data:count?&#39;</span>
+        <span class="c1"># response = self.osa.ask(command)</span>
+        <span class="c1"># check_response(command, response)</span>
+        <span class="c1"># print response</span>
+
+        <span class="c1"># get the trace</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;trace:data?&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osa</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="c1"># parse csv string</span>
+        <span class="n">trace_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">n_trace_data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trace_data</span><span class="p">)</span>
+        <span class="n">n_trace_data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_trace_data</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trace_data</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># take only enough points accoridng to step</span>
+        <span class="c1"># NOTE: BOSA does&#39;t change its sampling rate; it only changes it on the display</span>
+        <span class="n">original_size</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">n_trace_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s1">&#39;orig: &#39;</span><span class="p">,</span> <span class="n">original_size</span>
+        <span class="n">target_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s1">&#39;targ: &#39;</span><span class="p">,</span> <span class="n">target_size</span>
+        <span class="n">skip_step</span> <span class="o">=</span> <span class="n">original_size</span> <span class="o">/</span> <span class="n">target_size</span>
+        <span class="nb">print</span> <span class="s1">&#39;skip: &#39;</span><span class="p">,</span> <span class="n">skip_step</span>
+        <span class="n">return_data</span> <span class="o">=</span> <span class="n">n_trace_data</span><span class="p">[::</span><span class="n">skip_step</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">return_data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="check_response"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.check_response">[docs]</a><span class="k">def</span> <span class="nf">check_response</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">OK</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">ERROR_BGN</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">OK</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">OK_MSG</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">BOSAException</span><span class="p">(</span><span class="s1">&#39;cmd:&lt; </span><span class="si">{}</span><span class="s1"> &gt; repsonded with: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">response</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="nm_to_ghz"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.nm_to_ghz">[docs]</a><span class="k">def</span> <span class="nf">nm_to_ghz</span><span class="p">(</span><span class="n">nm</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nm</span> <span class="o">*</span> <span class="mi">125</span></div>
+
+<div class="viewcode-block" id="BOSAException"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.BOSAException">[docs]</a><span class="k">class</span> <span class="nc">BOSAException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<span class="c1"># create logger</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span> <span class="c1"># check if the logger already exists</span>
+    <span class="c1"># create logger</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="c1"># create console handler and set level to debug</span>
+    <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="c1"># create formatter</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># add formatter to ch</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+    <span class="c1"># add ch to logger</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BOSA"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.BOSA">[docs]</a><span class="k">class</span> <span class="nc">BOSA</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; class BOSA: driver used to communicate with BOSA equipment&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interfaceType</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">portNo</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">IDN</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">Reset</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;create the OSA object and tries to establish a connection with the equipment</span>
+<span class="sd">            Parameters:</span>
+<span class="sd">                interfaceType -&gt; LAN, GPIB interface utilyzed in connection</span>
+<span class="sd">                location      -&gt; IP address or GPIB address of equipment.</span>
+<span class="sd">                portN         -&gt; no of the port where the interface is open (LAN)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaceType</span> <span class="o">=</span> <span class="n">interfaceType</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portNo</span> <span class="o">=</span> <span class="n">portNo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activeTrace</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">interfaceType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;lan&quot;</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connection to OSA using Lan interface on </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">location</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connectLan</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not connect to OSA device&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+                <span class="k">return</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">interfaceType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;gpib&quot;</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;GPIB interface chosen to connect OSA on </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">location</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">GpibInstrument</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;couldn&#39;t connect to device&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+                <span class="k">return</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connected to device.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Interface Type &quot;</span> <span class="o">+</span> <span class="n">interfaceType</span> <span class="o">+</span> <span class="s2">&quot; not valid&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;interface type invalid&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">IDN</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending IDN to device...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not send *IDN? device&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;IDN send, waiting response...&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could read response from device&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;IDN= &quot;</span> <span class="o">+</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">Reset</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;resting device&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*RST&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not reset device&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaceType</span> <span class="o">==</span> <span class="s2">&quot;LAN&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">elif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaceType</span> <span class="o">==</span> <span class="s2">&quot;GPIB&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;could not close interface correctly: exception </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BOSA.connectLan"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.BOSA.connectLan">[docs]</a>    <span class="k">def</span> <span class="nf">connectLan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; connect the instrument to a LAN &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;creating socket&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connecting to remote socket...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">portNo</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not connection to remote socket&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connected to remote socket&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;OSA ready!&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BOSA.write"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.BOSA.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; write to equiment: independent of the interface</span>
+<span class="sd">            Parameters:</span>
+<span class="sd">                command -&gt; data to send to device + \r\n</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaceType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;lan&quot;</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending command &#39;&quot;</span> <span class="o">+</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot;&#39; using LAN interface...&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span> <span class="p">(</span><span class="n">command</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not send data, command </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">command</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">elif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaceType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;gpib&quot;</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending command &#39;&quot;</span> <span class="o">+</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot;&#39; using GPIB interface...&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">command</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not send data, command </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">command</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span></div>
+
+
+<div class="viewcode-block" id="BOSA.read"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.BOSA.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; read something from device&quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaceType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;lan&quot;</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reading data using LAN interface...&quot;</span><span class="p">)</span>
+            <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">19200</span><span class="p">)</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not read data&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+                <span class="k">if</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">):</span>
+                    <span class="k">break</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;All data readed!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaceType</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;gpib&quot;</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reading data using GPIB interface...&quot;</span><span class="p">)</span>
+            <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not read data&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+                <span class="k">if</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">):</span>
+                    <span class="k">break</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;All data readed!&quot;</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Data received: &quot;</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span></div>
+
+
+<div class="viewcode-block" id="BOSA.ask"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AragonBOSA400.BOSA.ask">[docs]</a>    <span class="k">def</span> <span class="nf">ask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; writes and reads data&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">visa</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="n">bosa</span> <span class="o">=</span> <span class="n">AragonBOSA400</span><span class="p">(</span><span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">(),</span> <span class="s1">&#39;128.59.87.222&#39;</span><span class="p">)</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">bosa</span><span class="o">.</span><span class="n">getSpectrum</span><span class="p">(</span><span class="mf">1540.5</span><span class="p">,</span> <span class="mi">1560</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">spec</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;done.&#39;</span><span class="p">)</span>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copyright (C) 2017  Robert Polster</span>
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -49,7 +49,7 @@
 <div class="viewcode-block" id="Polatis"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis">[docs]</a><span class="k">class</span> <span class="nc">Polatis</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This class models the Polatis 16x16 optical switch. Dependencies: PyVisa, datetime, time.</span>
-<span class="sd">    </span>
+
 <span class="sd">    .. note:: there are a handful of sleep() calls throughout the class that slow down the performance of the switch. This is beacuase the firmware on the switch is not stable enough to support commands executed at high-speeds.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
@@ -59,7 +59,7 @@
 
     <span class="k">def</span> <span class="nf">__getResource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Handles errors for constructor method&#39;&#39;&#39;</span>
-        
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">switch</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="c1"># instantiate our resource object</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Resource Initialized: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">switch</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;*IDN?&#39;</span><span class="p">)))</span>
@@ -69,10 +69,6 @@
 
 <div class="viewcode-block" id="Polatis.whoAmI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;switch&#39;</span></div>
-
-<div class="viewcode-block" id="Polatis.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;switch&#39;</span></div>
 
 <div class="viewcode-block" id="Polatis.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -129,15 +125,15 @@
         	<span class="n">buffer</span> <span class="o">=</span> <span class="n">egress</span>
         	<span class="n">egress</span> <span class="o">=</span> <span class="n">ingress</span>
         	<span class="n">ingress</span> <span class="o">=</span> <span class="n">buffer</span>
-		
+
         <span class="n">ingress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__formatConventional</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ingress</span><span class="p">))</span>
         <span class="n">egress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__formatConventional</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">egress</span><span class="p">))</span>
-        
+
         <span class="n">ports</span> <span class="o">=</span> <span class="n">ingress</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="n">egress</span>
-        
+
         <span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_switch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:oxc:swit:conn:add&#39;</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">ports</span><span class="o">+</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="Polatis.make_connections"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.make_connections">[docs]</a>    <span class="k">def</span> <span class="nf">make_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ingress</span><span class="p">,</span> <span class="n">egress</span><span class="p">,</span> <span class="n">explicit</span><span class="o">=</span><span class="s1">&#39;only&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 
@@ -160,7 +156,7 @@
 
         <span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_switch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:oxc:swit:conn:only&#39;</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">ports</span><span class="o">+</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
-        
+
     <span class="k">def</span> <span class="nf">__formatConnections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ingress</span><span class="p">,</span> <span class="n">egress</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Formats &lt;ingress&gt; &lt;egress&gt; for querying the device. Indices determine the relationship between the two ports.</span>
@@ -171,10 +167,10 @@
 <span class="sd">        :type egress: list of integers</span>
 <span class="sd">        :returns: String formatted for SCPI</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="n">ingress</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ingress</span><span class="p">])</span>
         <span class="n">egress</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">egress</span><span class="p">])</span>
-        
+
         <span class="n">ingress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__formatConventional</span><span class="p">(</span><span class="n">ingress</span><span class="p">)</span>
         <span class="n">egress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__formatConventional</span><span class="p">(</span><span class="n">egress</span><span class="p">)</span>
 
@@ -188,13 +184,13 @@
 <span class="sd">        :type toBeFormatted: String</span>
 <span class="sd">        :returns: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="k">if</span> <span class="p">(</span><span class="n">toBeFormatted</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;,&#39;</span><span class="p">):</span>
             <span class="n">toBeFormatted</span> <span class="o">=</span> <span class="n">toBeFormatted</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#remove last comma</span>
-            
+
         <span class="n">toBeFormatted</span> <span class="o">=</span> <span class="n">toBeFormatted</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;@(&#39;</span> <span class="c1">#add conventional format</span>
         <span class="n">toBeFormatted</span> <span class="o">=</span> <span class="n">toBeFormatted</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;)&#39;</span> <span class="c1">#closing bracket</span>
-        
+
         <span class="k">return</span> <span class="n">toBeFormatted</span>
 
 <div class="viewcode-block" id="Polatis.get_boot_mode"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.get_boot_mode">[docs]</a>    <span class="k">def</span> <span class="nf">get_boot_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -222,18 +218,18 @@
 
 <span class="sd">        :param commands: SCPI commands for the instrument</span>
 <span class="sd">        :type commands: Sting</span>
-<span class="sd">        :returns: varied </span>
+<span class="sd">        :returns: varied</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;;&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">commands</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)]</span>
         <span class="n">replies</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Storage for query replies</span>
-        
+
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;?&#39;</span><span class="p">:</span> <span class="c1"># indication of a query</span>
                 <span class="n">replies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_handler</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_handler</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-                       
+
         <span class="k">return</span> <span class="n">replies</span></div>
 
     <span class="k">def</span> <span class="nf">__cmd_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -247,7 +243,7 @@
 <span class="sd">        :returns: a reply if query as String</span>
 <span class="sd">        :raises: Exception, VisaTimeoutError</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="k">if</span> <span class="n">query</span><span class="p">:</span> <span class="c1"># expects a reply</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_switch</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -266,7 +262,7 @@
 <span class="sd">        :param name: desired filename, defaults to newPattern.txt</span>
 <span class="sd">        :type name: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
@@ -283,7 +279,7 @@
 <span class="sd">        :returns: String</span>
 <span class="sd">        :raises: Exception</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
+
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
@@ -313,22 +309,18 @@
         <span class="n">connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_connections</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;),(&quot;</span><span class="p">)</span>
         <span class="n">connections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
         <span class="n">connections</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-		
+
         <span class="n">row1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
 			<span class="nb">print</span> <span class="n">elem</span>
 			<span class="n">row1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
-			
+
         <span class="n">row2</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
 			<span class="nb">print</span> <span class="n">elem</span>
 			<span class="n">row2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
-		
-        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row1</span><span class="p">,</span> <span class="n">row2</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;Polatis&#39;</span></div>
+        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row1</span><span class="p">,</span> <span class="n">row2</span><span class="p">)</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

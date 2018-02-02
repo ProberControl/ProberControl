@@ -52,10 +52,10 @@
 
 <span class="sd">  .. note:: Currently this class and therefore get_o_spectrum() is explicitly written to set up the connection and work only with the AQ4321 Laser.</span>
 <span class="sd">  &#39;&#39;&#39;</span>
-	
+
   <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res_manager</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="s1">&#39;GPIB0::2::INSTR&#39;</span><span class="p">):</span>
 
-	
+
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span> <span class="o">=</span> <span class="n">res_manager</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;INIT&#39;</span><span class="p">)</span>
     <span class="c1">#time.sleep(0.55)</span>
@@ -67,17 +67,13 @@
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;OSA&#39;</span></div>
 
-<div class="viewcode-block" id="AndoAQ6317.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ6317.AndoAQ6317.whatCanI">[docs]</a>  <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
-
 <div class="viewcode-block" id="AndoAQ6317.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ6317.AndoAQ6317.change_state">[docs]</a>  <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span></div>
-	
+
 <div class="viewcode-block" id="AndoAQ6317.get_o_spectrum"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ6317.AndoAQ6317.get_o_spectrum">[docs]</a>  <span class="k">def</span> <span class="nf">get_o_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">result_path</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SNHD&#39;</span><span class="p">)</span> 					<span class="c1">#Sets Sensitivity to Normal Range (HOLD)</span>
@@ -91,7 +87,7 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;GP2ADR?&#39;</span><span class="p">)</span> 					<span class="c1">#Double checks</span>
     <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;GP-IB2 Address of OSA set to: &#39;</span> <span class="o">+</span><span class="n">info</span><span class="p">)</span>
-    
+
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TLSSYNC1&#39;</span><span class="p">)</span> 				<span class="c1">#Syncs Laser and OSA</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TLSSYNC?&#39;</span><span class="p">)</span> 				<span class="c1">#Double checks</span>
     <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -105,7 +101,7 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SRMSK254&#39;</span><span class="p">)</span> 				<span class="c1">#Sets mask to be 254, Masking for &#39;Sweep Complete&#39; (Bit 0)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SRQ1&#39;</span><span class="p">)</span> 					<span class="c1">#Status Bit on</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">stb</span> 								<span class="c1">#Discard Initial status bit</span>
-    
+
     <span class="n">sweepWidth</span> <span class="o">=</span> <span class="n">stop</span><span class="o">-</span><span class="n">start</span>
     <span class="n">sampleNumber</span> <span class="o">=</span> <span class="n">sweepWidth</span><span class="o">/</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -114,14 +110,14 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;STPWL&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">stop</span><span class="p">))</span> 		<span class="c1">#End of sweep</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Scan Starts: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; to &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;nm step&#39;</span><span class="p">)</span>
-    
+
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SGL&#39;</span><span class="p">)</span> <span class="c1"># Start Single Sweep</span>
-    
+
     <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">()</span>  <span class="c1">#Checks if sweep is complete</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[Sweep Done]&#39;</span><span class="p">)</span>
     <span class="c1">#time.sleep(60)</span>
-    
+
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SD1, LDATA&#39;</span><span class="p">)</span> <span class="c1">#Reads Data from Buffer</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">DataList</span> <span class="o">=</span> <span class="p">[]</span>
@@ -133,7 +129,7 @@
 
     <span class="k">return</span> <span class="n">DataList</span></div>
 
-<div class="viewcode-block" id="AndoAQ6317.checkStatus"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ6317.AndoAQ6317.checkStatus">[docs]</a>  <span class="k">def</span> <span class="nf">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<div class="viewcode-block" id="AndoAQ6317.checkStatus"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ6317.AndoAQ6317.checkStatus">[docs]</a>  <span class="k">def</span> <span class="nf">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">status</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">stb</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Status: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">status</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Scanning.&#39;</span><span class="p">),</span>
@@ -143,9 +139,6 @@
 	  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span>
       <span class="c1">#print(&#39;Status: %d&#39; %status)</span>
     <span class="k">return</span> <span class="kc">True</span></div></div>
-
-
-
 </pre></div>
 
           </div>

@@ -3,131 +3,128 @@ import math
 import time
 import connecting
 from ..classes.plotter import NBPlot
+from ..classes.DataIO import DataIO
 
 # Getting an instance of the Global_MeasureHandler singleton object
 from ..classes.Global_MeasureHandler import Global_MeasureHandler as g
 # Getting Global_MeasureHandler (singleton)instance; Do not change this!
 gh = g()
 
-def set_clear_plot(clear):
+def test(data):
     pl = NBPlot()
-    pl.set_clear(clear)
+    data = [data,data,data]
+    DataList = [[[1,1,1],data,data],[[2,2,2],data,data],[[3,3,3],data,data],[[4,4,4],data,data]]
+    pl.plot(DataList,'Optical Spectrum','Wavelength [nm]','Measured Power [dB]')
 
 
-def _write_csv(file,data):
-	for elem in data:
-		for item in elem:
-			file.write(str(item))
-			file.write('\t')
-		file.write('\n')
-
-def _write_data(data,path='results.meas'):
-    result_file = open(path,"w")
-
-    _write_csv(result_file,data)
+    DataIO.writeData('NextTest.txt', DataList, Data_Name='')
+    return DataList
 
 
-def get_o_power(stages,maitre,wavelength=1550,sweeping=False,result_path=0):
-    if 'MLaser' in stages and sweeping == False:
-        wavelength = gh.call_function('laser','getwavelength')
-        #wavelength = stages['MLaser'].getwavelength() #direct access alternative
+def get_o_power(wavelength=1550,sweeping=False,result_path=0):
+    laser = gh.get_instrument('Laser', additional=False)
+    if laser is not None:
+        wavelength = laser.getwavelength()
 
-    data = float(gh.call_function('PowerMeter', 'get_power', float(wavelength)))
-    # data = float(stages['MPowerMeter'].get_power(float(wavelength), channel)) #direct access alternative
-
+    pm = gh.get_instrument('PowerMeter')
+    gh.connect_instruments(laser, pm)
+    data = pm.get_power(float(wavelength))
 
     if result_path != 0:
-        _write_data(data,result_path)
+        DataIO.writeData(result_path,data,'get_o_power')
 
     return data
 
-def get_o_spectrum_OSA(stages, maitre, start, stop, step, result_path = 0):
+def get_o_spectrum_OSA(start, stop, step, result_path = 0):
 
-	DataList = []
-	DataList = stages['MOSA'].get_o_spectrum(start, stop, step, result_path)
+    DataList = []
+    osa = gh.get_instrument('OSA')
+    DataList = osa.get_o_spectrum(start, stop, step, result_path)
 
-	pl = NBPlot()
-	pl.plot(DataList,'Optical Spectrum','Wavelength [nm]','Measured Power [dB]')
+    pl = NBPlot()
+    pl.plot(DataList,'Optical Spectrum','Wavelength [nm]','Measured Power [dB]')
 
-	return DataList
+    return DataList
 
-def get_o_spectrum_PowerMeter(stages, maitre, start, stop, step, channels, result_path = 0):
+def get_o_spectrum_PowerMeter(start, stop, step, channels, result_path = 0):
 
-	start = float(start)
-	stop = float(stop)
-	step = float(step)
+    start = float(start)
+    stop = float(stop)
+    step = float(step)
 
-	channels = int(channels)
+    channels = int(channels)
 
-	sweepWidth = stop-start
-	sampleNumber = sweepWidth/(step) + 1
+    sweepWidth = stop-start
+    sampleNumber = sweepWidth/(step) + 1
 
-	for i in xrange(1, channels+1):
-			stages['MPowerMeter' + str(i)].config_meter(-30)
-			stages['MPowerMeter' + str(i)].prep_measure_on_trigger(sampleNumber)
-
-
-
-	t0 = time.time()
-	OSAData = stages['MOSA'].get_o_spectrum(start, stop, step)
-
-	time.sleep(3)
-
-	AllDataList = [OSAData]
-	for i in xrange(1, channels+1):
-		PowerList = stages['MPowerMeter' + str(i) ].get_result_from_log(sampleNumber)
-
-		DataList =[]
-
-		for j in range(len(PowerList)):
-			if (PowerList[j] < 100 and PowerList[j] > 0):
-				power  = 10*math.log10(PowerList[j]/0.001)
-				#if (power < -70):
-				#	DataList.append([start+j*step, -70])
-				#else:
-				DataList.append([start+j*step, power])
-			#DataList.append([start+j*step, PowerList[j]])
-		pl = NBPlot()
-		pl.plot(DataList,'Optical Spectrum for Channel ' + str(i),'Wavelength [nm]','Measured Power [dBm]')
-
-		AllDataList.append(DataList)
-
-	#pl.plot(OSAData,'Optical Spectrum for OSA', 'Wavelength [nm]','Measured Power [dBm]')
-
-	if result_path != 0:
-
-		_write_data(OSAData,str(result_path)+'_OSA.txt')
-		for i in range(len(AllDataList)):
-			_write_data(AllDataList[i],str(result_path)+'_PM'+str(i)+'.txt')
+    pms = []
+    for i in xrange(channels):
+        pm = gh.get_instrument('PowerMeter', additional=True)
+    	pm.config_meter(-30)
+    	pm.prep_measure_on_trigger(sampleNumber)
+        pms.append(pm)
 
 
-	return AllDataList
 
-def get_current(stages, maitre,channel=1):
-    #return gh.call_function('DCMeter', 'get_current')
-    data = stages['MDCSource'+str(int(channel))].get_current()
+    t0 = time.time()
+    osa = gh.get_instrument('OSA')
+    OSAData = osa.get_o_spectrum(start, stop, step)
+
+    time.sleep(3)
+
+    AllDataList = [OSAData]
+    for i in xrange(channels):
+    	PowerList = pms[i].get_result_from_log(sampleNumber)
+
+    	DataList =[]
+
+    	for j in range(len(PowerList)):
+    		if (PowerList[j] < 100 and PowerList[j] > 0):
+    			power  = 10*math.log10(PowerList[j]/0.001)
+    			#if (power < -70):
+    			#	DataList.append([start+j*step, -70])
+    			#else:
+    			DataList.append([start+j*step, power])
+    		#DataList.append([start+j*step, PowerList[j]])
+    	pl = NBPlot()
+    	pl.plot(DataList,'Optical Spectrum for Channel ' + str(i),'Wavelength [nm]','Measured Power [dBm]')
+
+    	AllDataList.append(DataList)
+
+    #pl.plot(OSAData,'Optical Spectrum for OSA', 'Wavelength [nm]','Measured Power [dBm]')
+
+    if result_path != 0:
+
+    	_write_data(OSAData,str(result_path)+'_OSA.txt')
+    	for i in range(len(AllDataList)):
+    		_write_data(AllDataList[i],str(result_path)+'_PM'+str(i)+'.txt')
+
+
+    return AllDataList
+
+def get_current():
+    dc = gh.get_instrument('DCSource')
+    data = dc.get_current()
     return data
 
-def get_o_spectrum(stages, maitre,start,stop,step,result_path=0):
+def get_o_spectrum(start,stop,step,result_path=0):
 
-    #init_wavelength = float(gh.call_function('laser','getwavelength'))
-    init_wavelength=float(stages['MLaser'].getwavelength()) #direct access alternative
+    laser = gh.get_instrument('Laser')
+    pm = gh.get_instrument_triggered_by(laser, 'PowerMeter')
 
-    #gh.call_function('laser','sweepWavelengthsTriggerSetup', [float(start),float(stop),float(step)])
-    stages['MLaser'].sweepWavelengthsTriggerSetup(float(start),float(stop),float(step)) #direct access alternative
+    init_wavelength = float(laser.getwavelength())
+
+    laser.sweepWavelengthsTriggerSetup(float(start),float(stop),float(step))
 
     DataList = []
 
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
-        #gh.call_function('laser','trigger')
-        stages['MLaser'].trigger() #direct access alternative
-        DataList.append([x,get_o_power(stages,maitre,x,True)])
+        laser.trigger()
+        DataList.append([x,get_o_power(x,True)])
 
-    #gh.call_function('laser','setwavelength',init_wavelength)
-    #gh.call_function('power','get_power',init_wavelength)
 
-    stages['MLaser'].setwavelength(init_wavelength) #direct access alternative
-    stages['MPowerMeter'].get_power(init_wavelength,channel) #direct access alternative; channel deprecated
+    laser.setwavelength(init_wavelength)
+    pm.get_power(init_wavelength,channel)
 
     pl =  NBPlot()
     pl.plot(
@@ -138,58 +135,52 @@ def get_o_spectrum(stages, maitre,start,stop,step,result_path=0):
         )
 
     if result_path != 0:
-        _write_data(DataList,result_path)
+        DataIO.writeData(result_path,DataList,'get_o_spectrum')
 
     return DataList
 
-def _thresh_wavelength(stages, maitre,start,stop,step,thresh=-60,result_path=0):
+def _thresh_wavelength(start,stop,step,thresh=-60,result_path=0):
 
-    #gh.call_function('laser','sweepWavelengthsTriggerSetup', [float(start),float(stop),float(step)])
-    stages['MLaser'].sweepWavelengthsTriggerSetup(float(start),float(stop),float(step))
+    laser = gh.get_instrument('Laser')
+    laser.sweepWavelengthsTriggerSetup(float(start),float(stop),float(step))
+    pm = gh.get_instrument_triggered_by(laser, 'PowerMeter', additional=False)
 
     DataList = []
 
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
-        #gh.call_function('laser','trigger')
-        stages['MLaser'].trigger() #direct access alternative
-        power = get_o_power(stages,maitre,x,True)
-        DataList.append([x,get_o_power(stages,maitre,x,True)])
+        stages['MLaser'].trigger()
+        power = get_o_power(x,True)
+        DataList.append([x,get_o_power(x,True)])
         if power > thresh:
             return DataList
 
     return DataList
 
-def get_e_spectrum(stages,maitre,start=1,stop=1000,step=10,power=0.1,result_path=0):
+def get_e_spectrum(start=1,stop=1000,step=10,power=0.1,result_path=0):
+    rf = gh.get_instrument('RFSource')
+    rf.set_power(float(power))
+    rf.sweepTriggerSetup(float(start),float(stop),float(step))
+    rf.out_on()
 
-    #gh.call_function('RFSource','set_power',[float(power)])
-    #gh.call_function('RFSource','sweepTriggerSetup',[float(start),float(stop),float(step)])
-    #gh.call_function('RFSource','out_on')
-
-    stages['MRFSource'].set_power(float(power)) #direct access alternative
-    stages['MRFSource'].sweepTriggerSetup(float(start),float(stop),float(step)) #direct access alternative
-    stages['MRFSource'].out_on() #direct access alternative
+    rf_meter = gh.get_instrument('RFMeter')
 
     DataList = []
 
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
-        #rfval = gh.call_function('RFMeter','getPeak',[x,5])[1]
-        rfval  = stages['MRFMeter'].getPeak(x,5)[1] #direct access alternative
-        optval = get_o_power(stages,maitre)
+        rfval  = rf_meter.getPeak(x,5)[1]
+        optval = get_o_power()
         print(x,rfval,optval)
         DataList.append([x,rfval-optval])
-        # gh.call_function('RFSource','trigger')
-        stages['MRFSource'].trigger() #direct access alternative
+        rf.trigger()
 
-    #rfval = gh.call_function('RFMeter','getPeak',[x,5])[1]
-    rfval  = stages['MRFMeter'].getPeak(x,5)[1] #direct access alternative
-    optval = get_o_power(stages,maitre)
+    rfval  = rf_meter.getPeak(x,5)[1]
+    optval = get_o_power()
 
     print(x,rfval,optval)
 
     DataList.append([x,rfval-optval])
 
-    #gh.call_function('RFSource','out_off')
-    stages['MRFSource'].out_off()
+    rf.out_off()
 
     pl =  NBPlot()
     pl.plot(
@@ -203,35 +194,33 @@ def get_e_spectrum(stages,maitre,start=1,stop=1000,step=10,power=0.1,result_path
 
 
     if result_path != 0:
-        _write_data(data,result_path)
+        DataIO.writeData(result_path,data,'get_e_spectrum')
+
 
     return data
 
-def get_VI_curve(stages,maitre,start = 0, stop = 1, step = 0.1,channel=1,result_path=0):
-    return dc_sweep_1d(stages, maitre,start,stop,step,'get_current',str(int(channel)),result_path,channel)
+def get_VI_curve(start = 0, stop = 1, step = 0.1,channel=1,result_path=0):
+    return dc_sweep_1d(start,stop,step,'get_current',str(int(channel)),result_path,channel)
 
-def dc_power_sweep(stages, maitre,start=0,stop=1,step=0.1,result_path=0):
+def dc_power_sweep(start=0,stop=1,step=0.1,result_path=0):
 
     DataList = []
+    dc = gh.get_instrument('DCSource')
 
-    #gh.call_function('DCSource','save_state')
-    stages['MDCSource'].save_state() #direct access alternative
+    dc.save_state()
 
-    #gh.call_function('DCSource','setvoltage',float(start))
-    stages['MDCSource'].setvoltage(float(start)) #direct access alternative
+    dc.setvoltage(float(start))
 
-    #gh.call_function('DCSource','setOutputSwitch',1)
-    stages['MDCSource'].setOutputSwitch(1)
-
+    dc.setOutputSwitch(1)
 
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
         #gh.call_function('DCSource','setvoltage',x)
-        stages['MDCSource'].setvoltage(x)
+        dc.setvoltage(x)
         time.sleep(0.1)
-        DataList.append([x,get_o_power(stages,maitre)])
+        DataList.append([x,get_o_power()])
 
     #gh.call_function('DCSource','recall_state')
-    stages['MDCSource'].recall_state() #direct access alternative
+    dc.recall_state() #direct access alternative
 
     pl =  NBPlot()
     pl.plot(
@@ -243,28 +232,25 @@ def dc_power_sweep(stages, maitre,start=0,stop=1,step=0.1,result_path=0):
 
 
     if result_path != 0:
-        _write_data(DataList,result_path)
+        DataIO.writeData(result_path,DataList,'dc_power_sweep')
 
     return data
 
 
-def dc_sweep_1d(stages, maitre,start=0,stop=1,step=0.1,func=False,args=False,result_path=0,channel=1):
+def dc_sweep_1d(stages, maitre, start=0,stop=1,step=0.1,func=False,args=False,result_path=0):
 
     DataList = []
 
-    #gh.call_function('DCSource','save_state')
-    stages['MDCSource'+str(int(channel))].save_state() #direct access alternative
+    dc = gh.get_instrument('DCSource')
+    dc.save_state()
 
-    #gh.call_function('DCSource','setvoltage',float(start))
-    #gh.call_function('DCSource','setOutputSwitch',1)
-    stages['MDCSource'+str(int(channel))].setvoltage(float(start)) #direct access alternative
-    stages['MDCSource'+str(int(channel))].setOutputSwitch(1) #direct access alternative
+    dc.setvoltage(float(start))
+    dc.setOutputSwitch(1)
 
 
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
 
-        #gh.call_function('DCSource','setvoltage',x)
-        stages['MDCSource'+str(int(channel))].setvoltage(x)  #direct access alternative
+        dc.setvoltage(x)
         time.sleep(0.1)
         arglist = [stages,maitre]
         for elem in args:
@@ -283,16 +269,17 @@ def dc_sweep_1d(stages, maitre,start=0,stop=1,step=0.1,func=False,args=False,res
             func
         )
 
-    stages['MDCSource'+str(int(channel))].recall_state()
+    dc.recall_state()
 
     if result_path != 0:
-        _write_data(DataList,result_path)
+        DataIO.writeData(result_path,DataList,'dc_sweep_1d')
+
 
     return DataList
 
-def find_depl_MZI_bias(stages, maitre,channel=0,max_volt=5):
+def find_depl_MZI_bias(channel=0,max_volt=5):
 
-     dc_data=dc_power_sweep(stages,maitre,channel,0,max_volt,50)
+     dc_data=dc_power_sweep(channel,0,max_volt,50)
 
      # Add plotting of data
 
@@ -314,23 +301,22 @@ def find_depl_MZI_bias(stages, maitre,channel=0,max_volt=5):
 
      return ('Biasing V',opt_volt,'Max Vsignalpp',max_swing,'Extinction Ratio',ext_ratio,'Max Opt Output',max_o_power)
 
-def carac_MZI(stages, maitre, dc_sig1_chan,max_volt=5,result_path=0):
+def carac_MZI(dc_sig1_chan,max_volt=5,result_path=0):
     # Set optimal bias
     # Get Vpi
     # Get Extinction Ratio
     # Get Loss
 
+    dc = gh.get_instrument('DSource')
     dc_data = find_depl_MZI_bias(stages, maitre,dc_sig1_chan,max_volt)
 
     # Get e bandwidth
-    #gh.call_function('DCSource','setvoltage',[dc_data[0],dc_sig1_chan])
-    #gh.call_function('DCSource','setOutputSwitch',[1,dc_sig1_chan])
-    stages['MDCSource'].setvoltage(dc_data[0],dc_sig1_chan) #direct access alternative
-    stages['MDCSource'].setOutputSwitch(1,dc_sig1_chan) #direct access alternative
+    dc.setvoltage(dc_data[0],dc_sig1_chan)
+    dc.setOutputSwitch(1,dc_sig1_chan)
 
     best_power = 10 * math.log10((0.354*dc_data[1])**2/50/0.001)
 
-    rf_data = get_e_bandwidth(stages, maitre,0.5,20,100,best_power)
+    rf_data = get_e_bandwidth(0.5,20,100,best_power)
 
     dc_data.append(['RF_Spectrum',rf_data])
 
@@ -341,6 +327,46 @@ def carac_MZI(stages, maitre, dc_sig1_chan,max_volt=5,result_path=0):
         _write_data(data,result_path)
 
     return data
+
+def simpleConnectFiberTest():
+    gh = g()
+
+    laser = gh.get_instrument('Laser')
+    fiber_in = gh.choose_fiber_in(1)
+    gh.connect_instruments(laser, fiber_in)
+
+    fiber_out = gh.choose_fiber_out(2)
+    p_meter = gh.get_instrument('PowerMeter')
+    gh.connect_instruments(fiber_out, p_meter)
+
+    wavelength = 1550
+    laser.setwavelength(wavelength)
+    power = p_meter.get_power(wavelength)
+    print power
+
+def noFiberMeasureTest():
+    # setup
+    gh = g()
+    laser = gh.get_instrument('Laser')
+    osa = gh.get_instrument('OSA')
+    gh.connect_instruments(laser, osa)
+    # measure
+    laser.setwavelength(1560)
+    data = osa.getSpectrum(1530, 1570 , 0.1, 0)
+    # output
+    # print data
+    return data
+
+def noFiberTriggerTest():
+    # setup
+    gh = g()
+    dc1 = gh.get_instrument('DCSource')
+    dc2 = gh.get_instrument_triggered_by(dc1, 'DCSource')
+    # measure
+    dc1.setvoltage(1)
+    dc2.setvoltage(2)
+    # output
+    return 'Test complete.'
 
 
 '''

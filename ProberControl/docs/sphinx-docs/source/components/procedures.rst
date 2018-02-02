@@ -4,6 +4,14 @@ procedures package
 Submodules
 ----------
 
+procedures\.Binning module
+--------------------------
+
+.. automodule:: procedures.Binning
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 procedures\.Measure module
 --------------------------
 
@@ -40,6 +48,14 @@ procedures\.random module
 -------------------------
 
 .. automodule:: procedures.random
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+procedures\.randomWalk module
+-----------------------------
+
+.. automodule:: procedures.randomWalk
     :members:
     :undoc-members:
     :show-inheritance:

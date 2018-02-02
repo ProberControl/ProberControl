@@ -11,7 +11,7 @@ class AnritsuMS2667C(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -25,16 +25,12 @@ class AnritsuMS2667C(object):
         info = self.gpib.read()
         info = info.strip()
         print ('Connections Successful: %s' %info)
-        
+
         self.gpib.write('RL 30DBM') #reference level is 30 dBm, corresponds to 10Vpp
 
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'RFMeter'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
 
     def change_state(self):
 
@@ -55,7 +51,7 @@ class AnritsuMS2667C(object):
         :type resolutionStep: Integer
         :returns: List of readings
         '''
-    
+
         self.gpib.write('CF %dMHZ' % central) # all in MHz
         self.gpib.write('SP %dMHZ' % span)
         self.gpib.write('TS') #take sweep
@@ -121,17 +117,13 @@ class AnritsuMS2667C(object):
 
         self.gpib.write('MKR 0') # all in MHz
         self.gpib.write('MKPK')
-        self.gpib.write('MKF?') 
+        self.gpib.write('MKF?')
         peakfreq = float(self.gpib.read())
 
         self.gpib.write('MKL?')
         level = float(self.gpib.read())
 
         return (peakfreq, level)
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'AnritsuMS2667C'    
 
 
 '''

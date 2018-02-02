@@ -1,5 +1,12 @@
-import serial
-import visa
+try:
+    import serial
+except:
+    print "Serial package was not loaded"
+
+try:
+    import visa
+except:
+    print "Visa package was not loaded"
 import time
 import sys, os
 from ..instruments import *
@@ -208,7 +215,8 @@ class Initializer(object):
             'E': self._genOptElecStage, #Electrical stage
             'C': self._genChipStage, #Chip stage
             'M': self._genMeasureStage, #Measurement stage
-            'V': self._genVideoCamera #Video Camera
+            'V': self._genVideoCamera, #Video Camera
+            'F': self._genFiber #Fiber
         }
 
         for stage_config in self.configCollection:
@@ -219,7 +227,11 @@ class Initializer(object):
 
                 try:
                     # construct the instance of the class
+                    triggerNetwork = None
                     newStage = constructor_methods[stage_type](stage_config,gm_handler)
+                    # check if _genMeasureStage return a triggerNetwork as well
+                    if type(newStage) == tuple:
+                        newStage, triggerNetwork = newStage
 
                     # construct the key for GlobalMeasurement_Handler and stages dictionary
                     if 'SysChan' in stage_config:
@@ -233,10 +245,12 @@ class Initializer(object):
                         self.stageCollection[key] = newStage
                     else:
                         self.stageCollection[key] = newStage
+                    # store a referene to the object itself for identification
+                    stage_config['OBJ'] = newStage
 
                     # add the new instance to the GlobalMeasurement_Handler
                     gm_handler.update_stages(self.stageCollection)
-                    gm_handler.insert_instr(key, newStage.whatCanI())
+                    gm_handler.insert_instr(key, triggerNetwork)
 
                 except Exception as e:
                     print '\nError Instantiating: ' + stage_config['O']
@@ -244,6 +258,8 @@ class Initializer(object):
                     self.brokenInstruments.append(stage_config)
 
         self.stageCollection = self._genHandlers(self.configCollection, self.stageCollection)
+        # add the general handlers to g_mh
+        gm_handler.update_stages(self.stageCollection)
 
         self._checkInstruments()
 
@@ -251,12 +267,18 @@ class Initializer(object):
         return self.stageCollection
 
     def __generateStages(self, configuration):
-        '''Internal generation of stages for refresh() method'''
+        '''
+        Internal generation of stages for refresh() method
+        NOTE: RN does not match the actual generate Stages
+        '''
 
         # reset broken devices collection
         self.brokenInstruments = []
 
         gm_handler = Global_MeasureHandler.Global_MeasureHandler(self.stageCollection)
+
+        # store the locks for each address for stepmotors w/ MultiSerial
+        self.stp_mSerials = {}
 
         constructor_methods = {
             'O': self._genOptElecStage, #Optical stage
@@ -264,6 +286,7 @@ class Initializer(object):
             'C': self._genChipStage, #Chip stage
             'M': self._genMeasureStage, #Measurement stage
             'V': self._genVideoCamera, #Video Camera
+            'F': self._genFiber #Fiber
         }
 
         for stage_config in configuration:
@@ -271,7 +294,11 @@ class Initializer(object):
 
             try:
                 # construct the instance of the class
+                triggerNetwork = None
                 newStage = constructor_methods[stage_type](stage_config,gm_handler)
+                # check if _genMeasureStage return a triggerNetwork as well
+                if type(newStage) == tuple:
+                    newStage, triggerNetwork = newStage
 
                 # construct the key for GlobalMeasurement_Handler and stages dictionary
                 if 'SysChan' in stage_config:
@@ -284,11 +311,13 @@ class Initializer(object):
                         print "ERROR: "+key+"was initialized twice check numbering of devices and channels"
                         self.stageCollection[key] = newStage
                 else:
-                        self.stageCollection[key] = newStag
+                        self.stageCollection[key] = newStage
+                # store a referene to the object itself for identification
+                stage_config['OBJ'] = newStage
 
                 # add the new instance to the GlobalMeasurement_Handler
                 gm_handler.update_stages(self.stageCollection)
-                gm_handler.insert_instr(key, newStage.whatCanI())
+                gm_handler.insert_instr(key, triggerNetwork)
 
             except Exception as e:
                 print '\nError Instantiating: ' + stage_config['O']
@@ -311,9 +340,9 @@ class Initializer(object):
         space = None
         off_angle = None
         mtr_x = []; mtr_y = []; mtr_z = [];
-        t_x = self._genStpMtr(stage_config['X'], threaded=True, empty_collector=mtr_x)
-        t_y = self._genStpMtr(stage_config['Y'], threaded=True, empty_collector=mtr_y)
-        t_z = self._genStpMtr(stage_config['Z'], threaded=True, empty_collector=mtr_z)
+        t_x = self._genMtr(stage_config['X'], threaded=True, empty_collector=mtr_x)
+        t_y = self._genMtr(stage_config['Y'], threaded=True, empty_collector=mtr_y)
+        t_z = self._genMtr(stage_config['Z'], threaded=True, empty_collector=mtr_z)
         t_x.start(); t_y.start(); t_z.start()
         t_x.join(); t_y.join(); t_z.join()
         mtr_list = [mtr_x[0], mtr_y[0], mtr_z[0]]
@@ -336,24 +365,30 @@ class Initializer(object):
 
     def _genChipStage(self, stage_config, gm_handler):
         '''Generates ChipStage object from stage_configuation dictionary'''
-        ser_list = []
-        ser_list.append(apt_util.c2r(stage_config['R'], 9600))
-        ser_list.append(apt_util.c2r(stage_config['T']))
-        ser_list.append(apt_util.c2r(stage_config['B']))
-        return chip_stage.ChipStage(ser_list)
+        mtr_r = []; mtr_t = []; mtr_b = [];
+        t_r = self._genMtr(stage_config['R'], threaded=True, empty_collector=mtr_r)
+        t_t = self._genMtr(stage_config['T'], threaded=True, empty_collector=mtr_t)
+        t_b = self._genMtr(stage_config['B'], threaded=True, empty_collector=mtr_b)
+        t_r.start(); t_t.start(); t_b.start()
+        t_r.join(); t_t.join(); t_b.join()
+        mtr_list = [mtr_r[0], mtr_t[0], mtr_b[0]]
+        return chip_stage.ChipStage(mtr_list)
 
     def _genMeasureStage(self, stage_config, gm_handler):
         '''Generates the measurement stages'''
+        # T and R designators for tranmist and receive triggers
+        # (TriggerOut/TriggerIn)
+
         address = stage_config['A']
         instrumentName = stage_config['O']
-
-        # Special case for Amonics EDFA
-        if instrumentName == 'AEDFA_IL_23_B_FA':
-            instrumentPort = import_instrument(instrumentName)
-            instrumentActual = getattr(instrumentPort, instrumentName)(apt_util.c2r(address))
+        # Trigger networks setup
+        triggerIn = stage_config.get('R', '')
+        triggerOut = stage_config.get('T', '')
+        triggerList = [triggerIn, triggerOut]
+        triggerList = map(lambda a: a if a != '' else None, triggerList)
 
         # Special case for distance measurement setup
-        elif instrumentName == 'Distance':
+        if instrumentName == 'Distance':
             instrumentActual = self._distanceSetup(stage_config)
 
         # Importing a multi-channel device
@@ -370,7 +405,7 @@ class Initializer(object):
             instrumentPort = import_instrument(instrumentName)
             instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address)
 
-        return instrumentActual
+        return instrumentActual, triggerList
 
     def _genVideoCamera(self, stage_config, gm_handler):
         id = stage_config['I']
@@ -384,14 +419,25 @@ class Initializer(object):
         temp.set_whoAmI(cameraName)
         return temp
 
+    def _genFiber(self, stage_config, gm_handler):
+        # a Fiber is always a multi-channel device
+        if 'N' not in stage_config:
+            raise AttributeError('GenerateFiber: #N parameter not specified for fiber. Hint: {}'.format(stage_config))
+    	fiber = Fiber.Fiber(stage_config['SysChan'])
+        return fiber
+
     def _distanceSetup(self, stage_config):
         '''Internal helper function'''
-        ser_list = []
-        ser_list.append(stage_config['D']) #DSensor
-        ser_list.append(apt_util.c2r(stage_config['X'])) #Stepper
-        ser_list.append(apt_util.c2r(stage_config['Y'])) #Stepper
-        ser_list.append(stage_config['A']) #Newport Controller
-        return DMesStage(ser_list)
+        mtr_d = []; mtr_x = []; mtr_y = []; mtr_a = [];
+        t_d = self._genMtr(stage_config['D'], threaded=True, empty_collector=mtr_d)
+        t_x = self._genMtr(stage_config['X'], threaded=True, empty_collector=mtr_x)
+        t_y = self._genMtr(stage_config['Y'], threaded=True, empty_collector=mtr_y)
+        t_a = self._genMtr(stage_config['A'], threaded=True, empty_collector=mtr_a)
+        t_d.start(); t_x.start(); t_y.start(); t_a.start()
+        t_d.join(); t_x.join(); t_y.join(); t_a.join()
+        mtr_list = [mtr_d[0], mtr_x[0], mtr_y[0], mtr_a[0]]
+
+        return DMesStage(mtr_list)
 
     def _genHandlers(self, stage_config, stages):
         '''
@@ -407,6 +453,8 @@ class Initializer(object):
 
         if handlerActual:
             stages['SwitchHandler'] = handlerActual
+        else:
+            print 'Initializer:: [WARNING] continuing without a SwitchHandler...'
 
         return stages
 
@@ -420,7 +468,7 @@ class Initializer(object):
         else:
             print 'The following tools were initialized as:'
             for k,v in self.stageCollection.items():
-                print "Stages Key: " + k + " Model: " + str(v)
+                print "Stages Key: " + k + " Model: " + v.__class__.__name__
 
     def _genUniqueAddressHandle(self, address):
         if address in self.stp_mSerials:
@@ -434,8 +482,8 @@ class Initializer(object):
             self.stp_mSerials[address] = mser
             return mser
 
-    def _genStpMtr(self, infoLine, threaded=False, empty_collector=[]):
-        ''' parses the motor info to generate step motors '''
+    def _genMtr(self, infoLine, threaded=False, empty_collector=[]):
+        ''' parses the motor info to generate motors '''
         args = map(lambda s: s.strip(), infoLine.split(';'))
 
         if len(args) < 2:

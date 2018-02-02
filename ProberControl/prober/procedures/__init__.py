@@ -1,6 +1,7 @@
 import matplotlib
 from imp import find_module
-matplotlib.use('gtkagg')
+matplotlib.use('TkAgg')
+
 
 def _check_cv2():
     try:
@@ -17,6 +18,7 @@ if not installed:
         'fine_allign',
         'Measure',
         'raster',
+        'Binning'
     ]
 else:
     __all__ = [
@@ -24,7 +26,7 @@ else:
         'fine_allign',
         'Measure',
         'raster',
-		'vision'
+        'Binning',
     ]
 '''
 Copyright (C) 2017  Robert Polster

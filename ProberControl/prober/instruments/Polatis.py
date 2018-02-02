@@ -5,7 +5,7 @@ from time import sleep
 class Polatis(object):
     '''
     This class models the Polatis 16x16 optical switch. Dependencies: PyVisa, datetime, time.
-    
+
     .. note:: there are a handful of sleep() calls throughout the class that slow down the performance of the switch. This is beacuase the firmware on the switch is not stable enough to support commands executed at high-speeds.
     '''
 
@@ -15,7 +15,7 @@ class Polatis(object):
 
     def __getResource(self, rm, address):
         '''Handles errors for constructor method'''
-        
+
         try:
             switch = rm.open_resource(address) # instantiate our resource object
             print('Resource Initialized: %s' % str(switch.query('*IDN?')))
@@ -25,10 +25,6 @@ class Polatis(object):
 
     def whoAmI(self):
         ''':returns: reference to device'''
-        return 'switch'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
         return 'switch'
 
     def change_state(self):
@@ -85,15 +81,15 @@ class Polatis(object):
         	buffer = egress
         	egress = ingress
         	ingress = buffer
-		
+
         ingress = self.__formatConventional(str(ingress))
         egress = self.__formatConventional(str(egress))
-        
+
         ports = ingress+','+egress
-        
+
         sleep(.1)
         self._switch.write(':oxc:swit:conn:add'+' '+ports+';')
-        
+
     def make_connections(self, ingress, egress, explicit='only'):
         '''
 
@@ -116,7 +112,7 @@ class Polatis(object):
 
         sleep(.1)
         self._switch.write(':oxc:swit:conn:only'+' '+ports+';')
-        
+
     def __formatConnections(self, ingress, egress):
         '''
         Formats <ingress> <egress> for querying the device. Indices determine the relationship between the two ports.
@@ -127,10 +123,10 @@ class Polatis(object):
         :type egress: list of integers
         :returns: String formatted for SCPI
         '''
-        
+
         ingress = ''.join([str(i)+',' for i in ingress])
         egress = ''.join([str(i)+',' for i in egress])
-        
+
         ingress = self.__formatConventional(ingress)
         egress = self.__formatConventional(egress)
 
@@ -144,13 +140,13 @@ class Polatis(object):
         :type toBeFormatted: String
         :returns: String
         '''
-        
+
         if (toBeFormatted[-1:] == ','):
             toBeFormatted = toBeFormatted[:-1] #remove last comma
-            
+
         toBeFormatted = toBeFormatted[::-1]+'@(' #add conventional format
         toBeFormatted = toBeFormatted[::-1]+')' #closing bracket
-        
+
         return toBeFormatted
 
     def get_boot_mode(self):
@@ -178,18 +174,18 @@ class Polatis(object):
 
         :param commands: SCPI commands for the instrument
         :type commands: Sting
-        :returns: varied 
+        :returns: varied
         '''
-        
+
         commands = [i+';' for i in commands.split(';')]
         replies = [] # Storage for query replies
-        
+
         for item in commands:
             if item[-1:] == '?': # indication of a query
                 replies.append(self.__cmd_handler(item, True))
             else:
                 self.__cmd_handler(item)
-                       
+
         return replies
 
     def __cmd_handler(self, command, query=False):
@@ -203,7 +199,7 @@ class Polatis(object):
         :returns: a reply if query as String
         :raises: Exception, VisaTimeoutError
         '''
-        
+
         if query: # expects a reply
             try:
                 return self._switch.query(item)
@@ -222,7 +218,7 @@ class Polatis(object):
         :param name: desired filename, defaults to newPattern.txt
         :type name: String
         '''
-        
+
         with open(name, 'w') as f:
             f.write(name+' '+str(datetime.datetime.now())+'\n')
             sleep(.1)
@@ -239,7 +235,7 @@ class Polatis(object):
         :returns: String
         :raises: Exception
         '''
-        
+
         try:
             with open(name, 'r') as f:
                 f.readline()
@@ -269,22 +265,18 @@ class Polatis(object):
         connections = self.get_all_connections().split("),(")
         connections[0] = connections[0][2:].split(',')
         connections[1] = connections[1][1:-1].split(',')
-		
+
         row1 = []
         for elem in connections[0]:
 			print elem
 			row1.append(int(elem))
-			
+
         row2 = []
         for elem in connections[1]:
 			print elem
 			row2.append(int(elem))
-		
-        return zip(row1, row2)
 
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'Polatis'
+        return zip(row1, row2)
 
 
 '''

@@ -36,9 +36,6 @@ class E_Stage(XYZ_Stage):
     def whoAmI(self):
         return self.name
 
-    def whatCanI(self):
-        return self.name
-
     def setHighZ(self):
         '''
         Set the height at which the probe will be from the chip while disconnected

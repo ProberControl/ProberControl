@@ -21,7 +21,7 @@ class InstrumentNameHere(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -31,14 +31,6 @@ class InstrumentNameHere(object):
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'PowerMeter'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return 'OPT'
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'ClassName'
 
     def change_state(self):
         ''' Toggles the self.active parameter'''

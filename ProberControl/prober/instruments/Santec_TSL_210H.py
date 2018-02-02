@@ -14,16 +14,16 @@ class Santec_TSL_210H(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
-       
+
         self.active = False
 
         self.max_wavelength = 1580
         self.min_wavelength = 1510
-    
+
         # open resource
         self.gpib = res_manager.open_resource(address)
 
@@ -34,10 +34,6 @@ class Santec_TSL_210H(object):
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'Laser'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
 
     def change_state(self):
 
@@ -53,7 +49,7 @@ class Santec_TSL_210H(object):
         :returns: Float
         '''
         return self.max_wavelength
-    
+
     def get_min_wavelength(self):
         '''
         Queries the minimum allowed wavelength.
@@ -61,7 +57,7 @@ class Santec_TSL_210H(object):
         :returns: Float
         '''
         return self.min_wavelength
-    
+
     def setwavelength(self, wavelength):
         '''
         Loads a single wavelength and sets output high.
@@ -85,7 +81,7 @@ class Santec_TSL_210H(object):
                 time.sleep(0.1)
                 info = float(self.gpib.read())
             print ('Wavelength Sent: %s' % self.gpib.read())
-            
+
     def sweepWavelengthsTriggerSetup (self, start, end, step):
         '''
         Execute a sweep of the wavelength trigger. Have to keep track of Triggers in main command.
@@ -99,7 +95,7 @@ class Santec_TSL_210H(object):
         :type end: Float
         :param step: Size of increment
         :type step: Float
-        ''' 
+        '''
 
 
         if (
@@ -125,26 +121,26 @@ class Santec_TSL_210H(object):
         if(self.sweepcurrent <self.sweepend and self.sweepcurrent >=self.sweepstart):
             self.sweepcurrent = float(self.sweepcurrent) + float(self.sweepstep)
             self.setwavelength(self.sweepcurrent)
-    
+
     def startSweep(self):
         '''
         Start sweep
         '''
         self.setwavelength(self.sweepstart)
-    
+
     def pauseSweep(self):
         '''
         Pause sweep
         '''
         self.gpib.write('WA')
-    
+
     def stopSweep(self):
         '''
         Stop the sweep
         '''
         self.outputOFF()
 
-    def checkStatus(self): 
+    def checkStatus(self):
         '''
         Check the status of the instrument
 
@@ -160,7 +156,7 @@ class Santec_TSL_210H(object):
         except Exception:
             time.sleep(0.2)
             return self.checkStatus()
-        
+
     def outputON(self):
         '''
         Turns output of laser source ON.
@@ -181,7 +177,7 @@ class Santec_TSL_210H(object):
         '''
         self.gpib.write('WA')
         return float(self.gpib.read())
-    
+
     def setpower(self, power):
         '''
         Set power in dbm
@@ -190,7 +186,7 @@ class Santec_TSL_210H(object):
         :type power: Float
         '''
         self.gpib.write('OP' + str(power))
-        
+
     def getpower(self):
         '''
         Gets output power in dbm
@@ -199,7 +195,7 @@ class Santec_TSL_210H(object):
         '''
         self.gpib.write('OP')
         return float(self.gpib.read())
-    
+
     def setcurrent(self, current):
         '''
         Set the current. Note: current is mA
@@ -217,7 +213,7 @@ class Santec_TSL_210H(object):
         '''
         self.gpib.write('CU')
         return float(self.gpib.read())
-    
+
     def settemperature(self, temperature):
         '''
         Set the temperature. Note: temperature is C
@@ -226,7 +222,7 @@ class Santec_TSL_210H(object):
         :type temperature: Integer
         '''
         self.gpib.write('TL' + str(temperature))
-    
+
     def gettemperature(self):
         '''
         Queries the temperature, Note: temperature is C
@@ -235,7 +231,7 @@ class Santec_TSL_210H(object):
         '''
         self.gpib.write('TL')
         return float(self.gpib.read())
-    
+
     def setACC(self):
         '''
         Sets the ACC
@@ -255,7 +251,7 @@ class Santec_TSL_210H(object):
         :returns: String
         '''
         self.gpib.write('SU')
-        return self.gpib.read()    
+        return self.gpib.read()
 
     def setpowermw(self, powermw):
         '''
@@ -265,7 +261,7 @@ class Santec_TSL_210H(object):
         :type powerMW: Integer
         '''
         self.gpib.write('LP' + str(powermw))
-    
+
     def getpowermw(self):
         '''
         Queries the status of the powerMW
@@ -274,7 +270,7 @@ class Santec_TSL_210H(object):
         '''
         self.gpib.write('LP')
         return float(self.gpib.read())
-    
+
     def coherenceON(self):
         '''
         Turns coherence ON
@@ -286,7 +282,7 @@ class Santec_TSL_210H(object):
         Turns coherence OFF
         '''
         self.gpib.write('CF')
-    
+
     def setcoherence(self, coherence):
         '''
         Sets the coherence
@@ -295,7 +291,7 @@ class Santec_TSL_210H(object):
         :type coherence: Integer
         '''
         self.gpib.write('CV' + str(coherence))
-    
+
     def getcoherence(self):
         '''
         Queries the coherence value
@@ -304,10 +300,6 @@ class Santec_TSL_210H(object):
         '''
         self.gpib.write('CV')
         return float(self.gpib.read())
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'Santec_TSL_210H'
 
 
 '''

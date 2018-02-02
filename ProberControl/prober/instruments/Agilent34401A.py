@@ -12,7 +12,7 @@ class Agilent34401A(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: string
         '''
@@ -28,10 +28,6 @@ class Agilent34401A(object):
         ''':returns: reference to device'''
         return 'DCMeter'
 
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return 'DC'
-
     def change_state(self):
 
         if self.active == True:
@@ -42,7 +38,7 @@ class Agilent34401A(object):
     def get_voltage(self,scaled=False,query_range=10,resolution=0.01):
         '''
         Queries the voltage of multimeter.
-        
+
         :param scaled: Optional scaling
         :type scaled: Boolean
         :param query_range: range for query
@@ -53,10 +49,10 @@ class Agilent34401A(object):
         '''
 
         val = float(self.gpib.query('MEAS:VOLT:DC? '+str(query_range)+','+str(resolution)))
-        
+
         if scaled==True:
             val = val*self.scalingfactor
-        
+
         return val
 
     def get_current(self,query_range=1,resolution=0.000001):
@@ -66,7 +62,7 @@ class Agilent34401A(object):
         :param query_range: range for query
         :type query_range: Integer
         :param resolution: resolution for query
-        :type resolution: Float       
+        :type resolution: Float
         :returns: current reading as float
         '''
         return float(self.gpib.query('MEAS:CURR:DC? '+str(query_range)+','+str(resolution)))
@@ -89,7 +85,7 @@ class Agilent34401A(object):
         '''
 
         return self.scalingfactor
-        
+
 
     def close(self):
         '''
@@ -97,10 +93,6 @@ class Agilent34401A(object):
         '''
 
         self.gpib.close()
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'Agilent34401A'
 
 
 '''

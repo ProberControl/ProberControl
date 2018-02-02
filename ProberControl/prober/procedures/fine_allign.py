@@ -3,6 +3,8 @@
 #from Classes.xyzstage import XYZ_Stage
 import raster
 import matplotlib
+matplotlib.use('TkAgg')
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy
@@ -16,11 +18,8 @@ SIGNAL_SOURCE = 'MPowerMeter'
 # Getting Global_MeasureHandler (singleton)instance; Do not change this!
 gh = gh()
 
-# set default value
-try:
-    __selected_function = gh.get_instr('OPT')
-except Exception as e:
-    print e
+# default unset
+__selected_function = None
 
 def _report(msg):
     prt_msg = 'fine-allign: ' + msg

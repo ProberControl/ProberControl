@@ -69,11 +69,9 @@
 </div>
 <div class="section" id="important-links-to-other-parts-of-the-software">
 <h2>Important Links to other parts of the Software<a class="headerlink" href="#important-links-to-other-parts-of-the-software" title="Permalink to this headline">¶</a></h2>
-<p>The Model Parameter that is used in the config file is defined as the return value of your <code class="docutils literal"><span class="pre">__str__()</span></code> method.</p>
 <p>The return  value of <code class="docutils literal"><span class="pre">whoAmI()</span></code> defines as what type of tool the device will show up in the stages dictionary and therefore in the GUI.</p>
-<p>The return value of <code class="docutils literal"><span class="pre">whatCanI()</span></code> defines the capabilities of the tool. All capabilities are read into the Global Measurement Handler that can be used to distribut access to tools depending on their capabilities.</p>
 <p>The <code class="docutils literal"><span class="pre">self.active</span></code> parameter is accessed by the Script Controller and Global Measurement Handler to check whether a tool is busy. When non atomic functions are performed by the driver (e.g. all communication with the tool) the driver function should set the device as busy while performing the function.</p>
-<p>The constructur needs to accept the following arguments: <code class="docutils literal"><span class="pre">__init__(self,res_manager,</span> <span class="pre">address='YourAddressHere')</span></code> even if the res_manager is not needed (e.g. for ethernet communication - see the Keithley2280S driver for an ethernet exaple). For multi channel devices a channel parameter must be added.</p>
+<p>The constructor needs to accept the following arguments: <code class="docutils literal"><span class="pre">__init__(self,res_manager,</span> <span class="pre">address='YourAddressHere')</span></code> even if the res_manager is not needed (e.g. for ethernet communication - see the Keithley2280S driver for an ethernet exaple). For multi channel devices a channel parameter must be added.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ClassNameHere</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;Purpose of this class here&#39;&#39;&#39;</span>
@@ -93,14 +91,6 @@
     <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;RFSource&#39;</span>
-
-    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;ClassNameHere&#39;</span>
 
     <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Toggles the self.active parameter&#39;&#39;&#39;</span>

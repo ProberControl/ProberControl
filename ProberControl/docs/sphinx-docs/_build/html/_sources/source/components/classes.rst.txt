@@ -12,6 +12,14 @@ classes\.DMesStage module
     :undoc-members:
     :show-inheritance:
 
+classes\.DataIO module
+----------------------
+
+.. automodule:: classes.DataIO
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 classes\.DataViewer module
 --------------------------
 
@@ -20,10 +28,26 @@ classes\.DataViewer module
     :undoc-members:
     :show-inheritance:
 
+classes\.Dialogs module
+-----------------------
+
+.. automodule:: classes.Dialogs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 classes\.E\_Stage module
 ------------------------
 
 .. automodule:: classes.E_Stage
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+classes\.Fiber module
+---------------------
+
+.. automodule:: classes.Fiber
     :members:
     :undoc-members:
     :show-inheritance:
@@ -56,6 +80,14 @@ classes\.OptStage module
 ------------------------
 
 .. automodule:: classes.OptStage
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+classes\.ScriptBuilderGUI module
+--------------------------------
+
+.. automodule:: classes.ScriptBuilderGUI
     :members:
     :undoc-members:
     :show-inheritance:
@@ -100,22 +132,6 @@ classes\.chip\_stage module
     :undoc-members:
     :show-inheritance:
 
-classes\.dist\_sensor module
-----------------------------
-
-.. automodule:: classes.dist_sensor
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-classes\.gonio\_stage module
-----------------------------
-
-.. automodule:: classes.gonio_stage
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 classes\.maitre module
 ----------------------
 
@@ -132,10 +148,10 @@ classes\.multi\_serial module
     :undoc-members:
     :show-inheritance:
 
-classes\.newport\_controller module
------------------------------------
+classes\.object\_chain module
+-----------------------------
 
-.. automodule:: classes.newport_controller
+.. automodule:: classes.object_chain
     :members:
     :undoc-members:
     :show-inheritance:
@@ -144,22 +160,6 @@ classes\.plotter module
 -----------------------
 
 .. automodule:: classes.plotter
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-classes\.rotator module
------------------------
-
-.. automodule:: classes.rotator
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-classes\.rotator\_ELL8 module
------------------------------
-
-.. automodule:: classes.rotator_ELL8
     :members:
     :undoc-members:
     :show-inheritance:

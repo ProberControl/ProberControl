@@ -1,7 +1,8 @@
-group-by: chip
+group-by:chip
+bin-by:Binning:testA
 
 > wafer
-abc
+wafer1
 
 > chip
 a
@@ -9,60 +10,101 @@ a
 > group
 1
 
-# stage
-PowerMeter
-# function
-get_power
-# arguments
-1550
+#Measurement Name
+Test_Abc
+#structure
+StructAbc
+#procedure
+Measure
+#Function
+test
+#Arguments
+abc
 
-# stage
-PowerMeter
-# function
-get_power
-# arguments
-1550
-
-# stage
-PowerMeter
-# function
-get_power
-# arguments
-1550
-
-# stage
-PowerMeter
-# function
-get_power
-# arguments
-1550
 
 > group
 2
 
-# stage
-PowerMeter
-# function
-get_power
-# arguments
-1550
+#Measurement Name
+Test_Def
+#structure
+StructDef
+#procedure
+Measure
+#Function
+test
+#Arguments
+def
+
 
 > chip 
 b
 
 > group
-1
+3
 
-# stage
-PowerMeter
-# function
-get_power
-# arguments
-1550
+#Measurement Name
+Test_Ghi
+#structure
+StructGhi
+#procedure
+Measure
+#Function
+test
+#Arguments
+ghi
 
-# stage
-PowerMeter
-# function
-get_power
-# arguments
-1550
+> group
+4
+
+#Measurement Name
+Test_Jkl
+#structure
+StructJkl
+#procedure
+Measure
+#Function
+test
+#Arguments
+jkl
+
+>wafer
+wafer2
+
+> chip 
+c
+
+> group
+5
+
+#Measurement Name
+Test_Mno
+#structure
+StructMno
+#procedure
+Measure
+#Function
+test
+#Arguments
+mno
+
+>    wafer
+wafer3
+
+> chip 
+d
+
+> group
+6
+
+#Measurement Name
+Test_Pqr
+#structure
+StructPqr
+#procedure
+Measure
+#Function
+test
+#Arguments
+pqr
+

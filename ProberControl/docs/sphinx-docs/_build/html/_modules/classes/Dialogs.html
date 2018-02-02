@@ -1,0 +1,319 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>classes.Dialogs &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for classes.Dialogs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Module Contains Dialogs for User Interaction</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">Tkinter</span> <span class="k">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">tkinter</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">ttk</span>
+    <span class="n">py3</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tkinter.ttk</span> <span class="k">as</span> <span class="nn">ttk</span>
+    <span class="n">py3</span> <span class="o">=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="Search_and_Replace"><a class="viewcode-back" href="../../source/components/classes.html#classes.Dialogs.Search_and_Replace">[docs]</a><span class="k">class</span> <span class="nc">Search_and_Replace</span><span class="p">(</span><span class="n">Toplevel</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">textWidget</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">textWidget</span>
+
+            <span class="n">Toplevel</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transient</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntryVar</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntryVar</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">()</span>
+
+            <span class="sd">&#39;&#39;&#39;This class configures and populates the toplevel window.</span>
+<span class="sd">               top is the toplevel containing window.&#39;&#39;&#39;</span>
+            <span class="n">_bgcolor</span> <span class="o">=</span> <span class="s1">&#39;#d9d9d9&#39;</span>  <span class="c1"># X11 color: &#39;gray85&#39;</span>
+            <span class="n">_fgcolor</span> <span class="o">=</span> <span class="s1">&#39;#000000&#39;</span>  <span class="c1"># X11 color: &#39;black&#39;</span>
+            <span class="n">_compcolor</span> <span class="o">=</span> <span class="s1">&#39;#d9d9d9&#39;</span> <span class="c1"># X11 color: &#39;gray85&#39;</span>
+            <span class="n">_ana1color</span> <span class="o">=</span> <span class="s1">&#39;#d9d9d9&#39;</span> <span class="c1"># X11 color: &#39;gray85&#39;</span>
+            <span class="n">_ana2color</span> <span class="o">=</span> <span class="s1">&#39;#d9d9d9&#39;</span> <span class="c1"># X11 color: &#39;gray85&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Style</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">theme_use</span><span class="p">(</span><span class="s1">&#39;winnative&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="n">_bgcolor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">foreground</span><span class="o">=</span><span class="n">_fgcolor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">font</span><span class="o">=</span><span class="s2">&quot;TkDefaultFont&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">background</span><span class="o">=</span>
+                <span class="p">[(</span><span class="s1">&#39;selected&#39;</span><span class="p">,</span> <span class="n">_compcolor</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span><span class="n">_ana2color</span><span class="p">)])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s2">&quot;482x188+694+307&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Search and Replace&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+
+
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;TNotebook.Tab&#39;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">_bgcolor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;TNotebook.Tab&#39;</span><span class="p">,</span> <span class="n">foreground</span><span class="o">=</span><span class="n">_fgcolor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="s1">&#39;TNotebook.Tab&#39;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span>
+                <span class="p">[(</span><span class="s1">&#39;selected&#39;</span><span class="p">,</span> <span class="n">_compcolor</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span><span class="n">_ana2color</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RiderTab</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Notebook</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RiderTab</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">relheight</span><span class="o">=</span><span class="mf">0.88</span><span class="p">,</span> <span class="n">relwidth</span><span class="o">=</span><span class="mf">0.94</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RiderTab</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">454</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RiderTab</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">takefocus</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RiderTab</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RiderTab</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Replace&quot;</span><span class="p">,</span><span class="n">underline</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">,)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchLabel</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchLabel</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.14</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">21</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">47</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Search&#39;&#39;&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceLabel</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceLabel</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.43</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">21</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">47</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceLabel</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Replace&#39;&#39;&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.22</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.14</span><span class="p">,</span> <span class="n">relheight</span><span class="o">=</span><span class="mf">0.14</span>
+                    <span class="p">,</span> <span class="n">relwidth</span><span class="o">=</span><span class="mf">0.72</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="s2">&quot;TkFixedFont&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">insertbackground</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SearchEntryVar</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">324</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.22</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.43</span><span class="p">,</span> <span class="n">relheight</span><span class="o">=</span><span class="mf">0.14</span>
+                    <span class="p">,</span> <span class="n">relwidth</span><span class="o">=</span><span class="mf">0.72</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="s2">&quot;TkFixedFont&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">insertbackground</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntryVar</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntry</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">324</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.22</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.61</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">69</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activebackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activeforeground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">searchAll</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightbackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightcolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Search All&#39;&#39;&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.42</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.61</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">69</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activebackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activeforeground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">replaceAll</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightbackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightcolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceAllButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Replace All&#39;&#39;&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.22</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.83</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">69</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activebackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activeforeground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">searchNext</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightbackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightcolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SearchNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Search Next&#39;&#39;&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.42</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.83</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">69</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activebackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activeforeground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">replaceNext</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightbackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightcolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReplaceNextButton</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Replace Next&#39;&#39;&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RiderTab_t1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.62</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.61</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">67</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activebackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">activeforeground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">disabledforeground</span><span class="o">=</span><span class="s2">&quot;#a3a3a3&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightbackground</span><span class="o">=</span><span class="s2">&quot;#d9d9d9&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">highlightcolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Cancel&#39;&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Button2</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">67</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Search_and_Replace.replaceNext"><a class="viewcode-back" href="../../source/components/classes.html#classes.Dialogs.Search_and_Replace.replaceNext">[docs]</a>        <span class="k">def</span> <span class="nf">replaceNext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="s1">&#39;search&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_names</span><span class="p">()</span> <span class="p">):</span>
+                <span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="n">countVar</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">searchNext</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s1">&#39;search&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_names</span><span class="p">():</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_ranges</span><span class="p">(</span><span class="s1">&#39;search&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_ranges</span><span class="p">(</span><span class="s1">&#39;search&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">stop</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntryVar</span><span class="o">.</span><span class="n">get</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Search_and_Replace.searchNext"><a class="viewcode-back" href="../../source/components/classes.html#classes.Dialogs.Search_and_Replace.searchNext">[docs]</a>        <span class="k">def</span> <span class="nf">searchNext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c1"># Restart on top if  cursor is on the bottom</span>
+            <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">END</span><span class="p">)))</span><span class="o">-</span><span class="mi">1</span> <span class="o">==</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">INSERT</span><span class="p">))):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">mark_set</span><span class="p">(</span><span class="n">INSERT</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Delete all tags</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_names</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_delete</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+            <span class="c1">#Prepare search variable + create marker</span>
+            <span class="n">countVar</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_configure</span><span class="p">(</span><span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Search</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">search</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntryVar</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">INSERT</span> <span class="p">,</span> <span class="n">stopindex</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">countVar</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+                    <span class="k">return</span>
+
+            <span class="c1"># Highlight</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_add</span><span class="p">(</span><span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> + </span><span class="si">%s</span><span class="s2">c&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">countVar</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+
+            <span class="c1"># Set cursor behind found instance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">mark_set</span><span class="p">(</span><span class="n">INSERT</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> + </span><span class="si">%s</span><span class="s2">c&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">countVar</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="n">countVar</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Search_and_Replace.searchAll"><a class="viewcode-back" href="../../source/components/classes.html#classes.Dialogs.Search_and_Replace.searchAll">[docs]</a>        <span class="k">def</span> <span class="nf">searchAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">countVar</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_configure</span><span class="p">(</span><span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+
+            <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
+            <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">search</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">SearchEntryVar</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">pos</span> <span class="p">,</span> <span class="n">stopindex</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">countVar</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_add</span><span class="p">(</span><span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> + </span><span class="si">%s</span><span class="s2">c&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">countVar</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+                <span class="n">pos</span> <span class="o">=</span>  <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> + </span><span class="si">%s</span><span class="s2">c&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">countVar</span><span class="o">.</span><span class="n">get</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Search_and_Replace.replaceAll"><a class="viewcode-back" href="../../source/components/classes.html#classes.Dialogs.Search_and_Replace.replaceAll">[docs]</a>        <span class="k">def</span> <span class="nf">replaceAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mf">1.0</span> <span class="p">,</span> <span class="n">END</span><span class="p">)</span>
+
+            <span class="n">script</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SearchEntryVar</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span><span class="bp">self</span><span class="o">.</span><span class="n">ReplaceEntryVar</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="n">script</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">see</span><span class="p">(</span><span class="n">END</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Search_and_Replace.exit"><a class="viewcode-back" href="../../source/components/classes.html#classes.Dialogs.Search_and_Replace.exit">[docs]</a>        <span class="k">def</span> <span class="nf">exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_names</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">tag_delete</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

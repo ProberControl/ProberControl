@@ -8,10 +8,10 @@ class AndoAQ6317(object):
 
   .. note:: Currently this class and therefore get_o_spectrum() is explicitly written to set up the connection and work only with the AQ4321 Laser.
   '''
-	
+
   def __init__(self, res_manager, address = 'GPIB0::2::INSTR'):
 
-	
+
     self.gpib = res_manager.open_resource(address)
     self.gpib.write('INIT')
     #time.sleep(0.55)
@@ -23,17 +23,13 @@ class AndoAQ6317(object):
         ''':returns: reference to device'''
         return 'OSA'
 
-  def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
-
   def change_state(self):
 
         if self.active == True:
             self.active = False
         else:
             self.active = True
-	
+
   def get_o_spectrum(self, start, stop, step, result_path = 0):
 
     self.gpib.write('SNHD') 					#Sets Sensitivity to Normal Range (HOLD)
@@ -47,7 +43,7 @@ class AndoAQ6317(object):
     self.gpib.write('GP2ADR?') 					#Double checks
     info = self.gpib.read()
     print ('GP-IB2 Address of OSA set to: ' +info)
-    
+
     self.gpib.write('TLSSYNC1') 				#Syncs Laser and OSA
     self.gpib.write('TLSSYNC?') 				#Double checks
     info = self.gpib.read()
@@ -61,7 +57,7 @@ class AndoAQ6317(object):
     self.gpib.write('SRMSK254') 				#Sets mask to be 254, Masking for 'Sweep Complete' (Bit 0)
     self.gpib.write('SRQ1') 					#Status Bit on
     self.gpib.stb 								#Discard Initial status bit
-    
+
     sweepWidth = stop-start
     sampleNumber = sweepWidth/(step) + 1
 
@@ -70,14 +66,14 @@ class AndoAQ6317(object):
     self.gpib.write('STPWL' + str(stop)) 		#End of sweep
 
     print('Scan Starts: ' + str(start) + ' to ' + str(stop) + ' at ' + str(step) + 'nm step')
-    
+
     self.gpib.write('SGL') # Start Single Sweep
-    
+
     self.checkStatus()  #Checks if sweep is complete
 
     print('[Sweep Done]')
     #time.sleep(60)
-    
+
     self.gpib.write('SD1, LDATA') #Reads Data from Buffer
     self.gpib.read()
     DataList = []
@@ -89,7 +85,7 @@ class AndoAQ6317(object):
 
     return DataList
 
-  def checkStatus(self): 
+  def checkStatus(self):
     status = int(self.gpib.stb)
     print('Status: %d' %status)
     print('Scanning.'),
@@ -99,6 +95,3 @@ class AndoAQ6317(object):
 	  print('.'),
       #print('Status: %d' %status)
     return True
-
-
-

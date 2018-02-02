@@ -3,9 +3,11 @@ import math
 import Tkinter as tk
 import tkFileDialog
 import matplotlib
-matplotlib.use('GtkAgg')
+matplotlib.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
+
+from DataIO import DataIO
 
 class DataViewer(tk.Frame):
     def __init__(self, master=None):
@@ -21,7 +23,7 @@ class DataViewer(tk.Frame):
         self.test_counter = 0
         self.BoxVar       = tk.StringVar()
         self.ActiveTest   = ''
-    
+
         # Bind Key Strokes To Function
         #self.bind('<KeyRelease-Left>', self.leftKey)
         #self.bind('<KeyRelease-Right>', self.rightKey)
@@ -63,14 +65,14 @@ class DataViewer(tk.Frame):
         toolbar_frame.grid(column=1,row=23,columnspan = 5)
         toolbar = NavigationToolbar2TkAgg( self.canvas, toolbar_frame )
 
-        # Create OptionMenu to choose displayed Test        
+        # Create OptionMenu to choose displayed Test
         ##Label
         self.MenuLabel = tk.Label(self,text='Test to load')
         self.MenuLabel.grid(column=0,row=2,columnspan = 1)
         ## Menu
         self.TestNameBox = tk.OptionMenu(self,self.BoxVar,[])
         self.TestNameBox.grid(column=2,row=2,columnspan = 2)
-        
+
         ## Load Button
         self.ProcButton = tk.Button(self, text='Load Test',command=self.NameLoad)
         self.ProcButton.grid(column=4,row=2)
@@ -120,14 +122,14 @@ class DataViewer(tk.Frame):
         self.Meas_Path = self.FileText.get()
 
         #get_test_names and fill up option_menu
-        self.test_names = self.get_test_names(self.Meas_Path)
+        self.test_names = DataIO.get_test_names(self.Meas_Path)
         self.TestNameBox["menu"].delete(0, "end")
         for entry in self.test_names:
             self.TestNameBox["menu"].add_command(label=entry,command=lambda value=entry: self.TestNameBoxChange(value))
             #show_first_data
-            self.test_counter = 0
-            self.TestText.set(self.test_names[0])
-            self.update_canvas(self.Meas_Path,self.test_names[0])
+        self.test_counter = 0
+        self.TestText.set(self.test_names[0])
+        self.update_canvas(self.Meas_Path,self.test_names[0])
 
 
     def _quit():
@@ -139,8 +141,9 @@ class DataViewer(tk.Frame):
     #
 
     def update_canvas(self,path,test_name,clear=True):
-        data = self.get_test_data(path, test_name)
-        
+        data = DataIO.get_test_data(path, test_name)
+
+
         if clear:
             self.f.clf()
 
@@ -149,66 +152,10 @@ class DataViewer(tk.Frame):
         try:
             a.plot(zip(*data)[0],zip(*data)[1],'b')
             self.f.canvas.draw()
-            
+
         except IndexError:
             print("Dataset '{}' only has 1 dimension, not able to plot.".format(test_name))
             self.f.clf()
-
-    def get_test_names(self,path):
-
-        NameList=[]
-
-        try:
-            with open(path,'r') as MeasFile:
-                if MeasFile is None:
-                    print 'Problem reading Measurement file.'
-                    exit()
-            
-                for line in MeasFile:
-                    if line[:2] == '##' :
-                        NameList.append(line[2:-2])
-        except IOError:
-            pass # No file was selected, no reason to report an error
-        except Exception as e:
-            print("Error: {}".format(e))
-
-        if NameList==[]:
-            return ['NoName']
-        return NameList
-
-    def get_test_data(self, path, test_name):
-
-        Data=[]
-
-        with open(path, 'r') as MeasFile:
-            if MeasFile is None:
-                print 'Problem reading Measurement file.'
-                exit()
-
-
-            in_block = False
-            for line in MeasFile:
-          
-                if (in_block and line[0:-1] != ''):
-                    SubList = line[0:-1].split('\t')
-                    CleanSubList = []
-                    for elem in SubList:
-                        if elem != '':
-                            CleanSubList.append(float(elem))
-                
-                    Data.append(CleanSubList)
-
-                if in_block and line[0:-1] == '':
-                    return Data
-
-                if line[2:-2] == test_name or (test_name == 'NoName' and in_block == False):
-                    in_block = True
-
-        if in_block == True:
-            return Data
-        
-        print 'Reading Data from File failed'
-        return False
 
 
 if __name__ == "__main__":

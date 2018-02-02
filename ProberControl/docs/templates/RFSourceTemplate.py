@@ -12,13 +12,13 @@
 
 class ClassNameHere(object):
     '''Purpose of this class here'''
-    
+
     def __init__(self,res_manager, address='YourAddressHere'):
         '''
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -28,14 +28,6 @@ class ClassNameHere(object):
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'RFSource'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'ClassNameHere'
 
     def change_state(self):
         ''' Toggles the self.active parameter'''
@@ -49,10 +41,10 @@ class ClassNameHere(object):
 ################################################################################
 
     def out_on(self):
-        '''Turns output ON'''    
+        '''Turns output ON'''
 
     def out_off(self):
-        '''Turns output OFF'''    
+        '''Turns output OFF'''
 
     def set_freq1(self, freq = 10):
         '''
@@ -71,7 +63,7 @@ class ClassNameHere(object):
         '''
 
     def sweep_f1f2(self):
-        '''Execute a sweep of the two frequencies'''    
+        '''Execute a sweep of the two frequencies'''
 
     def single_trigger_mode(self):
         '''Enter single trigger mode.'''
@@ -84,7 +76,7 @@ class ClassNameHere(object):
 
     def set_deltasweep_mode(self):
         '''Enter delta sweep mode'''
-        
+
     def set_sweep_delta(self,delta = 5):
         '''
         Set delta sweep value
@@ -139,7 +131,7 @@ class ClassNameHere(object):
         :param time: Specify time value; defaults to 1000
         :type time: Integer
         '''
-    
+
     def set_stepsweep_stepsize(self, step = 500):
         '''
         Set the stepsize of step-sweep mode

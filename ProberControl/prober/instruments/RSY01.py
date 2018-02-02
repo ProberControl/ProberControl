@@ -13,13 +13,13 @@ class RSY01(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
         self.active = False
         self.gpib = res_manager.open_resource(address)
-        
+
         self.reset()
 
         # Constants
@@ -42,10 +42,6 @@ class RSY01(object):
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'RFSource'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
 
     def reset(self):
         '''
@@ -120,10 +116,6 @@ class RSY01(object):
         if(self.currentfreq < self.stopfreq and self.currentfreq >= self.startfreq):
             self.currentfreq = float(self.currentfreq) + float(self.stepfreq)
             self.set_freq(self.currentfreq)
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'RSY01'
 
 
 '''

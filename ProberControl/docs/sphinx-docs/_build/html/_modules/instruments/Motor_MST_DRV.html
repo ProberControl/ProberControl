@@ -44,7 +44,7 @@
   <h1>Source code for instruments.Motor_MST_DRV</h1><div class="highlight"><pre>
 <span></span><span class="c1"># the Motor class</span>
 
-<span class="kn">import</span> <span class="nn">serial</span>
+<span class="c1">#import serial</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">unpack</span>
@@ -116,7 +116,7 @@
 <span class="c1"># setup the Logger</span>
 <span class="c1"># -&gt; should be done once</span>
 <span class="c1"># initialize the logger</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;MotorLog&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
 <span class="c1"># create console handler and set level to debug</span>

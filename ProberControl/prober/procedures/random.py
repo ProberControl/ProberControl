@@ -1,6 +1,7 @@
 #from Classes.xyzstage import XYZ_Stage
 import raster
 import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy

@@ -44,7 +44,7 @@
   <h1>Source code for instruments.ELL8</h1><div class="highlight"><pre>
 <span></span><span class="c1"># the motor class for ELL8/M Rotation Stage</span>
 
-<span class="kn">import</span> <span class="nn">serial</span>
+<span class="c1">#import serial</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">unpack</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -54,11 +54,11 @@
 <div class="viewcode-block" id="int2hexStr"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.int2hexStr">[docs]</a><span class="k">def</span> <span class="nf">int2hexStr</span><span class="p">(</span><span class="n">integer</span><span class="p">,</span> <span class="n">nb</span><span class="p">):</span>
 	<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">	 Convert an integer to its corresponding bytearray</span>
-<span class="sd">	 </span>
+
 <span class="sd">	 integer (int): the number we want to convert</span>
 <span class="sd">	 nb (int): the number of bytes</span>
 <span class="sd">	&#39;&#39;&#39;</span>
-	
+
 	<span class="nb">bytes</span> <span class="o">=</span> <span class="p">[]</span>
 	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb</span><span class="p">):</span>
 		<span class="nb">bytes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">integer</span> <span class="o">&amp;</span> <span class="mh">0x0FF</span><span class="p">)</span>
@@ -66,25 +66,25 @@
 	<span class="nb">bytes</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
 	<span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)))</span>
 	<span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
-	
+
 <div class="viewcode-block" id="hexString"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.hexString">[docs]</a><span class="k">def</span> <span class="nf">hexString</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
 	<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">	 Creates a string that is a byte sequense of the hex values</span>
 <span class="sd">	 input</span>
 <span class="sd">	 e.g. data = &#39;0A 23 34 56&#39;</span>
 <span class="sd">	&#39;&#39;&#39;</span>
-	
+
 	<span class="n">h_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 	<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 	<span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span> <span class="p">:</span>
 		<span class="n">h_str</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39;\x&#39;</span> <span class="o">+</span> <span class="n">byte</span>
-	
+
 	<span class="k">return</span> <span class="n">h_str</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;string_escape&#39;</span><span class="p">)</span></div>
 
 <span class="c1"># setup the Logger</span>
 <span class="c1"># -&gt; should be done once</span>
 <span class="c1"># initialize the logger</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;MotorLog&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
 <span class="c1"># create console handler and set level to debug</span>
@@ -107,40 +107,41 @@
 <span class="sd">		    Constructor</span>
 <span class="sd">		&#39;&#39;&#39;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="n">ser</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">baudrate</span> <span class="o">=</span> <span class="mi">9600</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">zeros_position</span> <span class="o">=</span> <span class="mi">0</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-		
+
 		<span class="c1"># request some info from controller to trigger the reading process</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">flushInput</span><span class="p">()</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">flushOutput</span><span class="p">()</span>
-			
+
 		<span class="c1"># get the logger we loaded once in the begining</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
-			
+
 		<span class="c1"># extra class info - for logger</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;com_port&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="s1">&#39;ClassName&#39;</span><span class="p">:</span> <span class="s1">&#39;Rot_Motor&#39;</span><span class="p">}</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">home</span><span class="p">()</span>
-	
+
 <div class="viewcode-block" id="ELL8.delta_move"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.ELL8.delta_move">[docs]</a>	<span class="k">def</span> <span class="nf">delta_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
 		<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">		    rotate the stage by specified # of steps</span>
 <span class="sd">		&#39;&#39;&#39;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="n">steps</span>
-		
+
 		<span class="c1">#_HOSTREQ_MOVERELATIVE</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;0mr&#39;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">int2hexStr</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
 
 		<span class="c1">#wait for ell8 position message</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">move_complete</span><span class="p">()</span></div>
-	
+
 <div class="viewcode-block" id="ELL8.abs_move"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.ELL8.abs_move">[docs]</a>	<span class="k">def</span> <span class="nf">abs_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
 		<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">		    rotate the stage by specified # of steps</span>
-<span class="sd">		&#39;&#39;&#39;</span>     
+<span class="sd">		&#39;&#39;&#39;</span>
 
 		<span class="c1">#_HOSTREQ_MOVERELATIVE</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;0mr&#39;</span><span class="p">)</span>
@@ -165,7 +166,7 @@
 <span class="sd">		&#39;&#39;&#39;</span>
 		<span class="c1">#_HOSTREQ_HOME</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span></div>
-	
+
 <div class="viewcode-block" id="ELL8.set_as_zero"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.ELL8.set_as_zero">[docs]</a>	<span class="k">def</span> <span class="nf">set_as_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zer_deg</span><span class="p">):</span>
 		<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">		 change the origin (zero)</span>
@@ -173,12 +174,12 @@
 
 		<span class="bp">self</span><span class="o">.</span><span class="n">zeros_position</span> <span class="o">=</span> <span class="n">new_zero</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-=</span> <span class="n">new_zero</span></div>
-		
+
 <div class="viewcode-block" id="ELL8.set_vel_params"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.ELL8.set_vel_params">[docs]</a>	<span class="k">def</span> <span class="nf">set_vel_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vel</span><span class="p">):</span>
 		<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">		 Set the velocity parameters for the motor in terms of percentage of max</span>
 <span class="sd">		&#39;&#39;&#39;</span>
-		
+
 		<span class="c1"># _HOSTSET_VELOCITY</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;0sv&#39;</span><span class="p">)</span>           <span class="c1"># head</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">int2hexStr</span><span class="p">(</span><span class="n">vel</span><span class="p">))</span></div>
@@ -188,15 +189,15 @@
 <span class="sd">		 &lt;For Debugging Purposes&gt;</span>
 <span class="sd">		 gives information relevant to the motor state</span>
 <span class="sd">		&#39;&#39;&#39;</span>
-		
-		<span class="k">return</span> <span class="s1">&#39;position: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">zeros-position: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeros_position</span><span class="p">)</span>             
+
+		<span class="k">return</span> <span class="s1">&#39;position: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">zeros-position: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeros_position</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ELL8.close"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.ELL8.close">[docs]</a>	<span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">		    releases motor control</span>
 <span class="sd">		&#39;&#39;&#39;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-	
+
 <div class="viewcode-block" id="ELL8.move_complete"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.ELL8.ELL8.move_complete">[docs]</a>	<span class="k">def</span> <span class="nf">move_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="n">rx</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 		<span class="k">while</span> <span class="n">rx</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;0PO&#39;</span><span class="p">:</span>
@@ -207,8 +208,8 @@
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span></div>
 
 
-    
-    
+
+
 
 
 <span class="sd">&#39;&#39;&#39;</span>

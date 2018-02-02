@@ -47,12 +47,22 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
+<span class="n">ARRAY_PITCH</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">ARRAY_WIDTH</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">ARRAY_LENGTH</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">ARRAY_CHANNELS</span> <span class="o">=</span> <span class="mi">7</span>
+
+<span class="n">CHIP_WIDTH</span> <span class="o">=</span> <span class="mf">6.4</span>
+<span class="n">CHIP_LENGTH</span> <span class="o">=</span> <span class="mf">8.9</span>
+
+<span class="n">COUPLING_ANGLE</span> <span class="o">=</span> <span class="mf">5.0</span>
+
 <span class="k">def</span> <span class="nf">_convertTheta</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Changes reference of the cv2.HoughLines line theta</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">theta</span><span class="o">*</span><span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">90</span>
-            
+
 <div class="viewcode-block" id="setChipAngle"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.vision.setChipAngle">[docs]</a><span class="k">def</span> <span class="nf">setChipAngle</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">video</span><span class="p">,</span> <span class="n">chip</span><span class="p">,</span> <span class="n">desired_angle</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set angle of chip edge as seen by video feed using chip stage</span>
@@ -74,21 +84,21 @@
                 <span class="nb">print</span> <span class="s1">&#39;Procedure cannot be performed: Movement out of bounds&#39;</span>
                 <span class="k">break</span></div>
 
-<div class="viewcode-block" id="setFiberChipOffset"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.vision.setFiberChipOffset">[docs]</a><span class="k">def</span> <span class="nf">setFiberChipOffset</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">video</span><span class="p">,</span> <span class="n">chip_stage</span><span class="p">,</span> <span class="n">desired_offset</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
-    
+<div class="viewcode-block" id="setNSOffset"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.vision.setNSOffset">[docs]</a><span class="k">def</span> <span class="nf">setNSOffset</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">video</span><span class="p">,</span> <span class="n">chip_stage</span><span class="p">,</span> <span class="n">desired_offset</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+
     <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
     <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_setRegion</span><span class="p">()</span>
-    
+
     <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_beginScript</span><span class="p">()</span>
     <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_showRegionLines</span><span class="p">()</span>
-    
+
     <span class="k">while</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">script_running</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
             <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">assignment</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">chip_angle</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">fiber_angle</span> <span class="o">=</span> <span class="kc">None</span>
-            
+
             <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">chip_angle</span> <span class="o">=</span> <span class="n">_convertTheta</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;chip&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
@@ -104,24 +114,109 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">assignment</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">break</span>
-                     
+
             <span class="k">if</span> <span class="n">assignment</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">break</span>
-                
+
             <span class="n">actual_offset</span> <span class="o">=</span> <span class="n">chip_angle</span> <span class="o">-</span> <span class="n">fiber_angle</span>
             <span class="n">mismatch</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">desired_offset</span><span class="p">)</span> <span class="o">-</span> <span class="n">actual_offset</span>
-            
+
             <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">res</span><span class="p">:</span>
                 <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
                 <span class="k">break</span>
-            
+
             <span class="n">success</span> <span class="o">=</span> <span class="n">stages</span><span class="p">[</span><span class="n">chip_stage</span><span class="p">]</span><span class="o">.</span><span class="n">gon_T</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span>
-            
+
             <span class="k">if</span> <span class="n">success</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
                 <span class="nb">print</span> <span class="s1">&#39;Procedure cannot be performed: Movement out of bounds&#39;</span>
                 <span class="k">break</span></div>
-    
+
+<div class="viewcode-block" id="setEWOffset"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.vision.setEWOffset">[docs]</a><span class="k">def</span> <span class="nf">setEWOffset</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">video</span><span class="p">,</span> <span class="n">chip_stage</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_setRegion</span><span class="p">()</span>
+
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_beginScript</span><span class="p">()</span>
+    <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_showRegionLines</span><span class="p">()</span>
+
+    <span class="k">while</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">script_running</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">assignment</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">chip_angle</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">fiber_angle</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">chip_angle</span> <span class="o">=</span> <span class="n">_convertTheta</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;chip&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">fiber_angle</span> <span class="o">=</span> <span class="n">_convertTheta</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;fiber&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="c1">#maybe replace the try with a if Boolean statement</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">if</span> <span class="n">chip_angle</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">fiber_angle</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">t1</span><span class="o">-</span><span class="n">t0</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+                        <span class="nb">print</span> <span class="s2">&quot;Could not find both angles | Chip: </span><span class="si">{}</span><span class="s2">, Fiber: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chip_angle</span><span class="p">,</span><span class="n">fiber_angle</span><span class="p">)</span>
+                        <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">assignment</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">assignment</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="n">desired_offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">actual_offset</span> <span class="o">=</span> <span class="n">chip_angle</span> <span class="o">-</span> <span class="n">fiber_angle</span>
+            <span class="n">mismatch</span> <span class="o">=</span> <span class="n">desired_offset</span> <span class="o">-</span> <span class="n">actual_offset</span>
+
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">res</span><span class="p">:</span>
+                <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                <span class="k">break</span>
+
+            <span class="n">success</span> <span class="o">=</span> <span class="n">stages</span><span class="p">[</span><span class="n">chip_stage</span><span class="p">]</span><span class="o">.</span><span class="n">gon_B</span><span class="o">.</span><span class="n">delta_rot</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">success</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">stages</span><span class="p">[</span><span class="n">video</span><span class="p">]</span><span class="o">.</span><span class="n">_endScript</span><span class="p">()</span>
+                <span class="nb">print</span> <span class="s1">&#39;Procedure cannot be performed: Movement out of bounds&#39;</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="calibrateProbe"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.vision.calibrateProbe">[docs]</a><span class="k">def</span> <span class="nf">calibrateProbe</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">calibrating_stage</span><span class="p">,</span><span class="n">video</span><span class="p">):</span>
+        <span class="c1">#Calibrate the current position of the fiber array</span>
+        <span class="nb">print</span> <span class="s1">&#39;Calibrate current stage by placing the array corner at the origin</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="nb">print</span> <span class="s1">&#39;Assume the origin to be at the corner of the chip&#39;</span>
+
+        <span class="c1">#if calibrating_stage[1] == &#39;S&#39;:</span>
+            <span class="c1">#correct_coords = [ARRAY_WIDTH, (ARRAY_LENGTH + (ARRAY_CHANNELS-1)*ARRAY_PITCH)/2]</span>
+            <span class="c1">#correct_coords = connecting.coord_c2s(coords,calibrating_stage)</span>
+        <span class="k">if</span> <span class="n">calibrating_stage</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span>
+            <span class="n">correct_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">CHIP_LENGTH</span> <span class="o">-</span> <span class="n">ARRAY_WIDTH</span><span class="p">,</span> <span class="n">CHIP_WIDTH</span> <span class="o">-</span> <span class="p">(</span><span class="n">ARRAY_LENGTH</span> <span class="o">+</span> <span class="p">(</span><span class="n">ARRAY_CHANNELS</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ARRAY_PITCH</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">correct_coords</span> <span class="o">=</span> <span class="n">connecting</span><span class="o">.</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">calibrating_stage</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">calibrating_stage</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span>
+            <span class="n">correct_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">ARRAY_WIDTH</span><span class="p">,</span> <span class="n">CHIP_LENGTH</span><span class="o">-</span><span class="p">(</span><span class="n">ARRAY_LENGTH</span> <span class="o">+</span> <span class="p">(</span><span class="n">ARRAY_CHANNELS</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ARRAY_PITCH</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">correct_coords</span> <span class="o">=</span> <span class="n">connecting</span><span class="o">.</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">calibrating_stage</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">calibrating_stage</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span>
+            <span class="n">correct_coords</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ARRAY_LENGTH</span> <span class="o">+</span> <span class="p">(</span><span class="n">ARRAY_CHANNELS</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ARRAY_PITCH</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">CHIP_WIDTH</span> <span class="o">-</span> <span class="n">ARRAY_WIDTH</span><span class="p">]</span>
+            <span class="n">correct_coords</span> <span class="o">=</span> <span class="n">connecting</span><span class="o">.</span><span class="n">coord_c2s</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">calibrating_stage</span><span class="p">)</span>
+
+        <span class="n">Stages</span><span class="p">[</span><span class="n">calibrating_stage</span><span class="p">]</span><span class="o">.</span><span class="n">set_cur_as_2d</span><span class="p">(</span><span class="n">correct_coords</span><span class="p">)</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        if calibrating_stage[0] == &#39;O&#39;</span>
+<span class="sd">            if calibrating_stage[1] == &#39;N&#39;:</span>
+<span class="sd">                calib_pos = [0,CHIP_WIDTH/2]</span>
+<span class="sd">                calib_pos = connecting.coord_c2s(calib_pos,calibrating_stage)</span>
+<span class="sd">            if calibrating_stage[1] == &#39;E&#39; or calibrating_stage==&#39;W&#39;:</span>
+<span class="sd">                calib_pos = [(ARRAY_LENGTH + (ARRAY_CHANNELS-1)*ARRAY_PITCH)/2,CHIP_WIDTH/2]</span>
+<span class="sd">                calib_pos = connecting.coord_c2s(calib_pos,calibrating_stage)</span>
+
+<span class="sd">                Stages[calibrating_stage].set_coor_2d(calib_pos)</span>
+<span class="sd">                setNSOffset(video,&#39;CS&#39;)</span>
+<span class="sd">                calib_pos = [(ARRAY_LENGTH + (ARRAY_CHANNELS-1)*ARRAY_PITCH)/2 + CHIP_LENGTH/2,CHIP_WIDTH/2]</span>
+<span class="sd">                Stages[calibrating_stage].set_coor_2d(calib_pos)</span>
+<span class="sd">                setEWOffset(video,&#39;CS&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span></div>
+
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Copyright (C) 2017  Robert Polster</span>
 <span class="sd">This program is free software: you can redistribute it and/or modify</span>
@@ -136,7 +231,7 @@
 
 <span class="sd">You should have received a copy of the GNU General Public License</span>
 <span class="sd">along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="sd">&#39;&#39;&#39;</span> 
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

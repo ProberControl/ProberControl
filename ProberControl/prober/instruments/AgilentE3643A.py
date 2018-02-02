@@ -31,14 +31,6 @@ class AgilentE3643A(object):
         ''':returns: reference to device'''
         return 'DCSource'
 
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return 'DC'
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'AgilentE3643A'
-
     def change_state(self):
         ''' Toggles the self.active parameter'''
         if self.active == True:

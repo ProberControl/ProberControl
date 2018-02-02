@@ -11,7 +11,7 @@ class Keithley2400(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -26,10 +26,6 @@ class Keithley2400(object):
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'DCSource'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return 'DC'
 
     def change_state(self):
 
@@ -47,7 +43,7 @@ class Keithley2400(object):
         :param resolution: Specified resoultion to query, defaults to 0.01
         :type resolution: Float
         :returns: Float
-        ''' 
+        '''
         return float(self.gpib.query(':MEAS:VOLT:DC? '+str(query_range)+','+str(resolution)))
 
     def get_current(self,query_range=1,resolution=0.000001):
@@ -59,7 +55,7 @@ class Keithley2400(object):
         :param resolution: Specified resoultion to query, defaults to 0.000001
         :type resolution: Float
         :returns: Float
-        ''' 
+        '''
         return float(self.gpib.query(':MEAS:CURR:DC? '+str(query_range)+','+str(resolution)))
 
     def close(self):
@@ -72,7 +68,7 @@ class Keithley2400(object):
 
         :param value: Specified voltage value, defaults to 0
         :type value: Integer
-        ''' 
+        '''
         self.gpib.write(':SOUR:FUNC VOLT')
         self.gpib.write(':SOUR:VOLT '+str(value))
 
@@ -82,7 +78,7 @@ class Keithley2400(object):
 
         :param value: Specified voltage value, defaults to 0
         :type value: Integer
-        '''    
+        '''
         self.gpib.write(':SOUR:FUNC CURR')
         self.gpib.write(':SOUR:CURR '+str(value))
 
@@ -92,7 +88,7 @@ class Keithley2400(object):
 
         :param value: Specified voltage value, defaults to 0
         :type value: Integer
-        ''' 
+        '''
         self.gpib.write(':SENS:VOLT:PROT '+str(value))
 
     def setovercurrent(self, value = 0):
@@ -101,9 +97,9 @@ class Keithley2400(object):
 
         :param value: Specified current value, defaults to 0
         :type value: Integer
-        '''    
+        '''
         self.gpib.write(':SENS:CURR:PROT '+str(value))
-      
+
     def setOutputSwitch(self, value = 0):
         '''
         Set the output switch to 1 -> ON or 0 -> OFF
@@ -119,7 +115,7 @@ class Keithley2400(object):
     def getsetvoltage(self):
         '''
         Queries the current voltage
-        
+
         :returns: String
         '''
         self.gpib.write(':SOUR:VOLT?')
@@ -128,7 +124,7 @@ class Keithley2400(object):
     def getsetcurrent(self):
         '''
         Queries the current
-        
+
         :returns: String
         '''
         self.gpib.write(':SOUR:CURR?')
@@ -137,15 +133,15 @@ class Keithley2400(object):
     def getoutvoltage(self):
         '''
         Queries the current out-voltage
-        
+
         :returns: Float
         '''
-        return float(self.gpib.query(':MEAS:VOLT:DC? '+str(Range)+','+str(Resolution)))     
+        return float(self.gpib.query(':MEAS:VOLT:DC? '+str(Range)+','+str(Resolution)))
 
     def getoutcurrent(self):
         '''
         Queries the current out-current
-        
+
         :returns: Float
         '''
         return float(self.gpib.query(':MEAS:CURR:DC? '+str(Range)+','+str(Resolution)))
@@ -153,7 +149,7 @@ class Keithley2400(object):
     def getoutswitch(self):
         '''
         Queries the current out-switch
-        
+
         :returns: String
         '''
         self.gpib.write(':OUTP?')
@@ -176,10 +172,6 @@ class Keithley2400(object):
         :type mem: Integer
         '''
         self.gpib.write('*RCL '+str(mem))
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'Keithley2400'
 
 
 '''

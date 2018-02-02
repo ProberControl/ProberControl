@@ -14,11 +14,15 @@ try:
     # for i in folders:
     #     sys.path.append(os.path.join(pwd, i))
 
-    from prober.classes import Initializer, GUI, plotter, ScriptController, maitre
+
 
     if __name__ == '__main__':
+        from prober.classes import plotter
 
         pl = plotter.NBPlot()
+
+        from prober.classes import Initializer, GUI, ScriptController, maitre, ScriptBuilderGUI
+        import ScriptBuilder
 
         # SYSTEM INITIALIZATION
         init = Initializer.Initializer()
@@ -42,7 +46,7 @@ try:
                 print("Error: {}".format(e))
         else:
             # # DEBUG
-            # import inspect
+            #import inspect
             # print inspect.getmodule(inspect.getmodule(inspect.getmodule(E_Stage).XYZ_Stage).StepMotor).Constructor_Counter
             # print inspect.getmodule(inspect.getmodule(inspect.getmodule(E_Stage).XYZ_Stage).StepMotor).Home_Counter
             # ##

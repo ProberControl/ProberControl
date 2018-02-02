@@ -46,8 +46,52 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="classes-dmesstage-module">
-<h2>classes.DMesStage module<a class="headerlink" href="#classes-dmesstage-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-classes.DMesStage">
+<span id="classes-dmesstage-module"></span><h2>classes.DMesStage module<a class="headerlink" href="#module-classes.DMesStage" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="classes.DMesStage.DMesStage">
+<em class="property">class </em><code class="descclassname">classes.DMesStage.</code><code class="descname">DMesStage</code><span class="sig-paren">(</span><em>mtr_list</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DMesStage.html#DMesStage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DMesStage.DMesStage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="classes.DMesStage.DMesStage.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DMesStage.html#DMesStage.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DMesStage.DMesStage.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">type of instrument</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-classes.DataIO">
+<span id="classes-dataio-module"></span><h2>classes.DataIO module<a class="headerlink" href="#module-classes.DataIO" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="classes.DataIO.DataIO">
+<em class="property">class </em><code class="descclassname">classes.DataIO.</code><code class="descname">DataIO</code><a class="reference internal" href="../../_modules/classes/DataIO.html#DataIO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataIO.DataIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class provides standarized Data IO that should be used in the procedures, scriptcontroller  and DataViewer</p>
+<dl class="staticmethod">
+<dt id="classes.DataIO.DataIO.get_test_data">
+<em class="property">static </em><code class="descname">get_test_data</code><span class="sig-paren">(</span><em>path</em>, <em>test_name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataIO.html#DataIO.get_test_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataIO.DataIO.get_test_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="classes.DataIO.DataIO.get_test_names">
+<em class="property">static </em><code class="descname">get_test_names</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataIO.html#DataIO.get_test_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataIO.DataIO.get_test_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="classes.DataIO.DataIO.writeData">
+<em class="property">static </em><code class="descname">writeData</code><span class="sig-paren">(</span><em>openFile</em>, <em>data</em>, <em>Data_Name=”</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataIO.html#DataIO.writeData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataIO.DataIO.writeData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes data in form of nested lists or singular value and a experiment name, and writes it to a results file. The parmater is tested to be either a file handler (in which case its considered open) or a str in which case its considered to be a path to a file to which the data will be appended.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-classes.DataViewer">
 <span id="classes-dataviewer-module"></span><h2>classes.DataViewer module<a class="headerlink" href="#module-classes.DataViewer" title="Permalink to this headline">¶</a></h2>
@@ -96,18 +140,50 @@
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="classes.DataViewer.DataViewer.get_test_data">
-<code class="descname">get_test_data</code><span class="sig-paren">(</span><em>path</em>, <em>test_name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataViewer.html#DataViewer.get_test_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataViewer.DataViewer.get_test_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.DataViewer.DataViewer.get_test_names">
-<code class="descname">get_test_names</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataViewer.html#DataViewer.get_test_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataViewer.DataViewer.get_test_names" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="classes.DataViewer.DataViewer.update_canvas">
 <code class="descname">update_canvas</code><span class="sig-paren">(</span><em>path</em>, <em>test_name</em>, <em>clear=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataViewer.html#DataViewer.update_canvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataViewer.DataViewer.update_canvas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-classes.Dialogs">
+<span id="classes-dialogs-module"></span><h2>classes.Dialogs module<a class="headerlink" href="#module-classes.Dialogs" title="Permalink to this headline">¶</a></h2>
+<p>Module Contains Dialogs for User Interaction</p>
+<dl class="class">
+<dt id="classes.Dialogs.Search_and_Replace">
+<em class="property">class </em><code class="descclassname">classes.Dialogs.</code><code class="descname">Search_and_Replace</code><span class="sig-paren">(</span><em>parent</em>, <em>textWidget</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Dialogs.html#Search_and_Replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Dialogs.Search_and_Replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Tkinter.Toplevel</span></code></p>
+<dl class="attribute">
+<dt id="classes.Dialogs.Search_and_Replace.ReplaceEntryVar">
+<code class="descname">ReplaceEntryVar</code><em class="property"> = None</em><a class="headerlink" href="#classes.Dialogs.Search_and_Replace.ReplaceEntryVar" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class configures and populates the toplevel window.
+top is the toplevel containing window.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="classes.Dialogs.Search_and_Replace.exit">
+<code class="descname">exit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Dialogs.html#Search_and_Replace.exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Dialogs.Search_and_Replace.exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.Dialogs.Search_and_Replace.replaceAll">
+<code class="descname">replaceAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Dialogs.html#Search_and_Replace.replaceAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Dialogs.Search_and_Replace.replaceAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.Dialogs.Search_and_Replace.replaceNext">
+<code class="descname">replaceNext</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Dialogs.html#Search_and_Replace.replaceNext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Dialogs.Search_and_Replace.replaceNext" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.Dialogs.Search_and_Replace.searchAll">
+<code class="descname">searchAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Dialogs.html#Search_and_Replace.searchAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Dialogs.Search_and_Replace.searchAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.Dialogs.Search_and_Replace.searchNext">
+<code class="descname">searchNext</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Dialogs.html#Search_and_Replace.searchNext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Dialogs.Search_and_Replace.searchNext" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -156,13 +232,24 @@ pitch: spacing of pads in mm</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="classes.E_Stage.E_Stage.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/E_Stage.html#E_Stage.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.E_Stage.E_Stage.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="classes.E_Stage.E_Stage.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/E_Stage.html#E_Stage.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.E_Stage.E_Stage.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-classes.Fiber">
+<span id="classes-fiber-module"></span><h2>classes.Fiber module<a class="headerlink" href="#module-classes.Fiber" title="Permalink to this headline">¶</a></h2>
+<p>Defines a thin struct to represent a “fiber array” object for the purpose of
+providing a handle for the Measure functions</p>
+<dl class="class">
+<dt id="classes.Fiber.Fiber">
+<em class="property">class </em><code class="descclassname">classes.Fiber.</code><code class="descname">Fiber</code><span class="sig-paren">(</span><em>fiber_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Fiber.html#Fiber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Fiber.Fiber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="classes.Fiber.Fiber.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Fiber.html#Fiber.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Fiber.Fiber.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -171,15 +258,8 @@ pitch: spacing of pads in mm</p>
 <div class="section" id="classes-gui-module">
 <h2>classes.GUI module<a class="headerlink" href="#classes-gui-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-classes.Global_MeasureHandler">
-<span id="classes-global-measurehandler-module"></span><h2>classes.Global_MeasureHandler module<a class="headerlink" href="#module-classes.Global_MeasureHandler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="classes.Global_MeasureHandler.Singleton">
-<em class="property">class </em><code class="descclassname">classes.Global_MeasureHandler.</code><code class="descname">Singleton</code><span class="sig-paren">(</span><em>u_class</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Global_MeasureHandler.html#Singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Global_MeasureHandler.Singleton" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Singleton paradigm implementation</p>
-</dd></dl>
-
+<div class="section" id="classes-global-measurehandler-module">
+<h2>classes.Global_MeasureHandler module<a class="headerlink" href="#classes-global-measurehandler-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="classes-initializer-module">
 <h2>classes.Initializer module<a class="headerlink" href="#classes-initializer-module" title="Permalink to this headline">¶</a></h2>
@@ -197,17 +277,15 @@ pitch: spacing of pads in mm</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="classes.OptStage.OptStage.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/OptStage.html#OptStage.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.OptStage.OptStage.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="classes.OptStage.OptStage.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/OptStage.html#OptStage.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.OptStage.OptStage.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
+</div>
+<div class="section" id="classes-scriptbuildergui-module">
+<h2>classes.ScriptBuilderGUI module<a class="headerlink" href="#classes-scriptbuildergui-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="classes-scriptcontroller-module">
 <h2>classes.ScriptController module<a class="headerlink" href="#classes-scriptcontroller-module" title="Permalink to this headline">¶</a></h2>
@@ -220,6 +298,15 @@ pitch: spacing of pads in mm</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>The intention of this class if to provide a general implementation for any kind of fiber switch.
 The key features of the class are get_switch_state(), make_new_connection() and switch_book object.</p>
+<dl class="method">
+<dt id="classes.SwitchHandler.SwitchHandler.connect_devices">
+<code class="descname">connect_devices</code><span class="sig-paren">(</span><em>in_device</em>, <em>out_device</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/SwitchHandler.html#SwitchHandler.connect_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.SwitchHandler.SwitchHandler.connect_devices" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Connect two devices together:</dt>
+<dd>in_device::out —&gt; out_device::in</dd>
+</dl>
+</dd></dl>
+
 <dl class="method">
 <dt id="classes.SwitchHandler.SwitchHandler.get_switch_state">
 <code class="descname">get_switch_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/SwitchHandler.html#SwitchHandler.get_switch_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.SwitchHandler.SwitchHandler.get_switch_state" title="Permalink to this definition">¶</a></dt>
@@ -252,7 +339,17 @@ The key features of the class are get_switch_state(), make_new_connection() and 
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="classes.SwitchHandler.SwitchHandler.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/SwitchHandler.html#SwitchHandler.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.SwitchHandler.SwitchHandler.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
+
+<dl class="function">
+<dt id="classes.SwitchHandler.sdebug">
+<code class="descclassname">classes.SwitchHandler.</code><code class="descname">sdebug</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/SwitchHandler.html#sdebug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.SwitchHandler.sdebug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-classes.apt_util">
@@ -299,11 +396,6 @@ The key features of the class are get_switch_state(), make_new_connection() and 
 <dl class="method">
 <dt id="classes.camera.Camera.showCamera2">
 <code class="descname">showCamera2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.showCamera2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.showCamera2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.Camera.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.whatCanI" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -355,53 +447,90 @@ The key features of the class are get_switch_state(), make_new_connection() and 
 <dd></dd></dl>
 
 </div>
-<div class="section" id="classes-chip-stage-module">
-<h2>classes.chip_stage module<a class="headerlink" href="#classes-chip-stage-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-classes.dist_sensor">
-<span id="classes-dist-sensor-module"></span><h2>classes.dist_sensor module<a class="headerlink" href="#module-classes.dist_sensor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-classes.chip_stage">
+<span id="classes-chip-stage-module"></span><h2>classes.chip_stage module<a class="headerlink" href="#module-classes.chip_stage" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="classes.dist_sensor.DSensor">
-<em class="property">class </em><code class="descclassname">classes.dist_sensor.</code><code class="descname">DSensor</code><span class="sig-paren">(</span><em>COM_Port</em>, <em>sensor_model=42</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/dist_sensor.html#DSensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.dist_sensor.DSensor" title="Permalink to this definition">¶</a></dt>
+<dt id="classes.chip_stage.ChipStage">
+<em class="property">class </em><code class="descclassname">classes.chip_stage.</code><code class="descname">ChipStage</code><span class="sig-paren">(</span><em>mtr_list</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <dl class="method">
-<dt id="classes.dist_sensor.DSensor.Error">
-<code class="descname">Error</code><span class="sig-paren">(</span><em>err</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/dist_sensor.html#DSensor.Error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.dist_sensor.DSensor.Error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read errors from sensor</p>
+<dt id="classes.chip_stage.ChipStage.check_coordinates">
+<code class="descname">check_coordinates</code><span class="sig-paren">(</span><em>target_pos</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.check_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.check_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.chip_stage.ChipStage.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the underlying motors</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="classes.dist_sensor.DSensor.InterfaceRS422">
-<code class="descname">InterfaceRS422</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/dist_sensor.html#DSensor.InterfaceRS422"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.dist_sensor.DSensor.InterfaceRS422" title="Permalink to this definition">¶</a></dt>
+<dt id="classes.chip_stage.ChipStage.get_coordinates">
+<code class="descname">get_coordinates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.get_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="classes.dist_sensor.DSensor.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/dist_sensor.html#DSensor.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.dist_sensor.DSensor.close" title="Permalink to this definition">¶</a></dt>
+<dt id="classes.chip_stage.ChipStage.get_rot">
+<code class="descname">get_rot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.get_rot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.get_rot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="classes.dist_sensor.DSensor.open">
-<code class="descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/dist_sensor.html#DSensor.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.dist_sensor.DSensor.open" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.dist_sensor.DSensor.poll">
-<code class="descname">poll</code><span class="sig-paren">(</span><em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/dist_sensor.html#DSensor.poll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.dist_sensor.DSensor.poll" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves last n values from sensor</p>
+<dt id="classes.chip_stage.ChipStage.home">
+<code class="descname">home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.home" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all chip stage motors to home</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="classes.chip_stage.ChipStage.set_coordinates">
+<code class="descname">set_coordinates</code><span class="sig-paren">(</span><em>target_pos</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.set_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.set_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move to a point in the plane</p>
+<p>target_pos (3-tuple): (rot,g_T ,g_B) coordinates of the final point</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="classes.chip_stage.ChipStage.set_rot">
+<code class="descname">set_rot</code><span class="sig-paren">(</span><em>target_pos</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.set_rot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.set_rot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the chip stage</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="classes.chip_stage.ChipStage.set_stepsize">
+<code class="descname">set_stepsize</code><span class="sig-paren">(</span><em>stepsize</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.set_stepsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.set_stepsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the stepsize used in step() function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="classes.chip_stage.ChipStage.set_whoAmI">
+<code class="descname">set_whoAmI</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.set_whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.set_whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.chip_stage.ChipStage.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>direction</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.step" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Move Stage in either direction by one step</li>
+<li>Step Size defined in set_stepsize()</li>
+<li>direction expected to be char: L(CW),R(CCW)</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="classes.chip_stage.ChipStage.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#ChipStage.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.ChipStage.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="classes.dist_sensor.Error">
-<code class="descclassname">classes.dist_sensor.</code><code class="descname">Error</code><span class="sig-paren">(</span><em>err</em>, <em>sensor</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/dist_sensor.html#Error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.dist_sensor.Error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read errors from sensor</p>
-</dd></dl>
+<dt id="classes.chip_stage.t_add">
+<code class="descclassname">classes.chip_stage.</code><code class="descname">t_add</code><span class="sig-paren">(</span><em>tuple1</em>, <em>tuple2</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#t_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.t_add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-</div>
-<div class="section" id="classes-gonio-stage-module">
-<h2>classes.gonio_stage module<a class="headerlink" href="#classes-gonio-stage-module" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="classes.chip_stage.t_sub">
+<code class="descclassname">classes.chip_stage.</code><code class="descname">t_sub</code><span class="sig-paren">(</span><em>tuple1</em>, <em>tuple2</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/chip_stage.html#t_sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.chip_stage.t_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="classes-maitre-module">
 <h2>classes.maitre module<a class="headerlink" href="#classes-maitre-module" title="Permalink to this headline">¶</a></h2>
@@ -455,43 +584,8 @@ should be used to check whether the slave reported a certain answer.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-classes.newport_controller">
-<span id="classes-newport-controller-module"></span><h2>classes.newport_controller module<a class="headerlink" href="#module-classes.newport_controller" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Newport Controler Class</dt>
-<dd>implementation for vertical stage</dd>
-</dl>
-<dl class="class">
-<dt id="classes.newport_controller.NewportPM500">
-<em class="property">class </em><code class="descclassname">classes.newport_controller.</code><code class="descname">NewportPM500</code><span class="sig-paren">(</span><em>gpib_addr</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/newport_controller.html#NewportPM500"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.newport_controller.NewportPM500" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="classes.newport_controller.NewportPM500.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/newport_controller.html#NewportPM500.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.newport_controller.NewportPM500.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>release resources</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="classes.newport_controller.NewportPM500.move_down">
-<code class="descname">move_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/newport_controller.html#NewportPM500.move_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.newport_controller.NewportPM500.move_down" title="Permalink to this definition">¶</a></dt>
-<dd><p>Moves the stage to negative limit switch</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="classes.newport_controller.NewportPM500.move_up">
-<code class="descname">move_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/newport_controller.html#NewportPM500.move_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.newport_controller.NewportPM500.move_up" title="Permalink to this definition">¶</a></dt>
-<dd><p>Moves the stage to positive limit switch</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="classes.newport_controller.NewportPM500.set_velocity">
-<code class="descname">set_velocity</code><span class="sig-paren">(</span><em>vel</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/newport_controller.html#NewportPM500.set_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.newport_controller.NewportPM500.set_velocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the velocity for the motor movement</p>
-<p>vel (integer): velocity in um/sec</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="classes-object-chain-module">
+<h2>classes.object_chain module<a class="headerlink" href="#classes-object-chain-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-classes.plotter">
 <span id="classes-plotter-module"></span><h2>classes.plotter module<a class="headerlink" href="#module-classes.plotter" title="Permalink to this headline">¶</a></h2>
@@ -500,13 +594,13 @@ should be used to check whether the slave reported a certain answer.</p>
 <em class="property">class </em><code class="descclassname">classes.plotter.</code><code class="descname">ProcessPlotter</code><a class="reference internal" href="../../_modules/classes/plotter.html#ProcessPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.plotter.ProcessPlotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <dl class="method">
-<dt id="classes.plotter.ProcessPlotter.poll_draw">
-<code class="descname">poll_draw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/plotter.html#ProcessPlotter.poll_draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.plotter.ProcessPlotter.poll_draw" title="Permalink to this definition">¶</a></dt>
+<dt id="classes.plotter.ProcessPlotter.terminate">
+<code class="descname">terminate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/plotter.html#ProcessPlotter.terminate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.plotter.ProcessPlotter.terminate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="classes.plotter.ProcessPlotter.terminate">
-<code class="descname">terminate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/plotter.html#ProcessPlotter.terminate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.plotter.ProcessPlotter.terminate" title="Permalink to this definition">¶</a></dt>
+<dt id="classes.plotter.ProcessPlotter.update_fig">
+<code class="descname">update_fig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/plotter.html#ProcessPlotter.update_fig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.plotter.ProcessPlotter.update_fig" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -518,12 +612,12 @@ should be used to check whether the slave reported a certain answer.</p>
 <p>Singleton paradigm implementation</p>
 </dd></dl>
 
-</div>
-<div class="section" id="classes-rotator-module">
-<h2>classes.rotator module<a class="headerlink" href="#classes-rotator-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="classes-rotator-ell8-module">
-<h2>classes.rotator_ELL8 module<a class="headerlink" href="#classes-rotator-ell8-module" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="classes.plotter.close_handler">
+<em class="property">class </em><code class="descclassname">classes.plotter.</code><code class="descname">close_handler</code><span class="sig-paren">(</span><em>shelled_handle</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/plotter.html#close_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.plotter.close_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-classes.xyzstage">
 <span id="classes-xyzstage-module"></span><h2>classes.xyzstage module<a class="headerlink" href="#module-classes.xyzstage" title="Permalink to this headline">¶</a></h2>
@@ -674,26 +768,26 @@ ang_y (float): anfle in y-axis</p>
   <ul>
 <li><a class="reference internal" href="#">classes package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#classes-dmesstage-module">classes.DMesStage module</a></li>
+<li><a class="reference internal" href="#module-classes.DMesStage">classes.DMesStage module</a></li>
+<li><a class="reference internal" href="#module-classes.DataIO">classes.DataIO module</a></li>
 <li><a class="reference internal" href="#module-classes.DataViewer">classes.DataViewer module</a></li>
+<li><a class="reference internal" href="#module-classes.Dialogs">classes.Dialogs module</a></li>
 <li><a class="reference internal" href="#module-classes.E_Stage">classes.E_Stage module</a></li>
+<li><a class="reference internal" href="#module-classes.Fiber">classes.Fiber module</a></li>
 <li><a class="reference internal" href="#classes-gui-module">classes.GUI module</a></li>
-<li><a class="reference internal" href="#module-classes.Global_MeasureHandler">classes.Global_MeasureHandler module</a></li>
+<li><a class="reference internal" href="#classes-global-measurehandler-module">classes.Global_MeasureHandler module</a></li>
 <li><a class="reference internal" href="#classes-initializer-module">classes.Initializer module</a></li>
 <li><a class="reference internal" href="#module-classes.OptStage">classes.OptStage module</a></li>
+<li><a class="reference internal" href="#classes-scriptbuildergui-module">classes.ScriptBuilderGUI module</a></li>
 <li><a class="reference internal" href="#classes-scriptcontroller-module">classes.ScriptController module</a></li>
 <li><a class="reference internal" href="#module-classes.SwitchHandler">classes.SwitchHandler module</a></li>
 <li><a class="reference internal" href="#module-classes.apt_util">classes.apt_util module</a></li>
 <li><a class="reference internal" href="#module-classes.camera">classes.camera module</a></li>
-<li><a class="reference internal" href="#classes-chip-stage-module">classes.chip_stage module</a></li>
-<li><a class="reference internal" href="#module-classes.dist_sensor">classes.dist_sensor module</a></li>
-<li><a class="reference internal" href="#classes-gonio-stage-module">classes.gonio_stage module</a></li>
+<li><a class="reference internal" href="#module-classes.chip_stage">classes.chip_stage module</a></li>
 <li><a class="reference internal" href="#classes-maitre-module">classes.maitre module</a></li>
 <li><a class="reference internal" href="#module-classes.multi_serial">classes.multi_serial module</a></li>
-<li><a class="reference internal" href="#module-classes.newport_controller">classes.newport_controller module</a></li>
+<li><a class="reference internal" href="#classes-object-chain-module">classes.object_chain module</a></li>
 <li><a class="reference internal" href="#module-classes.plotter">classes.plotter module</a></li>
-<li><a class="reference internal" href="#classes-rotator-module">classes.rotator module</a></li>
-<li><a class="reference internal" href="#classes-rotator-ell8-module">classes.rotator_ELL8 module</a></li>
 <li><a class="reference internal" href="#module-classes.xyzstage">classes.xyzstage module</a></li>
 <li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>

@@ -55,7 +55,7 @@
 <span class="sd">        Constructor method</span>
 
 <span class="sd">        :param res_manager: PyVisa resource manager</span>
-<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
 <span class="sd">        :param address: SCPI address of instrument</span>
 <span class="sd">        :type address: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -69,16 +69,12 @@
         <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">info</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Connections Successful: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">info</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RL 30DBM&#39;</span><span class="p">)</span> <span class="c1">#reference level is 30 dBm, corresponds to 10Vpp</span>
 
 <div class="viewcode-block" id="AnritsuMS2667C.whoAmI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AnritsuMS2667C.AnritsuMS2667C.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;RFMeter&#39;</span></div>
-
-<div class="viewcode-block" id="AnritsuMS2667C.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AnritsuMS2667C.AnritsuMS2667C.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
 
 <div class="viewcode-block" id="AnritsuMS2667C.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AnritsuMS2667C.AnritsuMS2667C.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -99,7 +95,7 @@
 <span class="sd">        :type resolutionStep: Integer</span>
 <span class="sd">        :returns: List of readings</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-    
+
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;CF </span><span class="si">%d</span><span class="s1">MHZ&#39;</span> <span class="o">%</span> <span class="n">central</span><span class="p">)</span> <span class="c1"># all in MHz</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SP </span><span class="si">%d</span><span class="s1">MHZ&#39;</span> <span class="o">%</span> <span class="n">span</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TS&#39;</span><span class="p">)</span> <span class="c1">#take sweep</span>
@@ -165,17 +161,13 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MKR 0&#39;</span><span class="p">)</span> <span class="c1"># all in MHz</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MKPK&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MKF?&#39;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MKF?&#39;</span><span class="p">)</span>
         <span class="n">peakfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MKL?&#39;</span><span class="p">)</span>
         <span class="n">level</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="n">peakfreq</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;AnritsuMS2667C&#39;</span>    </div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">peakfreq</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

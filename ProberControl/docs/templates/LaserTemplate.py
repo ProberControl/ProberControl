@@ -25,26 +25,18 @@ class InstrumentNameHere(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: string
         '''
-        self.active = False    
-        self.max_wavelength = 
+        self.active = False
+        self.max_wavelength =
         self.min_wavelength =
         self.gpib = res_manager.open_resource(address) #call vis
-    
+
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'Laser'
-
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'AndoAQ4321'
 
     def change_state(self):
         ''' Toggles the self.active parameter'''
@@ -67,7 +59,7 @@ class InstrumentNameHere(object):
 
         :returns: Float
         '''
-    
+
     def setpower(self,power = 0 ):
         '''
         Sets power in dbm
@@ -75,14 +67,14 @@ class InstrumentNameHere(object):
         :param power: Specified power to set the laser to in dbm
         :type power: Integer
         '''
-        
+
     def getpower(self):
         '''
         Gets output power in dbm
 
         :returns: Float
         '''
-		
+
     def sweepWavelengthsTriggerSetup (self, start, end, step):
         '''
         Have to keep track of Triggers in main command, use Stop Sweep Command to end sweep.
@@ -101,7 +93,7 @@ class InstrumentNameHere(object):
         '''
         Triggers laser
         '''
-		
+
 ################################################################################
 #################### All methods below are suggested: ##########################
 ################################################################################
@@ -113,7 +105,7 @@ class InstrumentNameHere(object):
         :returns: Integer
         '''
         return self.max_wavelength
-    
+
     def get_min_wavelength(self):
         '''
         Queries the minimum allowed wavelength
@@ -126,9 +118,9 @@ class InstrumentNameHere(object):
         '''
         Executes a sweep with respect to a specified step
 
-        :param start: Specified wavelength  
+        :param start: Specified wavelength
         :type start: Integer
-        :param end: Specified wavelength  
+        :param end: Specified wavelength
         :type end: Integer
         :param step: Specified step must be greater or equal to than 0.001
         :type step: Float
@@ -146,7 +138,7 @@ class InstrumentNameHere(object):
         :type time: Float
         '''
 
-    def checkStatus(self): 
+    def checkStatus(self):
         '''
         Checks the status of the laser. Handles timeout exception
 
@@ -172,7 +164,7 @@ class InstrumentNameHere(object):
         '''
         Use after pause to resume, still have to call trigger() for next data point if using with trigger sweep
         '''
-        
+
     def outputOFF(self):
         '''
         Turns output of laser source OFF

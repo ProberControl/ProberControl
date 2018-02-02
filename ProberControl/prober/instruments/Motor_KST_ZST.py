@@ -1,6 +1,6 @@
 # the Motor class
 
-import serial
+#import serial
 import threading
 from struct import unpack
 import logging
@@ -40,7 +40,7 @@ def hexString(data):
 # setup the Logger
 # -> should be done once
 # initialize the logger
-logger = logging.getLogger('MotorLog')
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # create console handler and set level to debug

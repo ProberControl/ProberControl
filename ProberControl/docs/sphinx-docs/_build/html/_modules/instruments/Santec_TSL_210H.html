@@ -58,16 +58,16 @@
 <span class="sd">        Constructor method</span>
 
 <span class="sd">        :param res_manager: PyVisa resource manager</span>
-<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
 <span class="sd">        :param address: SCPI address of instrument</span>
 <span class="sd">        :type address: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-       
+
         <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">max_wavelength</span> <span class="o">=</span> <span class="mi">1580</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_wavelength</span> <span class="o">=</span> <span class="mi">1510</span>
-    
+
         <span class="c1"># open resource</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span> <span class="o">=</span> <span class="n">res_manager</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 
@@ -78,10 +78,6 @@
 <div class="viewcode-block" id="Santec_TSL_210H.whoAmI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;Laser&#39;</span></div>
-
-<div class="viewcode-block" id="Santec_TSL_210H.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
 
 <div class="viewcode-block" id="Santec_TSL_210H.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -97,7 +93,7 @@
 <span class="sd">        :returns: Float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_wavelength</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.get_min_wavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.get_min_wavelength">[docs]</a>    <span class="k">def</span> <span class="nf">get_min_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the minimum allowed wavelength.</span>
@@ -105,7 +101,7 @@
 <span class="sd">        :returns: Float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_wavelength</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.setwavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.setwavelength">[docs]</a>    <span class="k">def</span> <span class="nf">setwavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Loads a single wavelength and sets output high.</span>
@@ -129,7 +125,7 @@
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
                 <span class="n">info</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
             <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Wavelength Sent: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-            
+
 <div class="viewcode-block" id="Santec_TSL_210H.sweepWavelengthsTriggerSetup"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.sweepWavelengthsTriggerSetup">[docs]</a>    <span class="k">def</span> <span class="nf">sweepWavelengthsTriggerSetup</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Execute a sweep of the wavelength trigger. Have to keep track of Triggers in main command.</span>
@@ -143,7 +139,7 @@
 <span class="sd">        :type end: Float</span>
 <span class="sd">        :param step: Size of increment</span>
 <span class="sd">        :type step: Float</span>
-<span class="sd">        &#39;&#39;&#39;</span> 
+<span class="sd">        &#39;&#39;&#39;</span>
 
 
         <span class="k">if</span> <span class="p">(</span>
@@ -169,26 +165,26 @@
         <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepcurrent</span> <span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepend</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweepcurrent</span> <span class="o">&gt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepstart</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sweepcurrent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepcurrent</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepstep</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setwavelength</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepcurrent</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.startSweep"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.startSweep">[docs]</a>    <span class="k">def</span> <span class="nf">startSweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Start sweep</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setwavelength</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepstart</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.pauseSweep"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.pauseSweep">[docs]</a>    <span class="k">def</span> <span class="nf">pauseSweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Pause sweep</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;WA&#39;</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.stopSweep"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.stopSweep">[docs]</a>    <span class="k">def</span> <span class="nf">stopSweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Stop the sweep</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputOFF</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Santec_TSL_210H.checkStatus"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.checkStatus">[docs]</a>    <span class="k">def</span> <span class="nf">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<div class="viewcode-block" id="Santec_TSL_210H.checkStatus"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.checkStatus">[docs]</a>    <span class="k">def</span> <span class="nf">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Check the status of the instrument</span>
 
@@ -204,7 +200,7 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">()</span></div>
-        
+
 <div class="viewcode-block" id="Santec_TSL_210H.outputON"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.outputON">[docs]</a>    <span class="k">def</span> <span class="nf">outputON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Turns output of laser source ON.</span>
@@ -225,7 +221,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;WA&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.setpower"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.setpower">[docs]</a>    <span class="k">def</span> <span class="nf">setpower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set power in dbm</span>
@@ -234,7 +230,7 @@
 <span class="sd">        :type power: Float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OP&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">power</span><span class="p">))</span></div>
-        
+
 <div class="viewcode-block" id="Santec_TSL_210H.getpower"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.getpower">[docs]</a>    <span class="k">def</span> <span class="nf">getpower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Gets output power in dbm</span>
@@ -243,7 +239,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OP&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.setcurrent"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.setcurrent">[docs]</a>    <span class="k">def</span> <span class="nf">setcurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set the current. Note: current is mA</span>
@@ -261,7 +257,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;CU&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.settemperature"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.settemperature">[docs]</a>    <span class="k">def</span> <span class="nf">settemperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set the temperature. Note: temperature is C</span>
@@ -270,7 +266,7 @@
 <span class="sd">        :type temperature: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TL&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">temperature</span><span class="p">))</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.gettemperature"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.gettemperature">[docs]</a>    <span class="k">def</span> <span class="nf">gettemperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the temperature, Note: temperature is C</span>
@@ -279,7 +275,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TL&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.setACC"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.setACC">[docs]</a>    <span class="k">def</span> <span class="nf">setACC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Sets the ACC</span>
@@ -299,7 +295,7 @@
 <span class="sd">        :returns: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SU&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>    </div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Santec_TSL_210H.setpowermw"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.setpowermw">[docs]</a>    <span class="k">def</span> <span class="nf">setpowermw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">powermw</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -309,7 +305,7 @@
 <span class="sd">        :type powerMW: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;LP&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">powermw</span><span class="p">))</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.getpowermw"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.getpowermw">[docs]</a>    <span class="k">def</span> <span class="nf">getpowermw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the status of the powerMW</span>
@@ -318,7 +314,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;LP&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.coherenceON"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.coherenceON">[docs]</a>    <span class="k">def</span> <span class="nf">coherenceON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Turns coherence ON</span>
@@ -330,7 +326,7 @@
 <span class="sd">        Turns coherence OFF</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;CF&#39;</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.setcoherence"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.setcoherence">[docs]</a>    <span class="k">def</span> <span class="nf">setcoherence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coherence</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Sets the coherence</span>
@@ -339,7 +335,7 @@
 <span class="sd">        :type coherence: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;CV&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">coherence</span><span class="p">))</span></div>
-    
+
 <div class="viewcode-block" id="Santec_TSL_210H.getcoherence"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Santec_TSL_210H.Santec_TSL_210H.getcoherence">[docs]</a>    <span class="k">def</span> <span class="nf">getcoherence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the coherence value</span>
@@ -347,11 +343,7 @@
 <span class="sd">        :returns: Float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;CV&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;Santec_TSL_210H&#39;</span></div>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

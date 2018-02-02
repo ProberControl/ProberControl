@@ -1,0 +1,254 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>classes.DataIO &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for classes.DataIO</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<div class="viewcode-block" id="DataIO"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO">[docs]</a><span class="k">class</span> <span class="nc">DataIO</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This class provides standarized Data IO that should be used in the procedures, scriptcontroller  and DataViewer</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="DataIO.writeData"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO.writeData">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">writeData</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">Data_Name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Takes data in form of nested lists or singular value and a experiment name, and writes it to a results file. The parmater is tested to be either a file handler (in which case its considered open) or a str in which case its considered to be a path to a file to which the data will be appended.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># TODO check data type</span>
+        <span class="c1"># Test openFile parameter</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">openFile</span><span class="p">)</span> <span class="ow">is</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># It is already a file handler - everything is good</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">openFile</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Try to open file</span>
+                <span class="n">openFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s2">&quot;Cannot open file for writing&quot;</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;Wrong argument type for openFile&quot;</span>
+            <span class="k">return</span>
+
+
+        <span class="c1">#Check Dimension of data</span>
+        <span class="k">if</span> <span class="n">DataIO</span><span class="o">.</span><span class="n">_test_dim</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># If Dimension bigger 2 than recursively dive into file</span>
+            <span class="k">for</span> <span class="n">substruct</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">DataIO</span><span class="o">.</span><span class="n">writeData</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span> <span class="n">substruct</span><span class="p">,</span> <span class="n">Data_Name</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">substruct</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="n">DataIO</span><span class="o">.</span><span class="n">_test_dim</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">DataIO</span><span class="o">.</span><span class="n">_test_dim</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># If a 2 dim data block or less write csv block</span>
+            <span class="n">DataIO</span><span class="o">.</span><span class="n">_write_csv</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span> <span class="n">data</span> <span class="p">,</span><span class="n">Data_Name</span><span class="p">,</span><span class="n">DataIO</span><span class="o">.</span><span class="n">_test_dim</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="p">:</span>
+            <span class="c1"># if the data is a str just write it into file</span>
+            <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">openFile</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;Could not write data to file: Error in Data Format&quot;</span>
+
+
+        <span class="c1"># Seperate the experiments by one extra new lines</span>
+        <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">openFile</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_write_csv</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span> <span class="n">data</span> <span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">dim</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Writes Single dimensional lists to file&#39;&#39;&#39;</span>
+
+        <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;##</span><span class="si">{}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">openFile</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">:</span>
+                    <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
+                <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">:</span>
+                <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
+            <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">openFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">openFile</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">return</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_test_dim</span><span class="p">(</span><span class="n">testlist</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;tests if testlist is a list and how many dimensions it has.</span>
+<span class="sd">       Returns -1 if testlist is a number</span>
+<span class="sd">       returns -2 if it is no list or number, 0 if list is empty</span>
+<span class="sd">       and otherwise the dimensions of it&quot;&quot;&quot;</span>
+       <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">testlist</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+          <span class="k">if</span> <span class="n">testlist</span> <span class="o">==</span> <span class="p">[]:</span>
+              <span class="k">return</span> <span class="n">dim</span>
+          <span class="n">dim</span> <span class="o">=</span> <span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span>
+          <span class="n">dim</span> <span class="o">=</span> <span class="n">DataIO</span><span class="o">.</span><span class="n">_test_dim</span><span class="p">(</span><span class="n">testlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="p">)</span>
+          <span class="k">return</span> <span class="n">dim</span>
+       <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">testlist</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+           <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+       <span class="k">else</span><span class="p">:</span>
+          <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+              <span class="k">return</span> <span class="o">-</span><span class="mi">2</span>
+          <span class="k">else</span><span class="p">:</span>
+              <span class="k">return</span> <span class="n">dim</span>
+
+<div class="viewcode-block" id="DataIO.get_test_names"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO.get_test_names">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_test_names</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
+        <span class="n">NameList</span><span class="o">=</span><span class="p">[]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">MeasFile</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">MeasFile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">print</span> <span class="s1">&#39;Problem reading Measurement file.&#39;</span>
+                    <span class="n">exit</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">MeasFile</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;##&#39;</span> <span class="p">:</span>
+                        <span class="n">NameList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">pass</span> <span class="c1"># No file was selected, no reason to report an error</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">NameList</span><span class="o">==</span><span class="p">[]:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;NoName&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">NameList</span></div>
+
+<div class="viewcode-block" id="DataIO.get_test_data"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO.get_test_data">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_test_data</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">test_name</span><span class="p">):</span>
+
+        <span class="n">Data</span><span class="o">=</span><span class="p">[]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">MeasFile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">MeasFile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s1">&#39;Problem reading Measurement file.&#39;</span>
+                <span class="n">exit</span><span class="p">()</span>
+
+            <span class="n">in_block</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">MeasFile</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">in_block</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+                    <span class="n">SubList</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">CleanSubList</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">SubList</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">elem</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                            <span class="n">CleanSubList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
+
+                    <span class="n">Data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CleanSubList</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">in_block</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">Data</span>
+
+                <span class="k">if</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="ow">or</span> <span class="p">(</span><span class="n">test_name</span> <span class="o">==</span> <span class="s1">&#39;NoName&#39;</span> <span class="ow">and</span> <span class="n">in_block</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">in_block</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">in_block</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Data</span>
+
+        <span class="nb">print</span> <span class="s1">&#39;Reading Data from File failed&#39;</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">openFile</span> <span class="o">=</span> <span class="s1">&#39;HelloWorld.txt&#39;</span>
+    <span class="n">openFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+    <span class="n">Data_Name</span> <span class="o">=</span> <span class="s1">&#39;Exp1&#39;</span>
+    <span class="nb">print</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="n">DataIO</span><span class="o">.</span><span class="n">_test_dim</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">DataIO</span><span class="o">.</span><span class="n">writeData</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">Data_Name</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

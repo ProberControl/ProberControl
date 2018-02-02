@@ -53,7 +53,7 @@
 <span class="sd">        Constructor method</span>
 
 <span class="sd">        :param res_manager: PyVisa resource manager</span>
-<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
 <span class="sd">        :param address: SCPI address of instrument</span>
 <span class="sd">        :type address: String</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -69,10 +69,6 @@
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;RFSource&#39;</span></div>
 
-<div class="viewcode-block" id="WT68145B.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
-
 <div class="viewcode-block" id="WT68145B.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
@@ -81,11 +77,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="WT68145B.out_on"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.out_on">[docs]</a>    <span class="k">def</span> <span class="nf">out_on</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Turns output ON&#39;&#39;&#39;</span>    
+        <span class="sd">&#39;&#39;&#39;Turns output ON&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RF1&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WT68145B.out_off"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.out_off">[docs]</a>    <span class="k">def</span> <span class="nf">out_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Turns output OFF&#39;&#39;&#39;</span>    
+        <span class="sd">&#39;&#39;&#39;Turns output OFF&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RF0&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WT68145B.set_freq1"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.set_freq1">[docs]</a>    <span class="k">def</span> <span class="nf">set_freq1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
@@ -107,7 +103,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;F2 &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; GH&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WT68145B.sweep_f1f2"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.sweep_f1f2">[docs]</a>    <span class="k">def</span> <span class="nf">sweep_f1f2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Execute a sweep of the two frequencies&#39;&#39;&#39;</span>    
+        <span class="sd">&#39;&#39;&#39;Execute a sweep of the two frequencies&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SF1&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WT68145B.single_trigger_mode"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.single_trigger_mode">[docs]</a>    <span class="k">def</span> <span class="nf">single_trigger_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -125,7 +121,7 @@
 <div class="viewcode-block" id="WT68145B.set_deltasweep_mode"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.set_deltasweep_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_deltasweep_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Enter delta sweep mode&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;DF1&#39;</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="WT68145B.set_sweep_delta"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.set_sweep_delta">[docs]</a>    <span class="k">def</span> <span class="nf">set_sweep_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">delta</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set delta sweep value</span>
@@ -191,7 +187,7 @@
 <span class="sd">        :type time: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SWT &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; MS&#39;</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="WT68145B.set_stepsweep_stepsize"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.set_stepsweep_stepsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_stepsweep_stepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mi">500</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Set the stepsize of step-sweep mode</span>
@@ -221,15 +217,11 @@
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">),</span><span class="nb">float</span><span class="p">(</span><span class="n">stop</span><span class="p">),(</span><span class="nb">float</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">steps</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; GH,&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;ZEL GTF ZS000&#39;</span><span class="p">)</span> </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;ZEL GTF ZS000&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WT68145B.freq_step"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.WT68145B.WT68145B.freq_step">[docs]</a>    <span class="k">def</span> <span class="nf">freq_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Set step frequency.&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;WT68145B&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

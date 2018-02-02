@@ -1,3 +1,5 @@
+.. _launching-label:
+
 Launching ProberControl
 =======================
 

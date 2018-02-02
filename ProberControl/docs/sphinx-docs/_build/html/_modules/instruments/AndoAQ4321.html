@@ -58,7 +58,7 @@
 <span class="sd">        Constructor method</span>
 
 <span class="sd">        :param res_manager: PyVisa resource manager</span>
-<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
 <span class="sd">        :param address: SCPI address of instrument</span>
 <span class="sd">        :type address: string</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -67,7 +67,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">max_wavelength</span> <span class="o">=</span> <span class="mf">1579.9</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_wavelength</span> <span class="o">=</span> <span class="mi">1520</span>
-    
+
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span> <span class="o">=</span> <span class="n">res_manager</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;PASSWORD4321&#39;</span><span class="p">)</span>
 
@@ -93,10 +93,6 @@
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;Laser&#39;</span></div>
 
-<div class="viewcode-block" id="AndoAQ4321.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
-
 <div class="viewcode-block" id="AndoAQ4321.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
@@ -111,7 +107,7 @@
 <span class="sd">        :returns: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_wavelength</span></div>
-    
+
 <div class="viewcode-block" id="AndoAQ4321.get_min_wavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.get_min_wavelength">[docs]</a>    <span class="k">def</span> <span class="nf">get_min_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the minimum allowed wavelength</span>
@@ -119,7 +115,7 @@
 <span class="sd">        :returns: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_wavelength</span></div>
-    
+
 <div class="viewcode-block" id="AndoAQ4321.setwavelength"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.setwavelength">[docs]</a>    <span class="k">def</span> <span class="nf">setwavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Loads a single wavelength and sets output high</span>
@@ -210,11 +206,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TSWET &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span> <span class="p">(</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TSGL&#39;</span><span class="p">)</span> <span class="c1">#Single Sweep</span>
-    
+
             <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Sweep Wavelength Continuous Complete&#39;</span><span class="p">)</span></div>
-            
+
 <div class="viewcode-block" id="AndoAQ4321.sweepWavelengthsTriggerSetup"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.sweepWavelengthsTriggerSetup">[docs]</a>    <span class="k">def</span> <span class="nf">sweepWavelengthsTriggerSetup</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Have to keep track of Triggers in main command, use Stop Sweep Command to end sweep.</span>
@@ -258,7 +254,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TRIG&#39;</span><span class="p">)</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AndoAQ4321.checkStatus"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.checkStatus">[docs]</a>    <span class="k">def</span> <span class="nf">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<div class="viewcode-block" id="AndoAQ4321.checkStatus"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.checkStatus">[docs]</a>    <span class="k">def</span> <span class="nf">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Checks the status of the laser. Handles timeout exception</span>
 
@@ -276,9 +272,9 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">()</span></div>
-        
-    
-<div class="viewcode-block" id="AndoAQ4321.checkStatusSingle"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.checkStatusSingle">[docs]</a>    <span class="k">def</span> <span class="nf">checkStatusSingle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+
+
+<div class="viewcode-block" id="AndoAQ4321.checkStatusSingle"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.checkStatusSingle">[docs]</a>    <span class="k">def</span> <span class="nf">checkStatusSingle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Checks the status of the laser. Handles timeout exception</span>
 
@@ -322,8 +318,8 @@
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Use after pause to resume, still have to call trigger() for next data point if using with trigger sweep</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TCONT&#39;</span><span class="p">)</span>        </div>
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TCONT&#39;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="AndoAQ4321.outputOFF"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.outputOFF">[docs]</a>    <span class="k">def</span> <span class="nf">outputOFF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Turns output of laser source OFF</span>
@@ -340,7 +336,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TWL?&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-    
+
 <div class="viewcode-block" id="AndoAQ4321.setpower"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.setpower">[docs]</a>    <span class="k">def</span> <span class="nf">setpower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">power</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Sets power in dbm</span>
@@ -349,7 +345,7 @@
 <span class="sd">        :type power: Integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TPDB &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">power</span><span class="p">))</span></div>
-        
+
 <div class="viewcode-block" id="AndoAQ4321.getpower"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.AndoAQ4321.AndoAQ4321.getpower">[docs]</a>    <span class="k">def</span> <span class="nf">getpower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Gets output power in dbm</span>
@@ -357,11 +353,7 @@
 <span class="sd">        :returns: Float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TPDB?&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;AndoAQ4321&#39;</span>    </div>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

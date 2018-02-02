@@ -14,7 +14,7 @@ class HP8163A(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -26,7 +26,7 @@ class HP8163A(object):
         else:
 			self.__channel = channel
 			self.__port = 1
-			
+
         # Set Power Unit to dbm
         self.gpib.write('sens1:pow:unit 0')
         self.gpib.write('sens2:pow:unit 0')
@@ -47,10 +47,6 @@ class HP8163A(object):
         ''':returns: reference to device'''
         return 'PowerMeter'
 
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return 'OPT'
-
     def get_power(self,wavelength=1550):
         ''' return power meter reading after setting correct wavelength'''
         self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:wav '+str(wavelength)+'nm')
@@ -70,24 +66,20 @@ class HP8163A(object):
         else:
             self.active = True
 
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'HP8163A'
-		
     def config_meter(self, range):
         if self.__port != 2:
 			range = int(range)
-		
+
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit 0')
 			#print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit?')
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:range:auto 0')
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:rang '+str(range)+'DBM')
-		
+
     def prep_measure_on_trigger(self, samples = 64):
 		if self.__port != 2:
 			self.gpib.write('*CLS')
 			samples = int(samples)
-        
+
 			# self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat stab,stop') #switch stab with logg depending
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop') #switch stab with logg depending
 			self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp sme') #Set up trigger
@@ -95,25 +87,25 @@ class HP8163A(object):
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100us')
 			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?')
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,start')
-			
+
 			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
 			print self.gpib.query('syst:err?')
 
-    
+
     def get_result_from_log(self,samples=64):
-	
+
         if self.__port != 2:
 			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
-        
+
         self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:res?')
         data = self.gpib.read_raw()
         print self.gpib.query('syst:err?')
-       
+
 
         samples = int(samples)
-        
+
         #print data
-        
+
         NofDigits = int(data[1])
 
         HexData = data[2+NofDigits:2+NofDigits+samples*4]

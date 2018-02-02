@@ -21,18 +21,20 @@ The ``ProberConfig.conf`` file uses the following syntax, which is similar for a
         a.    #O – Orientation of Stages (E/S/N/W) or exact model for Measurement Tools
         b.    #A – address for tools e.g. COM4 or GPIB0::24::INSTR
         c.    #X / #Y / #Z – info for x,y,z axis stepper motors for xyz stages
-            a. The info should look like : ``Instrument Class; Address [; additional int args]``
+            a. The info should look like : ``Instrument Class; Address [; additional int args (';' separated)]``
             b. The first two arguments, ``Instrument class`` and ``Address`` must be provided, optionally followed by any other (integer) arguments that the constructor for that instrument takes
         d.    #A – angle deviations from perfect 90 setup
-        e.    #R / #W /#E address of Chip Rotation Stage, East Gonio and West Gonio Controlers
+        e.    #R / #W /#E info for Chip Rotation Stage, East Gonio and West Gonio Controlers
+            a. The info should look like : ``Instrument Class; Address [; additional int args (';' separated)]``
+            b. The first two arguments, ``Instrument class`` and ``Address`` must be provided, optionally followed by any other (integer) arguments that the constructor for that instrument takes
         f.    #N -
-            a. If multiple times the same same device is present the #N parameter controls the index of the device e.g. #N 3 for a laser creates the object **MLaser3** in the ``Stages Dictionary``.
+            a. If multiple times the same device is present the #N parameter controls the index of the device e.g. #N 3 for a laser creates the object **MLaser3** in the ``Stages Dictionary``.
             b. If one device has multiple channels e.g. for a laser: 1:3 maps channel 3 to the object MLaser1. If a device has more than one port per channel mapping follows: 1:4.2 - to link the object MLaser1 to channel 4 port 2. Also see :ref:`Interface with a Multi-Channel Devic <interfaceMultiChannel>`.
-            c. Multiple entries need to be saperated by ;
+            c. Multiple entries need to be separated by ;
         g.    #P - Ports corresponding to a switch, if a switch is present.
-            a. A switch entry has the following sytax: ``3:15,16>7,8.`` the `3:` represents the 3rd entity of the device e.g. MLaser3 if the there is only one laser present it can be neglected.
+            a. A switch entry has the following syntax: ``3:15,16>7,8.`` the `3:` represents the 3rd entity of the device e.g. MLaser3 if the there is only one laser present it can be neglected.
             b. `15,16` represent the tools input ports at the switch. `7,8` are the prelimary output ports at the switch.
-            c. Multiple entries need to be saperated by ;
+            c. Multiple entries need to be separated by ;
 Examples
 --------
 
@@ -77,9 +79,9 @@ Examples
     #O
     S
     #R
-    COM3
+    Rotator_ELL8; COM3
     #W
-    EMPTY
+    GonStage_KST_Z812B; COM4; 10
     #E
     EMPTY
     ##

@@ -1,6 +1,10 @@
-import visa
+try:
+    import visa
+    rm = visa.ResourceManager()
+except:
+    pass
 
-rm = visa.ResourceManager()
+
 
 __name__ = "instruments"
 
@@ -15,16 +19,37 @@ __all__ = [
     'AnritsuMS2667C',
     'AndoAQ4321',
     'AndoAQ6317',
+	'AragonBOSA400',
+    'DSensor_ILD1420',
     'ELL8',
+    'GonStage_KST_Z812B',
+    'Rotator_CR1_Z7',
+    'Rotator_ELL8',
     'Keithley2280S',
+    'NewportPM500',
     'Agilent34401A',
     'AEDFA_IL_23_B_FA',
     'Motor_KST_ZST',
     'Motor_MST_DRV',
     'StepMotor_KST_ZST',
     'StepMotor_MST_DRV',
+    'TL2500',
     'AgilentE3643A'
 ]
+
+pipe_instrument_groups = {
+    'Laser': [
+        'Laser'
+    ],
+    'BoostAmp': [],
+    'Modulator': [],
+    'Polarization': [],
+    'DUT': [
+        'Fiber'
+    ],
+    'PreAmp': [],
+    'SignalSink': []
+}
 
 '''
 Copyright (C) 2017  Robert Polster

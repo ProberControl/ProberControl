@@ -42,7 +42,10 @@
           <div class="body" role="main">
             
   <h1>Source code for classes.multi_serial</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">serial</span> <span class="k">import</span> <span class="n">Serial</span>
+<span></span><span class="k">try</span><span class="p">:</span>
+	<span class="kn">from</span> <span class="nn">serial</span> <span class="k">import</span> <span class="n">Serial</span>
+<span class="k">except</span><span class="p">:</span>
+	<span class="k">pass</span>
 <span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">unpack</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">threading</span>

@@ -4,7 +4,7 @@
 
 from Motor_MST_DRV import Motor_MST_DRV as Motor, hexString, int2hexStr, send_short_dst_src, send_long_dst_src,send_chan_ident,prep_short_src_dst,prep_long_src_dst
 
-import serial
+#import serial
 import logging
 import time
 from struct import unpack

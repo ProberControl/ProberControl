@@ -46,210 +46,8 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-instruments.AEDFA_IL_23_B_FA">
-<span id="instruments-aedfa-il-23-b-fa-module"></span><h2>instruments.AEDFA_IL_23_B_FA module<a class="headerlink" href="#module-instruments.AEDFA_IL_23_B_FA" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA">
-<em class="property">class </em><code class="descclassname">instruments.AEDFA_IL_23_B_FA.</code><code class="descname">AEDFA_IL_23_B_FA</code><span class="sig-paren">(</span><em>ser</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>This class models an Amonics EDFA.</p>
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.change_state">
-<code class="descname">change_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.change_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.change_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Closes session with resource.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_master_out">
-<code class="descname">get_master_out</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.get_master_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_master_out" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the master control switch status</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Integer; 0,1,2 for OFF, ON, BUSY respectively</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_mode">
-<code class="descname">get_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.get_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query the current mode of instrument.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String, current mode.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_out_power">
-<code class="descname">get_out_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.get_out_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_out_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the existing input power value of the specified channel.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_pump_currents">
-<code class="descname">get_pump_currents</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.get_pump_currents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_pump_currents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Queries the current for specified channel.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_set_power">
-<code class="descname">get_set_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.get_set_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.get_set_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Queries the current set power</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.mode_options">
-<code class="descname">mode_options</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.mode_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.mode_options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Queries available modes for the instrument.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String of available modes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_master_out">
-<code class="descname">set_master_out</code><span class="sig-paren">(</span><em>state=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.set_master_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_master_out" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets master control switch</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>state</strong> (<em>Integer</em>) – 1 means ON and 0 means OFF</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_mode">
-<code class="descname">set_mode</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.set_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the mode for the instrument.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mode</strong> (<em>String</em>) – Operating mode for instrument. Possible inputs at -&gt; mode_options()</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_power">
-<code class="descname">set_power</code><span class="sig-paren">(</span><em>power</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.set_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the driving set-point of the specified &lt;mode&gt; for the specified channel</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>power</strong> (<em>Float</em>) – specified power</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_pump_currents">
-<code class="descname">set_pump_currents</code><span class="sig-paren">(</span><em>channel</em>, <em>current</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.set_pump_currents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_pump_currents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the specified current for a particular channel.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>channel</strong> (<em>Integer</em>) – Specified channel</li>
-<li><strong>current</strong> (<em>Float</em>) – Specified current</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_status_pumps">
-<code class="descname">set_status_pumps</code><span class="sig-paren">(</span><em>state=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.set_status_pumps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.set_status_pumps" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the status for pump.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>state</strong> (<em>Integer</em>) – specified state</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.whoAmI">
-<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AEDFA_IL_23_B_FA.html#AEDFA_IL_23_B_FA.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AEDFA_IL_23_B_FA.AEDFA_IL_23_B_FA.whoAmI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">reference to device</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="instruments-aedfa-il-23-b-fa-module">
+<h2>instruments.AEDFA_IL_23_B_FA module<a class="headerlink" href="#instruments-aedfa-il-23-b-fa-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-instruments.Agilent34401A">
 <span id="instruments-agilent34401a-module"></span><h2>instruments.Agilent34401A module<a class="headerlink" href="#module-instruments.Agilent34401A" title="Permalink to this headline">¶</a></h2>
@@ -341,21 +139,159 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Agilent34401A.Agilent34401A.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Agilent34401A.html#Agilent34401A.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Agilent34401A.Agilent34401A.whatCanI" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.Agilent34401A.Agilent34401A.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Agilent34401A.html#Agilent34401A.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Agilent34401A.Agilent34401A.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">reference to device</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.AgilentE3643A">
+<span id="instruments-agilente3643a-module"></span><h2>instruments.AgilentE3643A module<a class="headerlink" href="#module-instruments.AgilentE3643A" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.AgilentE3643A.AgilentE3643A">
+<em class="property">class </em><code class="descclassname">instruments.AgilentE3643A.</code><code class="descname">AgilentE3643A</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=’YourAddressHere’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class models the Agilent DC power supply.</p>
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.change_state">
+<code class="descname">change_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.change_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.change_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles the self.active parameter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release resources, closes serial port.
+:raises: Exception when serial communication port is not open</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.get_current">
+<code class="descname">get_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.get_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.get_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the current.
+:return: the measured DC current
+:raises: Exception when serial communication port is not open</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.get_voltage">
+<code class="descname">get_voltage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.get_voltage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.get_voltage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the voltage.
+:return: the measured DC voltage
+:raises: Exception when serial communication port is not open</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.open">
+<code class="descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens serial connection.
+:raises: Exception when serial communication port is not open</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.recall_state">
+<code class="descname">recall_state</code><span class="sig-paren">(</span><em>mem=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.recall_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.recall_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads stored state from specified memory location</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mem</strong> (<em>Integer</em>) – Specified space to query</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Agilent34401A.Agilent34401A.whoAmI">
-<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Agilent34401A.html#Agilent34401A.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Agilent34401A.Agilent34401A.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dt id="instruments.AgilentE3643A.AgilentE3643A.save_state">
+<code class="descname">save_state</code><span class="sig-paren">(</span><em>mem=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.save_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.save_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores state within non-volatile memory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mem</strong> (<em>Integer</em>) – Specified space to write to</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.setCurrent">
+<code class="descname">setCurrent</code><span class="sig-paren">(</span><em>value=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.setCurrent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.setCurrent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the current.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Specified current value, defaults to 0</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">Exception when serial communication port is not open</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.setOutputSwitch">
+<code class="descname">setOutputSwitch</code><span class="sig-paren">(</span><em>value=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.setOutputSwitch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.setOutputSwitch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the output switch to 1 -&gt; ON or 0 -&gt; OFF</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>Integer</em>) – Specified state, defaults to 0 for OFF, 1 for ON</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">Exception when serial communication port is not open or value is not 0 or 1</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.setVoltage">
+<code class="descname">setVoltage</code><span class="sig-paren">(</span><em>value=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.setVoltage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.setVoltage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the voltage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Specified voltage value, defaults to 0</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">Exception when serial communication port is not open</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.setovervoltage">
+<code class="descname">setovervoltage</code><span class="sig-paren">(</span><em>value=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.setovervoltage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.setovervoltage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the over voltage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Specified voltage value, defaults to 0</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">Exception when serial communication port is not open</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AgilentE3643A.AgilentE3643A.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AgilentE3643A.html#AgilentE3643A.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AgilentE3643A.AgilentE3643A.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -606,19 +542,6 @@ Remeber to shut off laser after sweep ends</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.AndoAQ4321.AndoAQ4321.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ4321.html#AndoAQ4321.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ4321.AndoAQ4321.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.AndoAQ4321.AndoAQ4321.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ4321.html#AndoAQ4321.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ4321.AndoAQ4321.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -659,19 +582,6 @@ Remeber to shut off laser after sweep ends</p>
 <dt id="instruments.AndoAQ6317.AndoAQ6317.get_o_spectrum">
 <code class="descname">get_o_spectrum</code><span class="sig-paren">(</span><em>start</em>, <em>stop</em>, <em>step</em>, <em>result_path=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.get_o_spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.get_o_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="instruments.AndoAQ6317.AndoAQ6317.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
 
 <dl class="method">
 <dt id="instruments.AndoAQ6317.AndoAQ6317.whoAmI">
@@ -767,19 +677,6 @@ Remeber to shut off laser after sweep ends</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.AnritsuMS2667C.AnritsuMS2667C.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AnritsuMS2667C.html#AnritsuMS2667C.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AnritsuMS2667C.AnritsuMS2667C.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.AnritsuMS2667C.AnritsuMS2667C.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AnritsuMS2667C.html#AnritsuMS2667C.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AnritsuMS2667C.AnritsuMS2667C.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -792,6 +689,336 @@ Remeber to shut off laser after sweep ends</p>
 </table>
 </dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.AragonBOSA400">
+<span id="instruments-aragonbosa400-module"></span><h2>instruments.AragonBOSA400 module<a class="headerlink" href="#module-instruments.AragonBOSA400" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.AragonBOSA400.AragonBOSA400">
+<em class="property">class </em><code class="descclassname">instruments.AragonBOSA400.</code><code class="descname">AragonBOSA400</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=‘128.59.65.231’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class models the AndoAQ4321 laser.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When using any laser command, remember to send shut-off-laser command at the end of each sweep command set.
+For Trigger Sweep, send shut-off-laser command after sweep ends (sweep end condition noted in TriggerSweepSetup function)</p>
+</div>
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.change_state">
+<code class="descname">change_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.change_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.change_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.getAuxInputPower">
+<code class="descname">getAuxInputPower</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.getAuxInputPower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.getAuxInputPower" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.getIL">
+<code class="descname">getIL</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>step</em>, <em>polarization</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.getIL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.getIL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a sweep with respect to a specified time and collect injection loss information</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>start</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>end</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>step</strong> (<em>String</em>) – Specified step</li>
+<li><strong>step</strong> – polarization mode</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.getRL">
+<code class="descname">getRL</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>step</em>, <em>polarization</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.getRL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.getRL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a sweep with respect to a specified time and collect reflection loss information</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>start</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>end</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>step</strong> (<em>String</em>) – Specified step</li>
+<li><strong>step</strong> – polarization mode</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.getSpectrum">
+<code class="descname">getSpectrum</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>step</em>, <em>polarization</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.getSpectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.getSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a sweep with respect to a specified time and collect reflection loss information</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>start</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>end</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>step</strong> (<em>String</em>) – Specified step</li>
+<li><strong>step</strong> – polarization mode</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>NOTE: polarization arg doesn’t do anything yet!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.get_max_wavelength">
+<code class="descname">get_max_wavelength</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.get_max_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.get_max_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries the maximum allowed wavelength</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Integer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.get_min_wavelength">
+<code class="descname">get_min_wavelength</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.get_min_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.get_min_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries the minimum allowed wavelength</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Integer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.getpower">
+<code class="descname">getpower</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.getpower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.getpower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets output power in dbm</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.getwavelength">
+<code class="descname">getwavelength</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.getwavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.getwavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries wavelength of the laser</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.outputOFF">
+<code class="descname">outputOFF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.outputOFF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.outputOFF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns output of laser source OFF</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.outputON">
+<code class="descname">outputON</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.outputON"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.outputON" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns output of laser source OFF</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.setpower">
+<code class="descname">setpower</code><span class="sig-paren">(</span><em>wavelength</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.setpower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.setpower" title="Permalink to this definition">¶</a></dt>
+<dd><p>BOSA cannot adjust output power - raise exception</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.setwavelength">
+<code class="descname">setwavelength</code><span class="sig-paren">(</span><em>wavelength</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.setwavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.setwavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a single wavelength (in nanometers) and sets output high</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>waveLength</strong> (<em>Integer</em>) – Specified wavelength</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.stopSweep">
+<code class="descname">stopSweep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.stopSweep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.stopSweep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop sweep</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.sweepWavelengthsContinuous">
+<code class="descname">sweepWavelengthsContinuous</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>time</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.sweepWavelengthsContinuous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.sweepWavelengthsContinuous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a sweep with respect to a specified time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>start</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>end</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>time</strong> (<em>Float</em>) – Specified time</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.sweepWavelengthsTriggerSetup">
+<code class="descname">sweepWavelengthsTriggerSetup</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.sweepWavelengthsTriggerSetup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.sweepWavelengthsTriggerSetup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Have to keep track of Triggers in main command, use Stop Sweep Command to end sweep.
+Extra triggers do not make the laser sweep outside of specified end wavelength.
+Remeber to shut off laser after sweep ends</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>start</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>end</strong> (<em>Integer</em>) – Specified wavelength between 1520-1580</li>
+<li><strong>step</strong> (<em>Float</em>) – Specified step in nm</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.trigger">
+<code class="descname">trigger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers laser - Now this just starts the sweep</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.AragonBOSA400.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">reference to device</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="instruments.AragonBOSA400.BOSA">
+<em class="property">class </em><code class="descclassname">instruments.AragonBOSA400.</code><code class="descname">BOSA</code><span class="sig-paren">(</span><em>interfaceType</em>, <em>location</em>, <em>portNo=10000</em>, <em>IDN=True</em>, <em>Reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#BOSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.BOSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>class BOSA: driver used to communicate with BOSA equipment</p>
+<dl class="method">
+<dt id="instruments.AragonBOSA400.BOSA.ask">
+<code class="descname">ask</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#BOSA.ask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.BOSA.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes and reads data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.BOSA.connectLan">
+<code class="descname">connectLan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#BOSA.connectLan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.BOSA.connectLan" title="Permalink to this definition">¶</a></dt>
+<dd><p>connect the instrument to a LAN</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.BOSA.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#BOSA.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.BOSA.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>read something from device</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.AragonBOSA400.BOSA.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#BOSA.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.BOSA.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>write to equiment: independent of the interface
+Parameters:</p>
+<blockquote>
+<div>command -&gt; data to send to device +</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="instruments.AragonBOSA400.BOSAException">
+<em class="property">exception </em><code class="descclassname">instruments.AragonBOSA400.</code><code class="descname">BOSAException</code><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#BOSAException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.BOSAException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="instruments.AragonBOSA400.check_response">
+<code class="descclassname">instruments.AragonBOSA400.</code><code class="descname">check_response</code><span class="sig-paren">(</span><em>command</em>, <em>response</em>, <em>OK=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#check_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.check_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="instruments.AragonBOSA400.nm_to_ghz">
+<code class="descclassname">instruments.AragonBOSA400.</code><code class="descname">nm_to_ghz</code><span class="sig-paren">(</span><em>nm</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#nm_to_ghz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.nm_to_ghz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-instruments.DSensor_ILD1420">
+<span id="instruments-dsensor-ild1420-module"></span><h2>instruments.DSensor_ILD1420 module<a class="headerlink" href="#module-instruments.DSensor_ILD1420" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.DSensor_ILD1420.DSensor_ILD1420">
+<em class="property">class </em><code class="descclassname">instruments.DSensor_ILD1420.</code><code class="descname">DSensor_ILD1420</code><span class="sig-paren">(</span><em>COM_Port</em>, <em>sensor_model=42</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/DSensor_ILD1420.html#DSensor_ILD1420"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.DSensor_ILD1420.DSensor_ILD1420" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="instruments.DSensor_ILD1420.DSensor_ILD1420.Error">
+<code class="descname">Error</code><span class="sig-paren">(</span><em>err</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/DSensor_ILD1420.html#DSensor_ILD1420.Error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.DSensor_ILD1420.DSensor_ILD1420.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read errors from sensor</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.DSensor_ILD1420.DSensor_ILD1420.InterfaceRS422">
+<code class="descname">InterfaceRS422</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/DSensor_ILD1420.html#DSensor_ILD1420.InterfaceRS422"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.DSensor_ILD1420.DSensor_ILD1420.InterfaceRS422" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.DSensor_ILD1420.DSensor_ILD1420.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/DSensor_ILD1420.html#DSensor_ILD1420.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.DSensor_ILD1420.DSensor_ILD1420.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.DSensor_ILD1420.DSensor_ILD1420.open">
+<code class="descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/DSensor_ILD1420.html#DSensor_ILD1420.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.DSensor_ILD1420.DSensor_ILD1420.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.DSensor_ILD1420.DSensor_ILD1420.poll">
+<code class="descname">poll</code><span class="sig-paren">(</span><em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/DSensor_ILD1420.html#DSensor_ILD1420.poll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.DSensor_ILD1420.DSensor_ILD1420.poll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves last n values from sensor</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="instruments.DSensor_ILD1420.Error">
+<code class="descclassname">instruments.DSensor_ILD1420.</code><code class="descname">Error</code><span class="sig-paren">(</span><em>err</em>, <em>sensor</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/DSensor_ILD1420.html#Error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.DSensor_ILD1420.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read errors from sensor</p>
 </dd></dl>
 
 </div>
@@ -864,6 +1091,54 @@ e.g. data = ‘0A 23 34 56’</p>
 <dd><p>Convert an integer to its corresponding bytearray</p>
 <p>integer (int): the number we want to convert
 nb (int): the number of bytes</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.GonStage_KST_Z812B">
+<span id="instruments-gonstage-kst-z812b-module"></span><h2>instruments.GonStage_KST_Z812B module<a class="headerlink" href="#module-instruments.GonStage_KST_Z812B" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.GonStage_KST_Z812B.GonStage_KST_Z812B">
+<em class="property">class </em><code class="descclassname">instruments.GonStage_KST_Z812B.</code><code class="descname">GonStage_KST_Z812B</code><span class="sig-paren">(</span><em>ser</em>, <em>GNL_model</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/GonStage_KST_Z812B.html#GonStage_KST_Z812B"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.GonStage_KST_Z812B.GonStage_KST_Z812B" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#instruments.Motor_KST_ZST.Motor_KST_ZST" title="instruments.Motor_KST_ZST.Motor_KST_ZST"><code class="xref py py-class docutils literal"><span class="pre">instruments.Motor_KST_ZST.Motor_KST_ZST</span></code></a></p>
+<dl class="method">
+<dt id="instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.abs_rot">
+<code class="descname">abs_rot</code><span class="sig-paren">(</span><em>degs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/GonStage_KST_Z812B.html#GonStage_KST_Z812B.abs_rot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.abs_rot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Absolute translation on the motor</p>
+<p>degs (float): the millmeters of rotation (negative -&gt; backwards)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.check_abs_transl">
+<code class="descname">check_abs_transl</code><span class="sig-paren">(</span><em>dist</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/GonStage_KST_Z812B.html#GonStage_KST_Z812B.check_abs_transl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.check_abs_transl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check wether a move to position ‘dist’ is in range</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.delta_rot">
+<code class="descname">delta_rot</code><span class="sig-paren">(</span><em>degs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/GonStage_KST_Z812B.html#GonStage_KST_Z812B.delta_rot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.delta_rot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative translation on the motor</p>
+<p>degs (float): the millimeters of rotation (negative -&gt; backwards)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.get_deg_pos">
+<code class="descname">get_deg_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/GonStage_KST_Z812B.html#GonStage_KST_Z812B.get_deg_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.get_deg_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the motors current position, in millimeters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.home">
+<code class="descname">home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/GonStage_KST_Z812B.html#GonStage_KST_Z812B.home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.home" title="Permalink to this definition">¶</a></dt>
+<dd><p>Puts the motor to backward limit position, so that the
+position markers make sense</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.set_as_zero">
+<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>zer_deg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/GonStage_KST_Z812B.html#GonStage_KST_Z812B.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.GonStage_KST_Z812B.GonStage_KST_Z812B.set_as_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>change the origin (zero)</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1094,19 +1369,6 @@ nb (int): the number of bytes</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.HP6624A.HP6624A.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP6624A.html#HP6624A.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP6624A.HP6624A.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.HP6624A.HP6624A.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP6624A.html#HP6624A.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP6624A.HP6624A.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -1165,19 +1427,6 @@ nb (int): the number of bytes</p>
 <dt id="instruments.HP8163A.HP8163A.prep_measure_on_trigger">
 <code class="descname">prep_measure_on_trigger</code><span class="sig-paren">(</span><em>samples=64</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.prep_measure_on_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.prep_measure_on_trigger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="instruments.HP8163A.HP8163A.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
 
 <dl class="method">
 <dt id="instruments.HP8163A.HP8163A.whoAmI">
@@ -1296,19 +1545,6 @@ nb (int): the number of bytes</p>
 <dt id="instruments.Keithley2280S.Keithley2280S.setvoltage">
 <code class="descname">setvoltage</code><span class="sig-paren">(</span><em>value=0</em>, <em>channel=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Keithley2280S.html#Keithley2280S.setvoltage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Keithley2280S.Keithley2280S.setvoltage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="instruments.Keithley2280S.Keithley2280S.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Keithley2280S.html#Keithley2280S.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Keithley2280S.Keithley2280S.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
 
 <dl class="method">
 <dt id="instruments.Keithley2280S.Keithley2280S.whoAmI">
@@ -1549,19 +1785,6 @@ nb (int): the number of bytes</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>Integer</em>) – Specified voltage value, defaults to 0</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="instruments.Keithley2400.Keithley2400.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Keithley2400.html#Keithley2400.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Keithley2400.Keithley2400.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
 </tr>
 </tbody>
 </table>
@@ -1828,6 +2051,44 @@ Helper-function for delta_move() and abs_move() functions.</p>
 <dd></dd></dl>
 
 </div>
+<div class="section" id="module-instruments.NewportPM500">
+<span id="instruments-newportpm500-module"></span><h2>instruments.NewportPM500 module<a class="headerlink" href="#module-instruments.NewportPM500" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Newport Controler Class</dt>
+<dd>implementation for vertical stage</dd>
+</dl>
+<dl class="class">
+<dt id="instruments.NewportPM500.NewportPM500">
+<em class="property">class </em><code class="descclassname">instruments.NewportPM500.</code><code class="descname">NewportPM500</code><span class="sig-paren">(</span><em>gpib_addr</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/NewportPM500.html#NewportPM500"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.NewportPM500.NewportPM500" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="instruments.NewportPM500.NewportPM500.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/NewportPM500.html#NewportPM500.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.NewportPM500.NewportPM500.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>release resources</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.NewportPM500.NewportPM500.move_down">
+<code class="descname">move_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/NewportPM500.html#NewportPM500.move_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.NewportPM500.NewportPM500.move_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves the stage to negative limit switch</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.NewportPM500.NewportPM500.move_up">
+<code class="descname">move_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/NewportPM500.html#NewportPM500.move_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.NewportPM500.NewportPM500.move_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves the stage to positive limit switch</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.NewportPM500.NewportPM500.set_velocity">
+<code class="descname">set_velocity</code><span class="sig-paren">(</span><em>vel</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/NewportPM500.html#NewportPM500.set_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.NewportPM500.NewportPM500.set_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the velocity for the motor movement</p>
+<p>vel (integer): velocity in um/sec</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-instruments.Polatis">
 <span id="instruments-polatis-module"></span><h2>instruments.Polatis module<a class="headerlink" href="#module-instruments.Polatis" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -1992,19 +2253,6 @@ Helper-function for delta_move() and abs_move() functions.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Polatis.Polatis.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Polatis.html#Polatis.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Polatis.Polatis.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.Polatis.Polatis.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Polatis.html#Polatis.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Polatis.Polatis.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -2118,19 +2366,6 @@ Helper-function for delta_move() and abs_move() functions.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.RSY01.RSY01.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/RSY01.html#RSY01.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.RSY01.RSY01.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.RSY01.RSY01.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/RSY01.html#RSY01.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.RSY01.RSY01.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -2141,6 +2376,76 @@ Helper-function for delta_move() and abs_move() functions.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.Rotator_CR1_Z7">
+<span id="instruments-rotator-cr1-z7-module"></span><h2>instruments.Rotator_CR1_Z7 module<a class="headerlink" href="#module-instruments.Rotator_CR1_Z7" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.Rotator_CR1_Z7.Rotator_CR1_Z7">
+<em class="property">class </em><code class="descclassname">instruments.Rotator_CR1_Z7.</code><code class="descname">Rotator_CR1_Z7</code><span class="sig-paren">(</span><em>ser</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_CR1_Z7.html#Rotator_CR1_Z7"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_CR1_Z7.Rotator_CR1_Z7" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#instruments.Motor_KST_ZST.Motor_KST_ZST" title="instruments.Motor_KST_ZST.Motor_KST_ZST"><code class="xref py py-class docutils literal"><span class="pre">instruments.Motor_KST_ZST.Motor_KST_ZST</span></code></a></p>
+<dl class="method">
+<dt id="instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.abs_angle">
+<code class="descname">abs_angle</code><span class="sig-paren">(</span><em>deg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_CR1_Z7.html#Rotator_CR1_Z7.abs_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.abs_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative rotation on the motor</p>
+<p>deg (float): the degrees of rotation (negative -&gt; counter-clockwise)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.delta_angle">
+<code class="descname">delta_angle</code><span class="sig-paren">(</span><em>deg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_CR1_Z7.html#Rotator_CR1_Z7.delta_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.delta_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative rotation on the motor</p>
+<p>deg (float): the degrees of rotation (negative -&gt; counter-clockwise)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.get_angle">
+<code class="descname">get_angle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_CR1_Z7.html#Rotator_CR1_Z7.get_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.get_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the motors current position, in degrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.set_as_zero">
+<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>zer_deg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_CR1_Z7.html#Rotator_CR1_Z7.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_CR1_Z7.Rotator_CR1_Z7.set_as_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>change the origin (zero)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.Rotator_ELL8">
+<span id="instruments-rotator-ell8-module"></span><h2>instruments.Rotator_ELL8 module<a class="headerlink" href="#module-instruments.Rotator_ELL8" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.Rotator_ELL8.Rotator_ELL8">
+<em class="property">class </em><code class="descclassname">instruments.Rotator_ELL8.</code><code class="descname">Rotator_ELL8</code><span class="sig-paren">(</span><em>ser</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_ELL8.html#Rotator_ELL8"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_ELL8.Rotator_ELL8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#instruments.ELL8.ELL8" title="instruments.ELL8.ELL8"><code class="xref py py-class docutils literal"><span class="pre">instruments.ELL8.ELL8</span></code></a></p>
+<dl class="method">
+<dt id="instruments.Rotator_ELL8.Rotator_ELL8.abs_angle">
+<code class="descname">abs_angle</code><span class="sig-paren">(</span><em>deg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_ELL8.html#Rotator_ELL8.abs_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_ELL8.Rotator_ELL8.abs_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative rotation on the motor</p>
+<p>deg (float): the degrees of rotation (negative -&gt; counter-clockwise)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Rotator_ELL8.Rotator_ELL8.delta_angle">
+<code class="descname">delta_angle</code><span class="sig-paren">(</span><em>deg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_ELL8.html#Rotator_ELL8.delta_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_ELL8.Rotator_ELL8.delta_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative rotation on the motor</p>
+<p>deg (float): the degrees of rotation (negative -&gt; counter-clockwise)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Rotator_ELL8.Rotator_ELL8.get_angle">
+<code class="descname">get_angle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_ELL8.html#Rotator_ELL8.get_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_ELL8.Rotator_ELL8.get_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the motors current position, in degrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.Rotator_ELL8.Rotator_ELL8.set_as_zero">
+<code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>zer_deg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Rotator_ELL8.html#Rotator_ELL8.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Rotator_ELL8.Rotator_ELL8.set_as_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>change the origin (zero)</p>
 </dd></dl>
 
 </dd></dl>
@@ -2469,19 +2774,6 @@ Remeber to shut off laser after sweep ends.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Santec_TSL_210H.Santec_TSL_210H.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Santec_TSL_210H.html#Santec_TSL_210H.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Santec_TSL_210H.Santec_TSL_210H.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.Santec_TSL_210H.Santec_TSL_210H.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Santec_TSL_210H.html#Santec_TSL_210H.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Santec_TSL_210H.Santec_TSL_210H.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -2619,6 +2911,166 @@ and the other probes.</dd>
 <dt id="instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.set_as_zero">
 <code class="descname">set_as_zero</code><span class="sig-paren">(</span><em>zer_mm</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/StepMotor_MST_DRV.html#StepMotor_MST_DRV.set_as_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.StepMotor_MST_DRV.StepMotor_MST_DRV.set_as_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>change the origin (zero)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.TL2500">
+<span id="instruments-tl2500-module"></span><h2>instruments.TL2500 module<a class="headerlink" href="#module-instruments.TL2500" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.TL2500.TL2500">
+<em class="property">class </em><code class="descclassname">instruments.TL2500.</code><code class="descname">TL2500</code><span class="sig-paren">(</span><em>interface=None</em>, <em>address=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class handles the communication with the fiContec TL2500 system.</p>
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.calibrate">
+<code class="descname">calibrate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.calibrate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.calibrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrate machine for current configuration</p>
+<p>Should be blocking until machine is calibrated</p>
+<p>return ready or error</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.connect_structure">
+<code class="descname">connect_structure</code><span class="sig-paren">(</span><em>chip_id</em>, <em>structure_id</em>, <em>active_align=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.connect_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.connect_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober connects probes and performs active alignment of optical probes.</p>
+<ol class="arabic simple">
+<li>Prober reads coordinates of structure IO from internal database - coordinates include type of IO and feedback signal source for active alignment</li>
+<li>Prober checks whether it is configured to couple the structure</li>
+<li>Prober couples structure and performs active alignment</li>
+<li>Prober returns ‘error’/’ready’ message</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.free_prober">
+<code class="descname">free_prober</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.free_prober"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.free_prober" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober returns all loaded devices (wafer and/or chip) to original location</p>
+<p>returns ‘ready’ / ‘error’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.get_chip_temp">
+<code class="descname">get_chip_temp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.get_chip_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.get_chip_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober returns reticle holder temperature in degree Celsius</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.get_chuck_temp">
+<code class="descname">get_chuck_temp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.get_chuck_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.get_chuck_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober return wafer chuck temperature in degree Celsius</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.get_state">
+<code class="descname">get_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the state of the prober. Minimal set of returns: error, uncalibrated, ready</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.load_bluetape">
+<code class="descname">load_bluetape</code><span class="sig-paren">(</span><em>bluetape_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.load_bluetape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.load_bluetape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober loads bluetape to die ejector position. Sets state so that following coupling commands are executed for single die coupling.</p>
+<ol class="arabic simple">
+<li>Prober checks configuration</li>
+<li>Prober checks whether ejector is free. If not stores loaded bluetape in casssette</li>
+<li>Prober reads location of bluetape_id from database</li>
+<li>Prober loads bluetape to die ejector</li>
+<li>Prober returns error/success message</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.load_chip">
+<code class="descname">load_chip</code><span class="sig-paren">(</span><em>reticle_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.load_chip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.load_chip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober loads reticle onto single die probing station. Sets state so that following coupling commands are executed depending whether chip is in waferfor or die form.</p>
+<p>(1) Prober fetches position and state of chip from DB
+(2a)  If die is on already loaded wafer do nothing
+(2b)  If die is on new wafer possibly store current wafer back to foup
+(2c)  If die is in chip state and measurement platform is currently occupied restore current die to original location
+(3) Prober checks its configuration whether its equipped for chip state (wafer or die)
+(4) Prober loads wafer or picks die either from bluetape or gel pack
+(5) If needed Prober places die on probing station
+(6) Prober returns ‘ready’ or ‘error’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.load_wafer">
+<code class="descname">load_wafer</code><span class="sig-paren">(</span><em>wafer_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.load_wafer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.load_wafer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober loads bluetape to die ejector position. Sets state so that following coupling commands are executed for wafer scale coupling.</p>
+<ol class="arabic simple">
+<li>Prober checks configuration</li>
+<li>Prober checks whether wafer chuck is free. If not stores loaded wafer in casssette</li>
+<li>Prober reads location of wafer_id from database</li>
+<li>Prober loads wafer to wafer chuck</li>
+<li>Prober returns error/success message</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.set_chip_temp">
+<code class="descname">set_chip_temp</code><span class="sig-paren">(</span><em>temp</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.set_chip_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.set_chip_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober sets reticle holder temperature in degree Celsius</p>
+<ol class="arabic simple" start="2">
+<li>If lock = True  - tool driver returns functions only when temp is reached.</li>
+<li>If lock = False - tool driver only initiates heating process</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.set_chuck_temp">
+<code class="descname">set_chuck_temp</code><span class="sig-paren">(</span><em>temp</em>, <em>lock</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.set_chuck_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.set_chuck_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober sets wafer chuck temperature in degree Celsius</p>
+<ol class="arabic simple" start="2">
+<li>If lock = True  - tool driver returns functions only when temp is reached.</li>
+<li>If lock = False - tool driver only initiates heating process</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.store_bluetape">
+<code class="descname">store_bluetape</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.store_bluetape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.store_bluetape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober stores currently loaded bluetape in cassette.
+(2) Prober returns error/success message</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.store_chip">
+<code class="descname">store_chip</code><span class="sig-paren">(</span><em>pack_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.store_chip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.store_chip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober stores active chip in pack.
+* If no pack_id defined:
+(1) Return chip to previous location
+(2) Prober returns error/ready message.</p>
+<ul class="simple">
+<li>If pack_id defined:</li>
+</ul>
+<ol class="arabic simple">
+<li>Prober checks location and fill-stage of pack_id</li>
+<li>Prober stores chip in pack if possible</li>
+<li>Prober updates database with location of chip about pack_id and location in pack</li>
+<li>Prober returns error/ready message.</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.store_wafer">
+<code class="descname">store_wafer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.store_wafer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.store_wafer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober stores currently loaded wafer in cassette.
+(2) Prober returns error/success message</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="instruments.TL2500.TL2500.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -2851,19 +3303,6 @@ and the other probes.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.WT68145B.WT68145B.whatCanI">
-<code class="descname">whatCanI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/WT68145B.html#WT68145B.whatCanI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.WT68145B.WT68145B.whatCanI" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instrument attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.WT68145B.WT68145B.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/WT68145B.html#WT68145B.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.WT68145B.WT68145B.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -2879,9 +3318,9 @@ and the other probes.</dd>
 </dd></dl>
 
 </div>
-<div class="section" id="module-instruments">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-instruments" title="Permalink to this headline">¶</a></h2>
-</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-instruments"></span></div>
 </div>
 
 
@@ -2897,25 +3336,33 @@ and the other probes.</dd>
   <ul>
 <li><a class="reference internal" href="#">instruments package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-instruments.AEDFA_IL_23_B_FA">instruments.AEDFA_IL_23_B_FA module</a></li>
+<li><a class="reference internal" href="#instruments-aedfa-il-23-b-fa-module">instruments.AEDFA_IL_23_B_FA module</a></li>
 <li><a class="reference internal" href="#module-instruments.Agilent34401A">instruments.Agilent34401A module</a></li>
+<li><a class="reference internal" href="#module-instruments.AgilentE3643A">instruments.AgilentE3643A module</a></li>
 <li><a class="reference internal" href="#module-instruments.AndoAQ4321">instruments.AndoAQ4321 module</a></li>
 <li><a class="reference internal" href="#module-instruments.AndoAQ6317">instruments.AndoAQ6317 module</a></li>
 <li><a class="reference internal" href="#module-instruments.AnritsuMS2667C">instruments.AnritsuMS2667C module</a></li>
+<li><a class="reference internal" href="#module-instruments.AragonBOSA400">instruments.AragonBOSA400 module</a></li>
+<li><a class="reference internal" href="#module-instruments.DSensor_ILD1420">instruments.DSensor_ILD1420 module</a></li>
 <li><a class="reference internal" href="#module-instruments.ELL8">instruments.ELL8 module</a></li>
+<li><a class="reference internal" href="#module-instruments.GonStage_KST_Z812B">instruments.GonStage_KST_Z812B module</a></li>
 <li><a class="reference internal" href="#module-instruments.HP6624A">instruments.HP6624A module</a></li>
 <li><a class="reference internal" href="#module-instruments.HP8163A">instruments.HP8163A module</a></li>
 <li><a class="reference internal" href="#module-instruments.Keithley2280S">instruments.Keithley2280S module</a></li>
 <li><a class="reference internal" href="#module-instruments.Keithley2400">instruments.Keithley2400 module</a></li>
 <li><a class="reference internal" href="#module-instruments.Motor_KST_ZST">instruments.Motor_KST_ZST module</a></li>
 <li><a class="reference internal" href="#module-instruments.Motor_MST_DRV">instruments.Motor_MST_DRV module</a></li>
+<li><a class="reference internal" href="#module-instruments.NewportPM500">instruments.NewportPM500 module</a></li>
 <li><a class="reference internal" href="#module-instruments.Polatis">instruments.Polatis module</a></li>
 <li><a class="reference internal" href="#module-instruments.RSY01">instruments.RSY01 module</a></li>
+<li><a class="reference internal" href="#module-instruments.Rotator_CR1_Z7">instruments.Rotator_CR1_Z7 module</a></li>
+<li><a class="reference internal" href="#module-instruments.Rotator_ELL8">instruments.Rotator_ELL8 module</a></li>
 <li><a class="reference internal" href="#module-instruments.Santec_TSL_210H">instruments.Santec_TSL_210H module</a></li>
 <li><a class="reference internal" href="#module-instruments.StepMotor_KST_ZST">instruments.StepMotor_KST_ZST module</a></li>
 <li><a class="reference internal" href="#module-instruments.StepMotor_MST_DRV">instruments.StepMotor_MST_DRV module</a></li>
+<li><a class="reference internal" href="#module-instruments.TL2500">instruments.TL2500 module</a></li>
 <li><a class="reference internal" href="#module-instruments.WT68145B">instruments.WT68145B module</a></li>
-<li><a class="reference internal" href="#module-instruments">Module contents</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Serial and GPIB Port Handling" href="../gpib_porting.html" />
+    <link rel="next" title="Serial, GPIB and Ethernet Connection Handling in Instrument Classes" href="../gpib_porting.html" />
     <link rel="prev" title="Updating the Documentation" href="../howto/docsUpdate.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -47,20 +47,19 @@
 <h1>Locking Scheme for Scripting<a class="headerlink" href="#locking-scheme-for-scripting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>When the user implements the <code class="docutils literal"><span class="pre">lock</span></code> feature, described <a class="reference external" href="/source/howto/measurementScript.html">here</a>, there is a subroutine that disabled access to those instruments and ‘locks’ the specified instruments for the duration of the script. When the script is finished running, the instruments will appear in the drop down menu again.</p>
+<p>When the user acquires and uses instruments in <code class="docutils literal"><span class="pre">procedures'</span></code> functions that are called from a script, there is a subroutine that disabled access to those instruments and ‘locks’ the specified instruments for the duration of the script. When the script is finished running, the instruments will appear in the drop down menu again.</p>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>The workflow for locking an instrument occurs as follows:</p>
 <ol class="arabic simple">
-<li>Instrument is marked as locked in the script configuration.</li>
-<li>The object is added to the <code class="docutils literal"><span class="pre">__locked</span></code> collection, were the key is the <code class="docutils literal"><span class="pre">ID(</span> <span class="pre">)</span></code> of the <code class="docutils literal"><span class="pre">ScriptController</span></code> object that was initialized when the script was ran.</li>
-<li>The graphical user interface is updated, removing the locked instruments from the <code class="docutils literal"><span class="pre">Stages</span> <span class="pre">to</span> <span class="pre">Execute</span></code> option menu.</li>
+<li>Every time the user runs a script a new instance of the <code class="docutils literal"><span class="pre">ScriptController</span></code> is instantiated to undertake the task. Each script contoller is associated with a unique <code class="docutils literal"><span class="pre">ID</span></code>.</li>
+<li>The Script controller will serially go through the entries of the measurement script, executing the specified <code class="docutils literal"><span class="pre">procedure</span></code> function.</li>
+<li>The graphical user interface is updated, blocking the locked instruments from the <code class="docutils literal"><span class="pre">Stages</span> <span class="pre">to</span> <span class="pre">Execute</span></code> option menu.</li>
 <li><dl class="first docutils">
-<dt>When an instrument request is made, the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> traverses the stack of the request, looking for the <code class="docutils literal"><span class="pre">ID(</span> <span class="pre">)</span></code> of the object that made this call.</dt>
+<dt>When an instrument request is made within a <code class="docutils literal"><span class="pre">procedure</span></code> function through the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code>, the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> traverses the stack of the request, looking for the <code class="docutils literal"><span class="pre">ID</span></code> of the ScriptController that made this call.</dt>
 <dd><ul class="first last">
-<li>When the <code class="docutils literal"><span class="pre">ID</span></code> is determined, the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> then checks if that instrument is available in the <code class="docutils literal"><span class="pre">__locked</span></code> collection for that specific <code class="docutils literal"><span class="pre">ID(</span> <span class="pre">)</span></code>.</li>
-<li>The <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> will always return an instrument from the <code class="docutils literal"><span class="pre">__locked</span></code> collection if one is available for that specific <code class="docutils literal"><span class="pre">ID(</span> <span class="pre">)</span></code>.</li>
+<li>When the <code class="docutils literal"><span class="pre">ID</span></code> is determined, the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> can check if that instrument is available in the <code class="docutils literal"><span class="pre">__locked</span></code> collection for that specific <code class="docutils literal"><span class="pre">ID</span></code>.</li>
 <li>When the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> traverses the stack, it is looking for the <code class="docutils literal"><span class="pre">ID</span></code> of the instance of <code class="docutils literal"><span class="pre">ScriptHandler</span></code>. It is not necessarily looking for a specific <code class="docutils literal"><span class="pre">ID</span></code>, but looking for the <code class="docutils literal"><span class="pre">ID</span></code> of the object that has invoked this exact instance of the <code class="docutils literal"><span class="pre">get_instrument</span></code> call. Due to the design of the locking scheme, the only functions that could have invoked <code class="docutils literal"><span class="pre">get_instrument</span></code> are stored in the list <code class="docutils literal"><span class="pre">functions</span></code>. If the <code class="docutils literal"><span class="pre">ID</span></code> of the local namespace for <code class="docutils literal"><span class="pre">self</span></code>, i.e. the object that invoked this function, appears in out <code class="docutils literal"><span class="pre">__locked</span></code> dictionary’s keys, then it is in fact the <code class="docutils literal"><span class="pre">ID</span></code> of an instance of a <code class="docutils literal"><span class="pre">ScriptController</span></code> that locked the instrument during the initial setup.</li>
 </ul>
 </dd>
@@ -77,72 +76,66 @@
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
-<li>When the script is done running, the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> will release all of the locked instruments associated with that <code class="docutils literal"><span class="pre">ID(</span> <span class="pre">)</span></code></li>
+<li>When the <code class="docutils literal"><span class="pre">procedure</span></code> function is done running, the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code> will release all of the locked instruments associated with that <code class="docutils literal"><span class="pre">ID(</span></code></li>
 </ol>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">clear_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">release_current_user_instruments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">clears the locked instruments, if id_ is passed as a parameter,</span>
-<span class="sd">this function clears all instruments associated with that script id</span>
+<span class="sd">Releases all current user instruments</span>
+<span class="sd">Should be called at the end of a test entity and NOT normally</span>
+<span class="sd">inside Measure functions</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="k">if</span> <span class="n">id_</span><span class="p">:</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
-    <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">owner_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_owner</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__access_lock</span><span class="p">:</span>
+    <span class="n">owned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">owner_id</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chainSets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">owner_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">owned</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span><span class="p">[</span><span class="n">owner_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">chain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__chainSets</span><span class="p">[</span><span class="n">owner_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">ChainList</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="snapshot">
 <h2>Snapshot<a class="headerlink" href="#snapshot" title="Permalink to this headline">¶</a></h2>
-<p>Code that executes the locking scheme from the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specifiedDevice</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Finds and returns an unactive instrument corresponding to the one specified&#39;&#39;&#39;</span>
-    <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">specifiedDevice</span><span class="p">)</span>
+<dl class="docutils">
+<dt>Code that executes the locking scheme from the <code class="docutils literal"><span class="pre">Global_MeasureHandler</span></code>:</dt>
+<dd><ul class="first last simple">
+<li>Note: <code class="docutils literal"><span class="pre">_look_for_obj</span></code> is just a convenience function that will return the first occurence of an element in a list, for which a lambda function, provided as an argument, returns true.</li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_instrument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specifiedDevice</span><span class="p">,</span> <span class="n">additional</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Finds and returns an unactive instrument corresponding to the one specified</span>
+<span class="sd">Returns None if such instrument was found/available.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 
-    <span class="c1"># Try the locked instruments first</span>
-    <span class="n">instrumentActual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__checkLocked</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">instrumentActual</span><span class="p">:</span> <span class="c1"># if nothing was found in __checkLocked()</span>
+<span class="n">owner_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_owner</span><span class="p">()</span> <span class="c1"># This is where we get the ID</span>
 
-    <span class="c1"># Then take a look for available instruments, if not in locked</span>
-        <span class="k">for</span> <span class="n">instrument</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stages</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">strippedInstrument</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">instrument</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()])</span>
+<span class="c1"># serialize access to global ownership dictionary</span>
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__access_lock</span><span class="p">:</span>
 
-            <span class="c1"># If we find a device that fits and it isn&#39;t active right now</span>
-            <span class="k">if</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">strippedInstrument</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stages</span><span class="p">[</span><span class="n">instrument</span><span class="p">]</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stages</span><span class="p">[</span><span class="n">instrument</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">additional</span><span class="p">:</span>
+        <span class="c1"># Try the owned instruments first</span>
+        <span class="n">owned_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">owner_id</span><span class="p">)</span>
+        <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;OwnedList&lt;{}&gt;: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">owner_id</span><span class="p">,</span> <span class="n">owned_list</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">owned_list</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="n">_look_for_obj</span><span class="p">(</span><span class="n">owned_list</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">whoAmI</span><span class="p">()</span> <span class="o">==</span> <span class="n">specifiedDevice</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">found</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">found</span>
 
-    <span class="c1">#If you make it here, no available instrument</span>
-    <span class="k">return</span> <span class="n">instrumentActual</span>
+    <span class="c1"># Then take a look for available instruments</span>
+    <span class="n">used</span> <span class="o">=</span> <span class="p">[</span><span class="n">inst</span> <span class="k">for</span> <span class="n">sub_l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">sub_l</span><span class="p">]</span>
+    <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;used instruments: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">used</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">isUnused</span><span class="p">(</span><span class="n">instrument</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">instrument</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">used</span> <span class="ow">and</span> <span class="n">instrument</span><span class="o">.</span><span class="n">whoAmI</span><span class="p">()</span> <span class="o">==</span> <span class="n">specifiedDevice</span>
 
-<span class="k">def</span> <span class="nf">__checkLocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instrument</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Function that traces the stack back to ScriptController, then uses</span>
-<span class="sd">    the id() of that particular object to confirm who is calling on that</span>
-<span class="sd">    particular instrument</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="c1"># As of August 6, 2017</span>
-    <span class="c1"># The only functions that would be calling for objects/functions</span>
-    <span class="n">functions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_structureProcedure&#39;</span><span class="p">,</span><span class="s1">&#39;__executeCommand&#39;</span><span class="p">,</span><span class="s1">&#39;_procedure&#39;</span><span class="p">]</span>
-    <span class="n">id_</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-
-    <span class="c1"># Iterate over the stack, finding the ID of the unique ScriptController object</span>
-    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="n">functions</span><span class="p">:</span>
-            <span class="n">id_</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">])</span>
-
-        <span class="c1"># If the ID of the caller is in the locked objects</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">id_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="n">locked_objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locked</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span>
-
-            <span class="c1"># check instruments locked with that particular script</span>
-            <span class="k">for</span> <span class="n">object_</span> <span class="ow">in</span> <span class="n">locked_objects</span><span class="p">:</span>
-                <span class="n">cleanInstrument</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">object_</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()])</span>
-                <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="n">cleanInstrument</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">object_</span>
-
-    <span class="c1"># If nothing was found, return false</span>
-    <span class="k">return</span> <span class="bp">False</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="n">_look_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stages</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">isUnused</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">found</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock_instrument</span><span class="p">(</span><span class="n">found</span><span class="p">,</span> <span class="n">owner_id</span><span class="p">)</span>
+        <span class="c1"># self._connect_to_chain(found, owner_id, fiber_id)</span>
+    <span class="k">return</span> <span class="n">found</span>
 </pre></div>
 </div>
 </div>
@@ -176,7 +169,7 @@
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="../howto/docsUpdate.html" title="previous chapter">Updating the Documentation</a></li>
-      <li>Next: <a href="../gpib_porting.html" title="next chapter">Serial and GPIB Port Handling</a></li>
+      <li>Next: <a href="../gpib_porting.html" title="next chapter">Serial, GPIB and Ethernet Connection Handling in Instrument Classes</a></li>
   </ul></li>
 </ul>
 </div>

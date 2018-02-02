@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import Tkinter as tk
 import threading
+from Queue import Queue
 import inspect
 import operator
 import logging
@@ -13,6 +14,7 @@ import tkFileDialog
 import ScriptController
 from plotter import NBPlot
 from Global_MeasureHandler import Global_MeasureHandler as g
+import ScriptBuilderGUI
 
 
 ####### Define Window
@@ -20,6 +22,7 @@ from Global_MeasureHandler import Global_MeasureHandler as g
 # binding spawn events, now reacting on arrow keys
 
 class Application(tk.Frame):
+
     def __init__(self, master=None, stages={}):
         # Initialise GUI
         tk.Frame.__init__(self, master)
@@ -74,6 +77,26 @@ class Application(tk.Frame):
         self.bind('<Shift-KeyRelease-Up>',self.upKey)
         self.bind('<Shift-KeyRelease-Down>',self.downKey)
 
+        self.q = Queue()
+
+        # Start Queue Listening event
+        self.qLoop()
+
+
+    def qLoop(self):
+        '''
+        Pulls every 100 ms from the que and executes funtion f, if a return queue is provided return will be put in provided queue
+        '''
+        try:
+            while True:
+                f, a, k, qr = self.q.get_nowait()
+                r = f(*a, **k)
+                if qr: qr.put(r)
+        except:
+            pass
+
+        self.after(100, self.qLoop)
+
     # Setup Element on GUI
     def createWidgets(self):
         # Create Menu
@@ -92,6 +115,11 @@ class Application(tk.Frame):
         DataMenu.add_command(label='DataViewer',command = self.StartData)
         DataMenu.add_checkbutton(label='Sticky Data in Plotter',onvalue = 1, offvalue = 0, variable=self.stickyPlotter,command = self.ToggleStickyPlotter)
         MenuBar.add_cascade(label='Data',menu = DataMenu)
+
+        # Create Script Cascade
+        ScriptMenu = tk.Menu(MenuBar, tearoff=False)
+        ScriptMenu.add_command(label='ScriptBuilder',command = self.startScriptBuilder)
+        MenuBar.add_cascade(label='Scripts',menu = ScriptMenu)
 
 
 
@@ -194,12 +222,12 @@ class Application(tk.Frame):
     ### Functions Triggered by events
     def ToggleStickyPlotter(self):
 
-        if self.stickyPlotter.get:
-            pl = NBPlot()
-            pl.set_clear(1)
-        else:
+        if self.stickyPlotter.get():
             pl = NBPlot()
             pl.set_clear(0)
+        else:
+            pl = NBPlot()
+            pl.set_clear(1)
 
     def FileBrowse(self):
         try:
@@ -218,16 +246,9 @@ class Application(tk.Frame):
             name = path.split('/')[-1:][0]
 
             # Start a thread for the script to run with
-            controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name)
+            controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
             scriptThread = threading.Thread(target=controller.read_execute)
             scriptThread.start()
-
-            # Start update locking thread
-            lockThread = threading.Thread(name='lock thread',target=self.__updateLocked())
-            lockThread.start()
-
-            addThread = threading.Thread(name='release thread',target=self.__updateModBox, args=[scriptThread])
-            addThread.start()
 
         except IndexError as e:
             print("Command line error: {}".format(e))
@@ -238,44 +259,10 @@ class Application(tk.Frame):
         except Exception as e:
             print("Error: {}".format(e))
 
-    def __updateLocked(self):
-        '''Updates the option menu for Stages after the script is executed'''
 
-        # Wait for the script to get a locked instrument
-        # Maybe the better option would be to run this every 2 seconds while the thread is alive
-
-        logging.debug('starting')
-        #while self.scriptThread.is_alive():
-        sleep(1)
-        busy = [item.whoAmI() for i in self.gh.get_locked() for item in i[1]]
-        toRemove = [i for i in self.Stages.keys() if i[1:] in busy]
-
-        for item in toRemove:
-            try:
-                self.StageModBox.children['menu'].delete(item)
-            except Exception:
-                # Bad Form-- I know. Blame 2.7
-                pass
-        logging.debug('exiting')
-
-    def __updateModBox(self, thread):
-        '''Make unlocked resources available'''
-        logging.debug('starting')
-
-        while thread.is_alive():
-            pass
-
-        # destroy box
-        self.StageModBox.destroy()
-
-        busy = [item.whoAmI() for i in self.gh.get_locked() for item in i[1]]
-        toAdd = [i for i in self.Stages.keys() if i[1:] not in busy]
-        print busy
-        print toAdd
-        self.StageModBox = tk.OptionMenu(self,self.StageMod,*list(toAdd),command=self.StageClassChange)
-        self.StageModBox.grid(column=2,row=3,columnspan = 1)
-
-        logging.debug('exiting')
+    def startScriptBuilder(self):
+        BuilderWindow=tk.Toplevel(self)
+        ScriptBuilderGUI.create_ScriptBuilder(BuilderWindow, self.Maitre )
 
     def StartData(self):
         DataWindow=tk.Toplevel(self)
@@ -323,7 +310,12 @@ class Application(tk.Frame):
                     for x in insert_list:
                         ArgList.insert(x[0],x[1])
 
-        print self.ActiveStageFuncList[self.ActiveStageFunc](*ArgList)
+        # check if instrument has been locked
+        bounded_method = self.ActiveStageFuncList[self.ActiveStageFunc]
+        if g().is_locked(bounded_method.__self__):
+            print 'Cannot execute method {} : instrument locked by running script.'.format(bounded_method)
+        else:
+            print bounded_method(*ArgList)
 
     def StageFuncChange(self,choice):
         self.ActiveStageFunc = self.ActiveStageFuncNames.index(choice)

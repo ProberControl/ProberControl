@@ -9,7 +9,7 @@ class WT68145B(object):
         Constructor method
 
         :param res_manager: PyVisa resource manager
-        :type res_manager: PyVisa resourceManager object 
+        :type res_manager: PyVisa resourceManager object
         :param address: SCPI address of instrument
         :type address: String
         '''
@@ -25,10 +25,6 @@ class WT68145B(object):
         ''':returns: reference to device'''
         return 'RFSource'
 
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
-
     def change_state(self):
 
         if self.active == True:
@@ -37,11 +33,11 @@ class WT68145B(object):
             self.active = True
 
     def out_on(self):
-        '''Turns output ON'''    
+        '''Turns output ON'''
         self.gpib.write('RF1')
 
     def out_off(self):
-        '''Turns output OFF'''    
+        '''Turns output OFF'''
         self.gpib.write('RF0')
 
     def set_freq1(self, freq = 10):
@@ -63,7 +59,7 @@ class WT68145B(object):
         self.gpib.write('F2 '+str(freq)+' GH')
 
     def sweep_f1f2(self):
-        '''Execute a sweep of the two frequencies'''    
+        '''Execute a sweep of the two frequencies'''
         self.gpib.write('SF1')
 
     def single_trigger_mode(self):
@@ -81,7 +77,7 @@ class WT68145B(object):
     def set_deltasweep_mode(self):
         '''Enter delta sweep mode'''
         self.gpib.write('DF1')
-        
+
     def set_sweep_delta(self,delta = 5):
         '''
         Set delta sweep value
@@ -147,7 +143,7 @@ class WT68145B(object):
         :type time: Integer
         '''
         self.gpib.write('SWT '+str(time)+' MS')
-    
+
     def set_stepsweep_stepsize(self, step = 500):
         '''
         Set the stepsize of step-sweep mode
@@ -177,15 +173,11 @@ class WT68145B(object):
         for x in np.arange(float(start),float(stop),(float(stop)-float(start))/float(steps)):
             self.gpib.write(str(x)+' GH,')
 
-        self.gpib.write('ZEL GTF ZS000') 
+        self.gpib.write('ZEL GTF ZS000')
 
     def freq_step(self):
         '''Set step frequency.'''
         self.gpib.write('Y')
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'WT68145B'
 
 
 '''

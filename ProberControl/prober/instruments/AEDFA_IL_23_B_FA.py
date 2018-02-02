@@ -1,5 +1,6 @@
-import serial
+#import serial
 from time import sleep
+from ..classes import apt_util
 
 class AEDFA_IL_23_B_FA(object):
     '''
@@ -7,14 +8,15 @@ class AEDFA_IL_23_B_FA(object):
 
     .. :warning: Baudrate in device needs to be set to 115200
     '''
-    def __init__(self,ser):
+    def __init__(self,res_manager,address):
         '''
         Constructor method for AEDFA instrument
 
         :param ser: the Serial object corresponding to the EDFAs port
         :type ser: Serial object
         '''
-        self.ser = ser
+
+        self.ser = apt_util.c2r(address)
         self.active = False
 
         # request some info from controller to trigger the reading process
@@ -24,10 +26,6 @@ class AEDFA_IL_23_B_FA(object):
     def whoAmI(self):
         ''':returns: reference to device'''
         return 'EDFA'
-        
-    def whatCanI(self):
-        ''':returns: instrument attributes'''
-        return ''
 
     def change_state(self):
 
@@ -90,7 +88,7 @@ class AEDFA_IL_23_B_FA(object):
         '''
         if self.get_mode() == "APC":
             self.ser.write(":DRIV:APC:CUR:CH1? \n")
-        
+
             return self._read2cr()
         else:
             return -1
@@ -107,7 +105,7 @@ class AEDFA_IL_23_B_FA(object):
 
         self.ser.write(":DRIV:ACC:CUR:CH"+str(channel)+" "+str(current)+" \n")
 
-    
+
     def get_pump_currents(self,channel):
         '''
         Queries the current for specified channel.
@@ -135,7 +133,7 @@ class AEDFA_IL_23_B_FA(object):
             self.ser.write(":DRIV:ACC:STAT:CH2 "+str(state)+" \n")
         elif self.get_mode() == "APC":
             self.ser.write(":DRIV:APC:STAT:CH1 "+str(state)+" \n")
-           
+
 
     def set_master_out(self,state=1):
         '''
@@ -154,7 +152,7 @@ class AEDFA_IL_23_B_FA(object):
         '''
         Get the master control switch status
 
-        :returns: Integer; 0,1,2 for OFF, ON, BUSY respectively 
+        :returns: Integer; 0,1,2 for OFF, ON, BUSY respectively
         '''
         self.ser.write(":DRIV:MCTRL? \n")
 
@@ -184,10 +182,6 @@ class AEDFA_IL_23_B_FA(object):
             letter = self.ser.read()
 
         return response[0:-1]
-
-    def __str__(self):
-        '''Adds built in functionality for printing and casting'''
-        return 'AEDFA_IL_23_B_FA'
 
 
 '''

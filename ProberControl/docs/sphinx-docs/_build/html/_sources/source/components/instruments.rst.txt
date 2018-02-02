@@ -20,6 +20,14 @@ instruments\.Agilent34401A module
     :undoc-members:
     :show-inheritance:
 
+instruments\.AgilentE3643A module
+---------------------------------
+
+.. automodule:: instruments.AgilentE3643A
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.AndoAQ4321 module
 ------------------------------
 
@@ -44,10 +52,34 @@ instruments\.AnritsuMS2667C module
     :undoc-members:
     :show-inheritance:
 
+instruments\.AragonBOSA400 module
+---------------------------------
+
+.. automodule:: instruments.AragonBOSA400
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.DSensor\_ILD1420 module
+------------------------------------
+
+.. automodule:: instruments.DSensor_ILD1420
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.ELL8 module
 ------------------------
 
 .. automodule:: instruments.ELL8
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.GonStage\_KST\_Z812B module
+----------------------------------------
+
+.. automodule:: instruments.GonStage_KST_Z812B
     :members:
     :undoc-members:
     :show-inheritance:
@@ -100,6 +132,14 @@ instruments\.Motor\_MST\_DRV module
     :undoc-members:
     :show-inheritance:
 
+instruments\.NewportPM500 module
+--------------------------------
+
+.. automodule:: instruments.NewportPM500
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.Polatis module
 ---------------------------
 
@@ -112,6 +152,22 @@ instruments\.RSY01 module
 -------------------------
 
 .. automodule:: instruments.RSY01
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.Rotator\_CR1\_Z7 module
+------------------------------------
+
+.. automodule:: instruments.Rotator_CR1_Z7
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.Rotator\_ELL8 module
+---------------------------------
+
+.. automodule:: instruments.Rotator_ELL8
     :members:
     :undoc-members:
     :show-inheritance:
@@ -136,6 +192,14 @@ instruments\.StepMotor\_MST\_DRV module
 ---------------------------------------
 
 .. automodule:: instruments.StepMotor_MST_DRV
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.TL2500 module
+--------------------------
+
+.. automodule:: instruments.TL2500
     :members:
     :undoc-members:
     :show-inheritance:

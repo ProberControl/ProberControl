@@ -1,5 +1,25 @@
 # import Polatis
 
+# DEBUG flag
+debug = 1
+def sdebug(msg):
+    if debug > 0:
+        print 'SwitchHandler:: {}'.format(msg)
+		
+def _debug_setup(filename):
+    class flushFile(object):
+        def __init__(self, fileL):
+            if debug == 0:
+                return
+            self.fileL = open(fileL, 'w')
+        def writef(self, msg):
+            if debug == 0:
+                return
+            self.fileL.write(msg + '\n')
+            self.fileL.flush()
+    logfile = flushFile(filename)
+    return logfile
+
 class SwitchHandler(object):
     '''The intention of this class if to provide a general implementation for any kind of fiber switch.
     The key features of the class are get_switch_state(), make_new_connection() and switch_book object.'''
@@ -9,7 +29,9 @@ class SwitchHandler(object):
         self._p = resource
         self.active = False # only for compliance with ScriptController
 
+        sdebug('reading config file to fill in switch book...')
         self.switch_book = self._readIn(configFile,stages)
+        sdebug('switch book complete.')
         self._connect()
 
     def get_switch_state(self):
@@ -18,7 +40,7 @@ class SwitchHandler(object):
 
         :returns: String of all connections between devices
         '''
-        
+
         formatted_output = ""
         for k,v in self.switch_book.items():
             formatted_output += "{:15} {:20}{:3} {:5} {:10}\n".format(
@@ -29,7 +51,7 @@ class SwitchHandler(object):
         else:
             return "No Connnections Logged"
 
-    def make_new_connection(self, device, egress): 
+    def make_new_connection(self, device, egress):
         '''
         User specified connection between a device and an output port.
 
@@ -38,40 +60,79 @@ class SwitchHandler(object):
         :param egress: Specified output port
         :type egress: Int
         '''
-        
+
         ingress = self.switch_book[device][0]
-		
+
         self._p.quick_connect(ingress, int(egress))
-		
+
+        self._updateSwitchBook()
+
+    def connect_devices(self, in_device, out_device):
+        '''
+        Connect two devices together:
+            in_device::out ---> out_device::in
+        '''
+
+        ingress = self.switch_book[in_device][1]
+        egress  = self.switch_book[out_device][0]
+
+        sdebug('connecting [{} - {}]'.format(ingress, egress))
+
+        self._p.quick_connect(ingress, egress)
+
         self._updateSwitchBook()
 
     def _readIn(self, configFile,stages):
         '''Reads in the configFile info'''
         switch_book_init = {}
 		
+        bug = _debug_setup('switch_handler_debug.txt')
+        bug.writef('stages: {}'.format(stages))
+
         for entry in configFile:
             if entry['O'] != 'Polatis' and 'P' in entry.keys(): #skip the Polatis
+                bug.writef('\nentry: ' + str(entry))
                 ports = entry['P'].split('>')
-                ingress = list(map(int,ports[0].split(',')))
-                egress = list(map(int,ports[1].split(',')))
+                if len(ports) == 1 or len(entry['P']) == 1:
+                    # User didn't specify '>' or just declared '>'
+                    raise AttributeError('Invalid switch port decalration in Config File. Hint: {}'.format(entry))
+
+                ingress = []
+                egress = []
+                if len(ports[0]) == 0:
+                    # we only have output ports
+                    bug.writef('we only have output ports')
+                    egress = list(map(int,ports[1].split(',')))
+                    ingress = [None] * len(egress)
+                elif len(ports[1]) == 0:
+                    # we only have input ports
+                    bug.writef('we only have input ports')
+                    ingress = list(map(int,ports[0].split(',')))
+                    egress = [None] * len(ingress)
+                else:
+                    # both input and output ports have been specified
+                    bug.writef('both input and output ports have been specified')
+                    ingress = list(map(int,ports[0].split(',')))
+                    egress = list(map(int,ports[1].split(',')))
+
                 ports = list(zip(ingress, egress))
+                bug.writef('ports: ' + str(ports))
 
                 for actualObject in zip(stages.keys(), stages.values()):
-                	if entry['O'] == str(actualObject[1]):
-                		stage_type = actualObject[1].whoAmI()
+                    if entry['OBJ'] == actualObject[1]:
+                        stage_name = actualObject[0]
 
-				
-                for pair in ports:
-					if 'N' in entry.keys():
-						switch_book_init[stage_type+str(entry['SysChan'])]=pair
-					else:
-						switch_book_init[stage_type]=pair
-						
+                        bug.writef('stage_type: ' + str(stage_name))
+
+                        for pair in ports:
+                            switch_book_init[stage_name]=pair
+                            bug.writef('inserted: {} --> {}'.format(stage_name, str(pair)))
+
         return switch_book_init
-            
+
     def _connect(self):
         '''makes connections between ports for SwitchIntegration.__init__()'''
-        for k,entry in self.switch_book.items():	
+        for k,entry in self.switch_book.items():
             # Call function for making connections
             self._p.quick_connect(
                 ingress=entry[0],
@@ -80,7 +141,7 @@ class SwitchHandler(object):
 
     ## Thinking about getting rid of this
     ## Why is it here? What was the original intention?
-    def _integrateStages(self, stages):  
+    def _integrateStages(self, stages):
         '''Integrates the stages dictionary after boot'''
         for actualObject in zip(stages.keys(), stages.values()):
             for k,entry in self.switch_book.items():
@@ -92,7 +153,7 @@ class SwitchHandler(object):
         actual = self._p.get_zip_connections()
 
         for k,entry in self.switch_book.items():
-		
+
             for pair in actual:
                 if self._hasChangedOutput(entry, pair): # then this device changed output
                     if entry[0] == pair[0]:
@@ -104,7 +165,7 @@ class SwitchHandler(object):
                     self.switch_book[k]=entry
                 elif self._hasLostOutput(entry, pair, actual): # then this device changed output
                     entry =[entry[0],'']
-		
+
     def _hasChangedOutput(self, entry, pair):
         '''helper for _updateSwitchBook'''
         if entry[0] in pair:
@@ -118,8 +179,12 @@ class SwitchHandler(object):
         '''helper for _updateSwitchBook'''
         return entry[0] not in [i[0] for i in actual] and entry[0] not in [i[1] for i in actual]
 
+    def whoAmI(self):
+        return 'SwitchHandler'
+
     def __str__(self):
         return ''
+
 
 '''
 Copyright (C) 2017  Robert Polster

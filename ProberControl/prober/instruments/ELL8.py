@@ -1,6 +1,6 @@
 # the motor class for ELL8/M Rotation Stage
 
-import serial
+#import serial
 import threading
 from struct import unpack
 import logging
@@ -10,11 +10,11 @@ import binascii
 def int2hexStr(integer, nb):
 	'''
 	 Convert an integer to its corresponding bytearray
-	 
+
 	 integer (int): the number we want to convert
 	 nb (int): the number of bytes
 	'''
-	
+
 	bytes = []
 	for i in range(nb):
 		bytes.append(integer & 0x0FF)
@@ -22,25 +22,25 @@ def int2hexStr(integer, nb):
 	bytes.reverse()
 	s = str(binascii.hexlify(bytearray(bytes)))
 	return s.upper()
-	
+
 def hexString(data):
 	'''
 	 Creates a string that is a byte sequense of the hex values
 	 input
 	 e.g. data = '0A 23 34 56'
 	'''
-	
+
 	h_str = ''
 	data = data.split(' ')
 	for byte in data :
 		h_str += r'\x' + byte
-	
+
 	return h_str.decode('string_escape')
 
 # setup the Logger
 # -> should be done once
 # initialize the logger
-logger = logging.getLogger('MotorLog')
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # create console handler and set level to debug
@@ -63,40 +63,41 @@ class ELL8(object):
 		    Constructor
 		'''
 		self.ser = ser
+		self.ser.baudrate = 9600
 		self.position = 0
 		self.zeros_position = 0
 		self.count = -1
 
-		
+
 		# request some info from controller to trigger the reading process
 		self.ser.flushInput()
 		self.ser.flushOutput()
-			
+
 		# get the logger we loaded once in the begining
 		self.logger = logger
-			
+
 		# extra class info - for logger
 		self.ext = {'com_port': self.ser.port, 'ClassName': 'Rot_Motor'}
-                
+
                 self.home()
-	
+
 	def delta_move(self, steps):
 		'''
 		    rotate the stage by specified # of steps
 		'''
 		self.position += steps
-		
+
 		#_HOSTREQ_MOVERELATIVE
 		self.ser.write('0mr')
 		self.ser.write(int2hexStr(steps,4))
 
 		#wait for ell8 position message
 		self.move_complete()
-	
+
 	def abs_move(self, steps):
 		'''
 		    rotate the stage by specified # of steps
-		'''     
+		'''
 
 		#_HOSTREQ_MOVERELATIVE
 		self.ser.write('0mr')
@@ -121,7 +122,7 @@ class ELL8(object):
 		'''
 		#_HOSTREQ_HOME
 		return self.position
-	
+
 	def set_as_zero(self, zer_deg):
 		'''
 		 change the origin (zero)
@@ -129,12 +130,12 @@ class ELL8(object):
 
 		self.zeros_position = new_zero
 		self.position -= new_zero
-		
+
 	def set_vel_params(self, vel):
 		'''
 		 Set the velocity parameters for the motor in terms of percentage of max
 		'''
-		
+
 		# _HOSTSET_VELOCITY
 		self.ser.write('0sv')           # head
 		self.ser.write(int2hexStr(vel))
@@ -144,15 +145,15 @@ class ELL8(object):
 		 <For Debugging Purposes>
 		 gives information relevant to the motor state
 		'''
-		
-		return 'position: ' + str(self.position) + '\nzeros-position: ' + str(self.zeros_position)             
+
+		return 'position: ' + str(self.position) + '\nzeros-position: ' + str(self.zeros_position)
 
 	def close(self):
 		'''
 		    releases motor control
 		'''
 		self.ser.close()
-	
+
 	def move_complete(self):
 		rx = ''
 		while rx[:3] != '0PO':
@@ -163,8 +164,8 @@ class ELL8(object):
 		return self._count
 
 
-    
-    
+
+
 
 
 '''

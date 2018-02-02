@@ -25,9 +25,6 @@ class OptStage(XYZ_Stage):
     def whoAmI(self):
         return self.name
 
-    def whatCanI(self):
-        return self.name
-
     def __str__(self):
         return self.name
 

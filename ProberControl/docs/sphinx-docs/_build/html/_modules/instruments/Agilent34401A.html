@@ -56,7 +56,7 @@
 <span class="sd">        Constructor method</span>
 
 <span class="sd">        :param res_manager: PyVisa resource manager</span>
-<span class="sd">        :type res_manager: PyVisa resourceManager object </span>
+<span class="sd">        :type res_manager: PyVisa resourceManager object</span>
 <span class="sd">        :param address: SCPI address of instrument</span>
 <span class="sd">        :type address: string</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -72,10 +72,6 @@
         <span class="sd">&#39;&#39;&#39;:returns: reference to device&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;DCMeter&#39;</span></div>
 
-<div class="viewcode-block" id="Agilent34401A.whatCanI"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Agilent34401A.Agilent34401A.whatCanI">[docs]</a>    <span class="k">def</span> <span class="nf">whatCanI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;:returns: instrument attributes&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;DC&#39;</span></div>
-
 <div class="viewcode-block" id="Agilent34401A.change_state"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Agilent34401A.Agilent34401A.change_state">[docs]</a>    <span class="k">def</span> <span class="nf">change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
@@ -86,7 +82,7 @@
 <div class="viewcode-block" id="Agilent34401A.get_voltage"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Agilent34401A.Agilent34401A.get_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">get_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">scaled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">query_range</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Queries the voltage of multimeter.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param scaled: Optional scaling</span>
 <span class="sd">        :type scaled: Boolean</span>
 <span class="sd">        :param query_range: range for query</span>
@@ -97,10 +93,10 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;MEAS:VOLT:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">query_range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">)))</span>
-        
+
         <span class="k">if</span> <span class="n">scaled</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">scalingfactor</span>
-        
+
         <span class="k">return</span> <span class="n">val</span></div>
 
 <div class="viewcode-block" id="Agilent34401A.get_current"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Agilent34401A.Agilent34401A.get_current">[docs]</a>    <span class="k">def</span> <span class="nf">get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">query_range</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">):</span>
@@ -110,7 +106,7 @@
 <span class="sd">        :param query_range: range for query</span>
 <span class="sd">        :type query_range: Integer</span>
 <span class="sd">        :param resolution: resolution for query</span>
-<span class="sd">        :type resolution: Float       </span>
+<span class="sd">        :type resolution: Float</span>
 <span class="sd">        :returns: current reading as float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;MEAS:CURR:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">query_range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">)))</span></div>
@@ -133,18 +129,14 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalingfactor</span></div>
-        
+
 
 <div class="viewcode-block" id="Agilent34401A.close"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Agilent34401A.Agilent34401A.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Release resource.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds built in functionality for printing and casting&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;Agilent34401A&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Serial and GPIB Port Handling &#8212; AutoProber 2.0 documentation</title>
+    <title>Serial, GPIB and Ethernet Connection Handling in Instrument Classes &#8212; AutoProber 2.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -43,10 +43,77 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="serial-and-gpib-port-handling">
-<h1>Serial and GPIB Port Handling<a class="headerlink" href="#serial-and-gpib-port-handling" title="Permalink to this headline">¶</a></h1>
-<p>Serial Ports are currently assigned in the <code class="docutils literal"><span class="pre">ProberControl.py</span></code> using: <code class="docutils literal"><span class="pre">from</span> <span class="pre">ProbeLib.Classes.apt_util</span> <span class="pre">import</span> <span class="pre">c2r</span></code>. The c2r(COM_Port) function returns a handler of a serial object from the pyserial package. The serial object opens the communication with the specified COM_Port using the configuration: Baud Rate = 115200, timeout=none, parity = PARITY_NONE. The serial objects are then linked to the objects representing stages or measurement tools by handing the serial object over to the stage object as a constructor parameter.</p>
-<p>GPIB is a bus system so only one master is controlled by the pc. When in <code class="docutils literal"><span class="pre">ProberControl.py</span></code> the line from ProbeLib.InstrumentControlClasses import rm is executed a gpib resource manager (rm) is generated (see file <code class="docutils literal"><span class="pre">ProbeLib\InstrumentControlClasses\__init__.py</span></code>). The rm is made available to all instrument control drivers by adding the rm as a constructor parameter.</p>
+  <div class="section" id="serial-gpib-and-ethernet-connection-handling-in-instrument-classes">
+<h1>Serial, GPIB and Ethernet Connection Handling in Instrument Classes<a class="headerlink" href="#serial-gpib-and-ethernet-connection-handling-in-instrument-classes" title="Permalink to this headline">¶</a></h1>
+<p><strong>Serial Ports</strong> are currently assigned in the <code class="docutils literal"><span class="pre">ProberControl.py</span></code> using: <code class="docutils literal"><span class="pre">from</span> <span class="pre">ProbeLib.Classes.apt_util</span> <span class="pre">import</span> <span class="pre">c2r</span></code>. The c2r(COM_Port) function returns a handler of a serial object from the pyserial package. The serial object opens the communication with the specified COM_Port using the configuration: Baud Rate = 115200, timeout=none, parity = PARITY_NONE. The serial objects are then linked to the objects representing stages or measurement tools by handing the serial object over to the stage object as a constructor parameter.
+If the serial settings/parameters described above are not the optimal ones for a specific instrument, the user can change them at any point (usually in the constructor <code class="docutils literal"><span class="pre">__init__</span></code>) just like any serial object as described in the pyserial documentation found <a class="reference external" href="http://pythonhosted.org/pyserial/">here</a>. Below we see an exmaple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser</span><span class="p">,</span> <span class="n">bay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">chan</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+      <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">       Constructor</span>
+
+<span class="sd">       :param ser: (Serial) the Serial object that corresponds to the port</span>
+<span class="sd">       the motor is connected to. If the serial was successfully locked ser.write() can be called.</span>
+<span class="sd">       [...]</span>
+
+<span class="sd">      &#39;&#39;&#39;</span>
+      <span class="c1">###</span>
+      <span class="k">global</span> <span class="n">Constructor_Counter</span>
+      <span class="n">Constructor_Counter</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="c1">###</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="n">ser</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="bp">False</span>
+      <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p><strong>GPIB</strong> is a bus system so only one master is controlled by the pc. When in <code class="docutils literal"><span class="pre">ProberControl.py</span></code> the line from ProbeLib.InstrumentControlClasses import rm is executed a gpib resource manager (rm) is generated (see file <code class="docutils literal"><span class="pre">ProbeLib\InstrumentControlClasses\__init__.py</span></code>). The rm is made available to all instrument control drivers by adding the rm as a constructor parameter. Here’s an example of how <code class="docutils literal"><span class="pre">rm</span></code> is used inside an instrument class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res_manager</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="s1">&#39;GPIB0::24::INSTR&#39;</span><span class="p">):</span>
+      <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">      Constructor method</span>
+
+<span class="sd">      :param res_manager: PyVisa resource manager</span>
+<span class="sd">      :type res_manager: PyVisa resourceManager object</span>
+<span class="sd">      :param address: SCPI address of instrument</span>
+<span class="sd">      :type address: string</span>
+<span class="sd">      &#39;&#39;&#39;</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">max_wavelength</span> <span class="o">=</span> <span class="mf">1579.9</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">min_wavelength</span> <span class="o">=</span> <span class="mi">1520</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span> <span class="o">=</span> <span class="n">res_manager</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;PASSWORD4321&#39;</span><span class="p">)</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;INIT&#39;</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">write</span> <span class="p">(</span><span class="s1">&#39;IDN?&#39;</span><span class="p">)</span>
+      <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+      <span class="k">print</span> <span class="p">(</span><span class="s1">&#39;Connection Successful: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">info</span><span class="p">)</span>
+      <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>To use and program an <strong>Ethernet</strong> connected instrument all we need from the core software is the ip address of the instrument, which is given as the second argument of the constructor (and is parsed from the .config file). The user can choose to use any networking python module that they are comfortable with. We normally just use the standard socket module for portability reasons. Here’s an example where the instrument class connects to the instrument as a TCP/IP client:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">res_manager</span><span class="p">,</span><span class="n">address</span><span class="o">=</span><span class="s1">&#39;169.254.115.242&#39;</span><span class="p">,</span><span class="n">channel</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">__channel</span> <span class="o">=</span> <span class="n">channel</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+
+      <span class="k">try</span><span class="p">:</span>
+
+          <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">address</span><span class="p">,</span> <span class="mi">5025</span><span class="p">))</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s1">&#39;*IDN?</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+          <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s1">&#39;:DATA:CLE:AUTO 1</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s1">&#39;:TRAC:FEED:CONT ALW</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s1">&#39;:TRAC:POIN 2</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+          <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>We see that for the sake of uniformity we always include the two arguments <code class="docutils literal"><span class="pre">res_manager</span></code> and <code class="docutils literal"><span class="pre">address</span></code> in the constructor even if, for example, we do not use res_manager for an Ethernet connected instrument.</p>
 </div>
 
 
