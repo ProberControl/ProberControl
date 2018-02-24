@@ -1,4 +1,3 @@
-from __future__ import print_function
 import time
 try:
     from multiprocessing import Process, Pipe
@@ -6,6 +5,7 @@ except ImportError:
     from processing import Process, Pipe
 
 import numpy as np
+import inspect
 
 class close_handler(object):
     def __init__(self, shelled_handle):
@@ -123,6 +123,12 @@ class NBPlot(object):
             self.clear = False
 
     def plot(self,data,title='',xaxis='',yaxis=''):
+        # check whether call was local or generated from ethernet_interface
+        # Traverse Stack and search for the ethernet_interface
+        for entry in inspect.stack(context=0):
+            if "EthernetInterface" in entry[1]:
+                return
+
         send = self.plot_pipe.send
 
         datas = [data,title,xaxis,yaxis,self.clear]

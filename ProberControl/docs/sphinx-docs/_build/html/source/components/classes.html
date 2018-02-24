@@ -85,6 +85,15 @@
 <dd></dd></dl>
 
 <dl class="staticmethod">
+<dt id="classes.DataIO.DataIO.parameter_prep">
+<em class="property">static </em><code class="descname">parameter_prep</code><span class="sig-paren">(</span><em>Stages</em>, <em>Maitre</em>, <em>arg_string</em>, <em>func_parameter_list</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataIO.html#DataIO.parameter_prep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataIO.DataIO.parameter_prep" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function interpretes Input strings and prepares input paramters for functions.
+It also swaps MAitre/Stages keywords for the objects that are then passed to the functions.</p>
+<p>func_parameter_list are the expected paramters of the function for which the parameters are prepared.
+This allows to swap in Maitre and Stages where needed.</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="classes.DataIO.DataIO.writeData">
 <em class="property">static </em><code class="descname">writeData</code><span class="sig-paren">(</span><em>openFile</em>, <em>data</em>, <em>Data_Name=”</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DataIO.html#DataIO.writeData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataIO.DataIO.writeData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes data in form of nested lists or singular value and a experiment name, and writes it to a results file. The parmater is tested to be either a file handler (in which case its considered open) or a str in which case its considered to be a path to a file to which the data will be appended.</p>
@@ -297,7 +306,7 @@ providing a handle for the Measure functions</p>
 <em class="property">class </em><code class="descclassname">classes.SwitchHandler.</code><code class="descname">SwitchHandler</code><span class="sig-paren">(</span><em>configFile</em>, <em>stages</em>, <em>resource</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/SwitchHandler.html#SwitchHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.SwitchHandler.SwitchHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>The intention of this class if to provide a general implementation for any kind of fiber switch.
-The key features of the class are get_switch_state(), make_new_connection() and switch_book object.</p>
+The key features of the class are get_switch_state(), and switch_book object.</p>
 <dl class="method">
 <dt id="classes.SwitchHandler.SwitchHandler.connect_devices">
 <code class="descname">connect_devices</code><span class="sig-paren">(</span><em>in_device</em>, <em>out_device</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/SwitchHandler.html#SwitchHandler.connect_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.SwitchHandler.SwitchHandler.connect_devices" title="Permalink to this definition">¶</a></dt>
@@ -316,24 +325,6 @@ The key features of the class are get_switch_state(), make_new_connection() and 
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String of all connections between devices</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="classes.SwitchHandler.SwitchHandler.make_new_connection">
-<code class="descname">make_new_connection</code><span class="sig-paren">(</span><em>device</em>, <em>egress</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/SwitchHandler.html#SwitchHandler.make_new_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.SwitchHandler.SwitchHandler.make_new_connection" title="Permalink to this definition">¶</a></dt>
-<dd><p>User specified connection between a device and an output port.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>devie</strong> – Specified device Key according to Stages Dict to be reconnected</li>
-<li><strong>egress</strong> (<em>Int</em>) – Specified output port</li>
-</ul>
-</td>
 </tr>
 </tbody>
 </table>

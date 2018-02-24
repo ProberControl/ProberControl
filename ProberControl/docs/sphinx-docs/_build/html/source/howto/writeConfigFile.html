@@ -27,7 +27,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Adding a New Instrument" href="addNewInstrument.html" />
-    <link rel="prev" title="DataViewer" href="../components/DataViewer.html" />
+    <link rel="prev" title="Ethernet Interface" href="../components/EthernetInterface.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -105,8 +105,8 @@
 </ol>
 <blockquote class="last">
 <div><ol class="loweralpha simple">
-<li>A switch entry has the following syntax: <code class="docutils literal"><span class="pre">3:15,16&gt;7,8.</span></code> the <cite>3:</cite> represents the 3rd entity of the device e.g. MLaser3 if the there is only one laser present it can be neglected.</li>
-<li><cite>15,16</cite> represent the tools input ports at the switch. <cite>7,8</cite> are the prelimary output ports at the switch.</li>
+<li>A switch entry has the following syntax: <code class="docutils literal"><span class="pre">3:SwitchId[16&gt;8].</span></code> the <cite>3:</cite> represents the 3rd entity of the device e.g. MLaser3 if the there is only one laser present it can be neglected.</li>
+<li><cite>16</cite> represents the port of the switch, designated by SwitchId, to which the devices input is connected. <cite>8</cite> is the switch port that the output of the device is connected to.</li>
 <li>Multiple entries need to be separated by ;</li>
 </ol>
 </div></blockquote>
@@ -191,7 +191,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../components/DataViewer.html" title="previous chapter">DataViewer</a></li>
+      <li>Previous: <a href="../components/EthernetInterface.html" title="previous chapter">Ethernet Interface</a></li>
       <li>Next: <a href="addNewInstrument.html" title="next chapter">Adding a New Instrument</a></li>
   </ul></li>
 </ul>

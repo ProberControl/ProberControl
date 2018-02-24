@@ -1,3 +1,4 @@
+.. _measScriptLabel:
 Write and Execute a Measurement Script
 ======================================
 

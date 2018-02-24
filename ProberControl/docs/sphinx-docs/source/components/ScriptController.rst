@@ -16,3 +16,32 @@ The functionality of ScriptController can be summarized in the following points:
     :height: 400px
     :width: 1600px
     :align: center
+
+Data Output of ScriptController
+-------------------------------
+Results are saved in the ``config`` folder, as defined in the ``__configurePaths()`` function. Name and subfolders are currently hard coded in the ``execute_script()`` function by the line ``with self._OutputConfiguration(...) as out:``.
+
+As described in :ref:`Measurement Script HowTo <measScriptLabel>` the output can be split into different files depending on the grouping in the measurement script. Files are either created on wafer, chip , or group level. File names are then appended by the wafer/chip/group label given in the script.
+
+Decision on where data is saved is taken in the ``_OutputConfiguration`` class. If new features and options need to be implemented they should augment the function set of ``_OutputConfiguration``.
+
+
+Wafer and Chip Prober Interaction Scheme of ScriptController
+------------------------------------------------------------
+All interactions between the ScriptController and a self contained prober are triggered  in the ``execute_script()`` function. They are on four levels:
+
+  0. Checking Health of the Prober:
+      Before loading the first Device under Test (DUT) the function ``_checkProberState()`` is called. The function relies on the prober driver to implement a ``get_state()`` function and handles according to its return values.
+
+  1. DUT Loading:
+      The ScriptController checks whether a new ``chip-block`` starts. If yes, the ScriptController calls the function ``_loadChip``, which relies again on the prober driver. The ScriptController only sense chip loading commands, even if the chip is still part of a wafer. The automated prober is assumed to handle loading of chips based on their ID. This means that a chipID is provided to the prober driver and it is assumed that the prober initiates everything necessary to load this device. This might include fetching the location of this device from an external or internal database , checking whether this chipID is in wafer shape or chip shape and reference all future commands to this chipID.
+  2. Structure Connections:
+      Every measurement block contains (if used in connection with a wafer or chip prober) a structureID. For every measurement the function ``_structureProcedure()`` is called that calls the driver's ``connect_structure()`` function. If a fiber switch is used to control light in and output, it is ensured that a the tools light source and sink is connected to the correct fiber.
+  3. DUT Storing:
+    a. binnning:
+      If defined in the Measurement Script a binning function is called at the end of blocks of the hierarchically highest group. That means if waver groups are present then at the end of each wafer, if wafers are not present then at the end of each chip block. Binning functions are called in ``_callBinningFunction()`` using the Maitre and can be freely programmed in the procedures folder. Every binning function is supplied with:
+        1. The last measurement-details, which include the waferID, chipID, groupID
+        2. All file names in which measurement results were saved.
+      The binning function should return a keyword (e.g. good / bad). The function ``_storeBinningResult()`` saves the result. Wafers are assumed to be placed back into the FOUP either when the next wafer is loaded or at the end of the script. If the DUT is in chip shape ``_storeDie()`` is called.
+    b. _storeDie:
+      ``_storeDie(itemID, binningResult)`` accepts the itemID and binningResult as parameters. The function calls ``_getContainer()`` to make a decision on where to store this die based on the binningResult. Afterwards it makes use of the Prober Driver's ``store_chip(container)`` to store the chip.

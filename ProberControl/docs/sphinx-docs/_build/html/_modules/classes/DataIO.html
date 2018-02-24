@@ -44,6 +44,9 @@
   <h1>Source code for classes.DataIO</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numbers</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+
 
 <div class="viewcode-block" id="DataIO"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO">[docs]</a><span class="k">class</span> <span class="nc">DataIO</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -53,6 +56,12 @@
     <span class="k">def</span> <span class="nf">writeData</span><span class="p">(</span><span class="n">openFile</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">Data_Name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Takes data in form of nested lists or singular value and a experiment name, and writes it to a results file. The parmater is tested to be either a file handler (in which case its considered open) or a str in which case its considered to be a path to a file to which the data will be appended.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># check whether call was local or generated from ethernet_interface</span>
+        <span class="c1"># Traverse Stack and search for the ethernet_interface</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;EthernetInterface&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span>
 
         <span class="c1"># TODO check data type</span>
         <span class="c1"># Test openFile parameter</span>
@@ -196,7 +205,62 @@
             <span class="k">return</span> <span class="n">Data</span>
 
         <span class="nb">print</span> <span class="s1">&#39;Reading Data from File failed&#39;</span>
-        <span class="k">return</span> <span class="kc">False</span></div></div>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="DataIO.parameter_prep"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO.parameter_prep">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parameter_prep</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">Maitre</span><span class="p">,</span> <span class="n">arg_string</span><span class="p">,</span><span class="n">func_parameter_list</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            The function interpretes Input strings and prepares input paramters for functions.</span>
+<span class="sd">            It also swaps MAitre/Stages keywords for the objects that are then passed to the functions.</span>
+
+<span class="sd">            func_parameter_list are the expected paramters of the function for which the parameters are prepared.</span>
+<span class="sd">            This allows to swap in Maitre and Stages where needed.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">PreArgList</span><span class="o">=</span><span class="n">arg_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">ArgList</span><span class="o">=</span><span class="p">[]</span>
+        <span class="c1"># String Interpretation</span>
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">PreArgList</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;[&#39;</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>
+                <span class="n">SubList</span><span class="o">=</span><span class="n">elem</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                <span class="n">elem</span><span class="o">=</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span><span class="n">SubList</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;Stages&#39;</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>
+                <span class="n">elem</span> <span class="o">=</span> <span class="n">Stages</span>
+            <span class="k">if</span> <span class="s1">&#39;Maitre&#39;</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>
+                <span class="n">elem</span> <span class="o">=</span> <span class="n">Maitre</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="n">elem</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">elem</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">ArgList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+
+        <span class="n">direct_list</span> <span class="o">=</span> <span class="n">func_parameter_list</span>
+
+        <span class="n">insert_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;Stages&quot;</span> <span class="ow">in</span> <span class="n">direct_list</span><span class="p">:</span>
+            <span class="n">insert_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">direct_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;Stages&quot;</span><span class="p">),</span><span class="n">Stages</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s2">&quot;stages&quot;</span> <span class="ow">in</span> <span class="n">direct_list</span><span class="p">:</span>
+            <span class="n">insert_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">direct_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;stages&quot;</span><span class="p">),</span><span class="n">Stages</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s2">&quot;Maitre&quot;</span> <span class="ow">in</span> <span class="n">direct_list</span><span class="p">:</span>
+            <span class="n">insert_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">direct_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;Maitre&quot;</span><span class="p">),</span><span class="n">Maitre</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s2">&quot;maitre&quot;</span> <span class="ow">in</span> <span class="n">direct_list</span><span class="p">:</span>
+            <span class="n">insert_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">direct_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;maitre&quot;</span><span class="p">),</span><span class="n">Maitre</span><span class="p">])</span>
+
+        <span class="n">insert_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">insert_list</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">insert_list</span><span class="p">:</span>
+                <span class="n">ArgList</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">ArgList</span></div></div>
+
+
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
     <span class="n">openFile</span> <span class="o">=</span> <span class="s1">&#39;HelloWorld.txt&#39;</span>

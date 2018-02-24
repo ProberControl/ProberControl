@@ -38,6 +38,7 @@ Components of ProberControl
     source/components/DataIO
     source/components/ScriptController
     source/components/DataViewer
+    source/components/EthernetInterface
 
 How To's
 --------

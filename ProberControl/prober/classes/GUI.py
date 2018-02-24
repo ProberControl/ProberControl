@@ -15,6 +15,9 @@ import ScriptController
 from plotter import NBPlot
 from Global_MeasureHandler import Global_MeasureHandler as g
 import ScriptBuilderGUI
+from EthernetInterface import Eth_Server
+from EthernetInterface import Eth_GUI
+from DataIO import DataIO
 
 
 ####### Define Window
@@ -50,6 +53,10 @@ class Application(tk.Frame):
         #Gain access to Initializer singleton
         self.init = i.Initializer()
 
+        #Initialise Ethernet Interface
+        self.eth = Eth_Server(self.Stages,self.Maitre)
+        self.eth_loop()
+
         # Initialize Standard Values for GUI
         self.stickyPlotter  = tk.BooleanVar()
         self.CommandText    = tk.StringVar()
@@ -81,6 +88,13 @@ class Application(tk.Frame):
 
         # Start Queue Listening event
         self.qLoop()
+
+    def eth_loop(self):
+        '''
+        Calls repeatedly Eth interface update function. To check for new connections or commands.
+        '''
+        self.eth.update()
+        self.after(100, self.eth_loop)
 
 
     def qLoop(self):
@@ -121,6 +135,10 @@ class Application(tk.Frame):
         ScriptMenu.add_command(label='ScriptBuilder',command = self.startScriptBuilder)
         MenuBar.add_cascade(label='Scripts',menu = ScriptMenu)
 
+        # Create Network Cascade
+        NetworkMenu = tk.Menu(MenuBar, tearoff=False)
+        NetworkMenu.add_command(label='Network Config',command = self.startEthernetGUI)
+        MenuBar.add_cascade(label='Network',menu = NetworkMenu)
 
 
         # Procedure OptionMenu for Procedure selection
@@ -259,6 +277,10 @@ class Application(tk.Frame):
         except Exception as e:
             print("Error: {}".format(e))
 
+    def startEthernetGUI(self):
+        BuilderWindow=tk.Toplevel(self)
+        Eth_GUI(BuilderWindow,self.eth)
+
 
     def startScriptBuilder(self):
         BuilderWindow=tk.Toplevel(self)
@@ -273,42 +295,7 @@ class Application(tk.Frame):
         self.Stages = self.init.refresh()
 
     def StageClassButton(self):
-        PreArgList=self.StageArgText.get().split(' ')
-        ArgList=[]
-        # String Interpretation
-        for elem in PreArgList:
-            if '[' in elem:
-                SubList=elem.replace('[','').replace(']','').split(',')
-                elem=map(float,SubList)
-            if 'Stages' in elem:
-                elem = self.Stages
-            if 'Maitre' in elem:
-                elem = self.Maitre
-            if str(elem).isdigit():
-                elem=float(elem)
-            if elem != '':
-                ArgList.append(elem)
-
-                direct_list = inspect.getargspec(self.ActiveStageFuncList[self.ActiveStageFunc])[0]
-                insert_list = []
-
-                if "Stages" in direct_list:
-                    insert_list.append([direct_list.index("Stages"),self.Stages])
-
-                if "stages" in direct_list:
-                    insert_list.append([direct_list.index("stages"),self.Stages])
-
-                if "Maitre" in direct_list:
-                    insert_list.append([direct_list.index("Maitre"),self.Maitre])
-
-                if "maitre" in direct_list:
-                    insert_list.append([direct_list.index("maitre"),self.Maitre])
-
-                insert_list.sort(key=operator.itemgetter(0))
-
-                if insert_list != []:
-                    for x in insert_list:
-                        ArgList.insert(x[0],x[1])
+        ArgList = DataIO.parameter_prep(Stages = self.Stages, Maitre = self.Maitre,arg_string = self.StageArgText.get(),func_parameter_list = inspect.getargspec(self.ActiveStageFuncList[self.ActiveStageFunc])[0])
 
         # check if instrument has been locked
         bounded_method = self.ActiveStageFuncList[self.ActiveStageFunc]
@@ -346,44 +333,8 @@ class Application(tk.Frame):
             self.StageFuncBox["menu"].add_command(label=entry, command=lambda value=entry: self.StageFuncChange(value))
 
     def ProcButton(self):
-        PreArgList=self.ArgText.get().split(' ')
-        ArgList=[]
-        # String Interpretation
-        for elem in PreArgList:
-            if '[' in elem:
-                SubList=elem.replace('[','').replace(']','').split(',')
-                elem=map(float,SubList)
-            if 'Stages' in elem:
-                elem = self.Stages
-            if 'Maitre' in elem:
-                elem = self.Maitre
-            if str(elem).isdigit():
-                elem=float(elem)
-            if elem == '':
-                continue
 
-            ArgList.append(elem)
-
-        direct_list = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc)
-        insert_list = []
-
-        if "Stages" in direct_list:
-            insert_list.append([direct_list.index("Stages"),self.Stages])
-
-        if "stages" in direct_list:
-            insert_list.append([direct_list.index("stages"),self.Stages])
-
-        if "Maitre" in direct_list:
-            insert_list.append([direct_list.index("Maitre"),self.Maitre])
-
-        if "maitre" in direct_list:
-            insert_list.append([direct_list.index("maitre"),self.Maitre])
-
-        insert_list.sort(key=operator.itemgetter(0))
-
-        if insert_list != []:
-            for x in insert_list:
-                ArgList.insert(x[0],x[1])
+        ArgList = DataIO.parameter_prep(Stages = self.Stages, Maitre = self.Maitre,arg_string = self.ArgText.get(),func_parameter_list = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc))
 
         print self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList)
 

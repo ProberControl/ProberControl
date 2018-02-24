@@ -32,8 +32,8 @@ The ``ProberConfig.conf`` file uses the following syntax, which is similar for a
             b. If one device has multiple channels e.g. for a laser: 1:3 maps channel 3 to the object MLaser1. If a device has more than one port per channel mapping follows: 1:4.2 - to link the object MLaser1 to channel 4 port 2. Also see :ref:`Interface with a Multi-Channel Devic <interfaceMultiChannel>`.
             c. Multiple entries need to be separated by ;
         g.    #P - Ports corresponding to a switch, if a switch is present.
-            a. A switch entry has the following syntax: ``3:15,16>7,8.`` the `3:` represents the 3rd entity of the device e.g. MLaser3 if the there is only one laser present it can be neglected.
-            b. `15,16` represent the tools input ports at the switch. `7,8` are the prelimary output ports at the switch.
+            a. A switch entry has the following syntax: ``3:SwitchId[16>8].`` the `3:` represents the 3rd entity of the device e.g. MLaser3 if the there is only one laser present it can be neglected.
+            b. `16` represents the port of the switch, designated by SwitchId, to which the devices input is connected. `8` is the switch port that the output of the device is connected to.
             c. Multiple entries need to be separated by ;
 Examples
 --------

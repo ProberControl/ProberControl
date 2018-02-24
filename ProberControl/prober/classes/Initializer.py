@@ -13,6 +13,9 @@ from ..instruments import *
 from ..procedures import *
 from ..classes import *
 import threading
+import traceback
+
+SWITCH_ID_X = '_hidden_id_param_'
 
 def import_instrument(instrumentName):
     for name, mod in sys.modules.iteritems():
@@ -61,12 +64,8 @@ class Initializer(object):
         stage_config = {}
         config_collection = []
 
-        # This will be different depending on how the program was launched
-        pwd = os.path.abspath(path='.')
-        if (pwd.split('\\')[-1:][0]=='server'): # Launched via ethernet
-            path = './../../config/ProberConfig.conf'
-        else: # conventional launch
-            path = './config/ProberConfig.conf'
+        # ProberControl Config File location
+        path = './config/ProberConfig.conf'
 
 
         try:
@@ -96,6 +95,7 @@ class Initializer(object):
 
         except Exception as e:
             print 'Problem with config file:\n' + str(e)
+            # traceback.print_exc()
 
         # flatten the list, multi-dimensional because of multi-channel devices
         # Also check if the configuration file was updated
@@ -216,7 +216,8 @@ class Initializer(object):
             'C': self._genChipStage, #Chip stage
             'M': self._genMeasureStage, #Measurement stage
             'V': self._genVideoCamera, #Video Camera
-            'F': self._genFiber #Fiber
+            'F': self._genFiber, #Fiber
+            'S': self._genSwitch, # Switch
         }
 
         for stage_config in self.configCollection:
@@ -256,6 +257,7 @@ class Initializer(object):
                     print '\nError Instantiating: ' + stage_config['O']
                     print 'Exception Raised: ' + str(e) + '\n'
                     self.brokenInstruments.append(stage_config)
+                    traceback.print_exc()
 
         self.stageCollection = self._genHandlers(self.configCollection, self.stageCollection)
         # add the general handlers to g_mh
@@ -286,7 +288,8 @@ class Initializer(object):
             'C': self._genChipStage, #Chip stage
             'M': self._genMeasureStage, #Measurement stage
             'V': self._genVideoCamera, #Video Camera
-            'F': self._genFiber #Fiber
+            'F': self._genFiber, #Fiber
+            'S': self._genSwitch, # Switch
         }
 
         for stage_config in configuration:
@@ -374,6 +377,23 @@ class Initializer(object):
         mtr_list = [mtr_r[0], mtr_t[0], mtr_b[0]]
         return chip_stage.ChipStage(mtr_list)
 
+    def _genSwitch(self, stage_config, gm_handler):
+        '''Generates a switch object (mult. switch support)'''
+        address = stage_config['A']
+        instrumentName = stage_config['O']
+        try:
+            switch_id = stage_config['N']   # just to check if N param specified in config
+            switch_id = stage_config['SysChan']
+        except:
+            raise AttributeError('Switch object doesn\'t have ID (#N) in config.\nHint{}'.format(stage_config))
+
+        instrumentPort = import_instrument(instrumentName)
+        instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address)
+
+        # temporarily store the id param inside the switch object
+        setattr(instrumentActual, SWITCH_ID_X, switch_id)
+        return instrumentActual
+
     def _genMeasureStage(self, stage_config, gm_handler):
         '''Generates the measurement stages'''
         # T and R designators for tranmist and receive triggers
@@ -444,14 +464,17 @@ class Initializer(object):
         Generates Handlers for Stages
         :note: Currently only generates switch handler
         '''
-        handlerActual = ''
+        switches = {}
 
         for item in stages:
             if 'switch' in item.lower():
-                handlerPort = import_instrument('SwitchHandler')
-                handlerActual = getattr(handlerPort, 'SwitchHandler')(stage_config,stages,stages[item])
+                raw_switch = stages[item]
+                switches[getattr(raw_switch, SWITCH_ID_X)] = raw_switch
+                delattr(raw_switch, SWITCH_ID_X)
 
-        if handlerActual:
+        if switches:
+            handlerPort = import_instrument('SwitchHandler')
+            handlerActual = getattr(handlerPort, 'SwitchHandler')(stage_config,stages,switches)
             stages['SwitchHandler'] = handlerActual
         else:
             print 'Initializer:: [WARNING] continuing without a SwitchHandler...'

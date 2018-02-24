@@ -1,5 +1,8 @@
 import numbers
 import numpy
+import operator
+
+
 
 class DataIO():
     '''
@@ -9,6 +12,12 @@ class DataIO():
     def writeData(openFile, data, Data_Name=''):
         '''Takes data in form of nested lists or singular value and a experiment name, and writes it to a results file. The parmater is tested to be either a file handler (in which case its considered open) or a str in which case its considered to be a path to a file to which the data will be appended.
         '''
+
+        # check whether call was local or generated from ethernet_interface
+        # Traverse Stack and search for the ethernet_interface
+        for entry in inspect.stack(context=0):
+            if "EthernetInterface" in entry[1]:
+                return
 
         # TODO check data type
         # Test openFile parameter
@@ -153,6 +162,61 @@ class DataIO():
 
         print 'Reading Data from File failed'
         return False
+
+    @staticmethod
+    def parameter_prep(Stages, Maitre, arg_string,func_parameter_list):
+        '''
+            The function interpretes Input strings and prepares input paramters for functions.
+            It also swaps MAitre/Stages keywords for the objects that are then passed to the functions.
+
+            func_parameter_list are the expected paramters of the function for which the parameters are prepared.
+            This allows to swap in Maitre and Stages where needed.
+        '''
+
+        PreArgList=arg_string.split(' ')
+        ArgList=[]
+        # String Interpretation
+        for elem in PreArgList:
+            if '[' in elem:
+                SubList=elem.replace('[','').replace(']','').split(',')
+                elem=map(float,SubList)
+            if 'Stages' in elem:
+                elem = Stages
+            if 'Maitre' in elem:
+                elem = Maitre
+            if str(elem).isdigit():
+                elem=float(elem)
+            if elem == '':
+                continue
+
+            ArgList.append(elem)
+
+        direct_list = func_parameter_list
+
+        insert_list = []
+
+        if "Stages" in direct_list:
+            insert_list.append([direct_list.index("Stages"),Stages])
+
+        if "stages" in direct_list:
+            insert_list.append([direct_list.index("stages"),Stages])
+
+        if "Maitre" in direct_list:
+            insert_list.append([direct_list.index("Maitre"),Maitre])
+
+        if "maitre" in direct_list:
+            insert_list.append([direct_list.index("maitre"),Maitre])
+
+        insert_list.sort(key=operator.itemgetter(0))
+
+        if insert_list != []:
+            for x in insert_list:
+                ArgList.insert(x[0],x[1])
+
+        return ArgList
+
+
+
 
 if __name__ == "__main__" :
     openFile = 'HelloWorld.txt'

@@ -39,16 +39,11 @@ class ScriptController(object):
     def __configurePaths(self, scriptName):
         # This will be different depending on how the program was launched
         pwd = os.path.abspath(path='.')
-        if (pwd.split('\\')[-1:][0]=='server'): # Launched via ethernet
-            self.pwd = pwd
-            self.configPath = os.path.join(self.pwd, scriptName)
-            self.coordinatePath = os.path.join(self.pwd, 'Coordinates.conf')
-            self.resultsPath = self.pwd
-        else: # conventional launch
-            self.pwd = os.path.abspath(path='.\\..\\')
-            self.configPath = os.path.join(self.pwd, 'ProberControl\\config\\'+scriptName)
-            self.coordinatePath = os.path.join(self.pwd, 'ProberControl\\config\\Coordinates.conf')
-            self.resultsPath = os.path.join(self.pwd, 'ProberControl\\config\\')
+
+        self.pwd = os.path.abspath(path='.\\..\\')
+        self.configPath = os.path.join(self.pwd, 'ProberControl\\config\\'+scriptName)
+        self.coordinatePath = os.path.join(self.pwd, 'ProberControl\\config\\Coordinates.conf')
+        self.resultsPath = os.path.join(self.pwd, 'ProberControl\\config\\')
 
     def _promptForErrorHandling(self,text):
           self.upQueue.put((tkMessageBox.askquestion,('Prober Error', 'Could the Error be manually resolved ? \n Details: \n'+text),{},self.downQueue))
@@ -261,11 +256,15 @@ class ScriptController(object):
 
             args = self._prepArguments(entry)
 
-            # Execute the function using maitre
-            data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
-
-            # Write the results of the experiment to file
-            DataIO.writeData(file, data, entry['measurement'])
+            data = None
+            try:
+                # Execute the function using maitre
+                data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
+            except Exception as e:
+                data = str(e)
+            finally:
+                # Write the results of the experiment to file
+                DataIO.writeData(file, data, entry['measurement'])
             return True
 
 
@@ -283,22 +282,30 @@ class ScriptController(object):
             else:
                 args = self._prepArguments(entry)
 
-                # Execute the function using maitre
-                data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
-
-                # Write the results of the experiment to file
-                DataIO.writeData(file, data, entry['measurement'])
+                data = None
+                try:
+                    # Execute the function using maitre
+                    data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
+                except Exception as e:
+                    data = str(e)
+                finally:
+                    # Write the results of the experiment to file
+                    DataIO.writeData(file, data, entry['measurement'])
                 return True
 
     def _procedure(self, entry, file):
         '''executes experiments that use multiple tools or generalized algorythms'''
         args = self._prepArguments(entry)
 
-        # Execute the function using maitre
-        data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
-
-        # Write the results of the experiment to file
-        DataIO.writeData(file, data, Data_Name=entry['measurement'])
+        data = None
+        try:
+            # Execute the function using maitre
+            data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
+        except Exception as e:
+            data = str(e)
+        finally:
+            # Write the results of the experiment to file
+            DataIO.writeData(file, data, entry['measurement'])
 
     def _prepArguments(self, entry):
         '''
