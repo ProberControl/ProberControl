@@ -248,6 +248,9 @@ pitch: spacing of pads in mm</p>
 </dd></dl>
 
 </div>
+<div class="section" id="classes-ethernetinterface-module">
+<h2>classes.EthernetInterface module<a class="headerlink" href="#classes-ethernetinterface-module" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-classes.Fiber">
 <span id="classes-fiber-module"></span><h2>classes.Fiber module<a class="headerlink" href="#module-classes.Fiber" title="Permalink to this headline">¶</a></h2>
 <p>Defines a thin struct to represent a “fiber array” object for the purpose of
@@ -350,92 +353,6 @@ The key features of the class are get_switch_state(), and switch_book object.</p
 <code class="descclassname">classes.apt_util.</code><code class="descname">c2r</code><span class="sig-paren">(</span><em>COM_port</em>, <em>rate=115200</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/apt_util.html#c2r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.apt_util.c2r" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns a serial object for the spec. port with the APT configuration</p>
 </dd></dl>
-
-</div>
-<div class="section" id="module-classes.camera">
-<span id="classes-camera-module"></span><h2>classes.camera module<a class="headerlink" href="#module-classes.camera" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="classes.camera.Camera">
-<em class="property">class </em><code class="descclassname">classes.camera.</code><code class="descname">Camera</code><span class="sig-paren">(</span><em>cam_id</em>, <em>cam_ctrl=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="classes.camera.Camera.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.Camera.getRegionLines">
-<code class="descname">getRegionLines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.getRegionLines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.getRegionLines" title="Permalink to this definition">¶</a></dt>
-<dd><p>return the data for all lines gathered in each region of image</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.Camera.read">
-<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.read" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.Camera.set_whoAmI">
-<code class="descname">set_whoAmI</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.set_whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.set_whoAmI" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.Camera.showCamera">
-<code class="descname">showCamera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.showCamera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.showCamera" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.Camera.showCamera2">
-<code class="descname">showCamera2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.showCamera2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.showCamera2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.Camera.whoAmI">
-<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#Camera.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.Camera.whoAmI" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="classes.camera.CameraController">
-<em class="property">class </em><code class="descclassname">classes.camera.</code><code class="descname">CameraController</code><a class="reference internal" href="../../_modules/classes/camera.html#CameraController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.CameraController" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="classes.camera.CameraController.enRects">
-<code class="descname">enRects</code><span class="sig-paren">(</span><em>secs=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#CameraController.enRects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.CameraController.enRects" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.CameraController.kill">
-<code class="descname">kill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#CameraController.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.CameraController.kill" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.CameraController.quit">
-<code class="descname">quit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#CameraController.quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.CameraController.quit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.CameraController.setHUD">
-<code class="descname">setHUD</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#CameraController.setHUD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.CameraController.setHUD" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="classes.camera.CameraController.toggleHUD">
-<code class="descname">toggleHUD</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#CameraController.toggleHUD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.CameraController.toggleHUD" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="classes.camera.im_match_err">
-<code class="descclassname">classes.camera.</code><code class="descname">im_match_err</code><span class="sig-paren">(</span><em>im1</em>, <em>im2</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#im_match_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.im_match_err" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="classes.camera.im_rot">
-<code class="descclassname">classes.camera.</code><code class="descname">im_rot</code><span class="sig-paren">(</span><em>im</em>, <em>ang</em>, <em>im_w</em>, <em>im_h</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/camera.html#im_rot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.camera.im_rot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </div>
 <div class="section" id="module-classes.chip_stage">
@@ -764,6 +681,7 @@ ang_y (float): anfle in y-axis</p>
 <li><a class="reference internal" href="#module-classes.DataViewer">classes.DataViewer module</a></li>
 <li><a class="reference internal" href="#module-classes.Dialogs">classes.Dialogs module</a></li>
 <li><a class="reference internal" href="#module-classes.E_Stage">classes.E_Stage module</a></li>
+<li><a class="reference internal" href="#classes-ethernetinterface-module">classes.EthernetInterface module</a></li>
 <li><a class="reference internal" href="#module-classes.Fiber">classes.Fiber module</a></li>
 <li><a class="reference internal" href="#classes-gui-module">classes.GUI module</a></li>
 <li><a class="reference internal" href="#classes-global-measurehandler-module">classes.Global_MeasureHandler module</a></li>
@@ -773,7 +691,6 @@ ang_y (float): anfle in y-axis</p>
 <li><a class="reference internal" href="#classes-scriptcontroller-module">classes.ScriptController module</a></li>
 <li><a class="reference internal" href="#module-classes.SwitchHandler">classes.SwitchHandler module</a></li>
 <li><a class="reference internal" href="#module-classes.apt_util">classes.apt_util module</a></li>
-<li><a class="reference internal" href="#module-classes.camera">classes.camera module</a></li>
 <li><a class="reference internal" href="#module-classes.chip_stage">classes.chip_stage module</a></li>
 <li><a class="reference internal" href="#classes-maitre-module">classes.maitre module</a></li>
 <li><a class="reference internal" href="#module-classes.multi_serial">classes.multi_serial module</a></li>
