@@ -36,14 +36,6 @@ instruments\.AndoAQ4321 module
     :undoc-members:
     :show-inheritance:
 
-instruments\.AndoAQ6317 module
-------------------------------
-
-.. automodule:: instruments.AndoAQ6317
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 instruments\.AnritsuMS2667C module
 ----------------------------------
 
@@ -168,14 +160,6 @@ instruments\.Rotator\_ELL8 module
 ---------------------------------
 
 .. automodule:: instruments.Rotator_ELL8
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-instruments\.Sample module
---------------------------
-
-.. automodule:: instruments.Sample
     :members:
     :undoc-members:
     :show-inheritance:
