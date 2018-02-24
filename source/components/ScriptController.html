@@ -64,6 +64,57 @@ The functionality of ScriptController can be summarized in the following points:
 <p>The picture below shows the workflow followed by .meas script until its execution:</p>
 </div></blockquote>
 <a class="reference internal image-reference" href="../../_images/proceduresWorkflow.png"><img alt="../../_images/proceduresWorkflow.png" class="align-center" src="../../_images/proceduresWorkflow.png" style="width: 1600px; height: 400px;" /></a>
+<div class="section" id="data-output-of-scriptcontroller">
+<h2>Data Output of ScriptController<a class="headerlink" href="#data-output-of-scriptcontroller" title="Permalink to this headline">¶</a></h2>
+<p>Results are saved in the <code class="docutils literal"><span class="pre">config</span></code> folder, as defined in the <code class="docutils literal"><span class="pre">__configurePaths()</span></code> function. Name and subfolders are currently hard coded in the <code class="docutils literal"><span class="pre">execute_script()</span></code> function by the line <code class="docutils literal"><span class="pre">with</span> <span class="pre">self._OutputConfiguration(...)</span> <span class="pre">as</span> <span class="pre">out:</span></code>.</p>
+<p>As described in <a class="reference internal" href="../howto/measurementScript.html#measscriptlabel"><span class="std std-ref">Measurement Script HowTo</span></a> the output can be split into different files depending on the grouping in the measurement script. Files are either created on wafer, chip , or group level. File names are then appended by the wafer/chip/group label given in the script.</p>
+<p>Decision on where data is saved is taken in the <code class="docutils literal"><span class="pre">_OutputConfiguration</span></code> class. If new features and options need to be implemented they should augment the function set of <code class="docutils literal"><span class="pre">_OutputConfiguration</span></code>.</p>
+</div>
+<div class="section" id="wafer-and-chip-prober-interaction-scheme-of-scriptcontroller">
+<h2>Wafer and Chip Prober Interaction Scheme of ScriptController<a class="headerlink" href="#wafer-and-chip-prober-interaction-scheme-of-scriptcontroller" title="Permalink to this headline">¶</a></h2>
+<p>All interactions between the ScriptController and a self contained prober are triggered  in the <code class="docutils literal"><span class="pre">execute_script()</span></code> function. They are on four levels:</p>
+<blockquote>
+<div><ol class="arabic simple" start="0">
+<li><dl class="first docutils">
+<dt>Checking Health of the Prober:</dt>
+<dd>Before loading the first Device under Test (DUT) the function <code class="docutils literal"><span class="pre">_checkProberState()</span></code> is called. The function relies on the prober driver to implement a <code class="docutils literal"><span class="pre">get_state()</span></code> function and handles according to its return values.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>DUT Loading:</dt>
+<dd>The ScriptController checks whether a new <code class="docutils literal"><span class="pre">chip-block</span></code> starts. If yes, the ScriptController calls the function <code class="docutils literal"><span class="pre">_loadChip</span></code>, which relies again on the prober driver. The ScriptController only sense chip loading commands, even if the chip is still part of a wafer. The automated prober is assumed to handle loading of chips based on their ID. This means that a chipID is provided to the prober driver and it is assumed that the prober initiates everything necessary to load this device. This might include fetching the location of this device from an external or internal database , checking whether this chipID is in wafer shape or chip shape and reference all future commands to this chipID.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Structure Connections:</dt>
+<dd>Every measurement block contains (if used in connection with a wafer or chip prober) a structureID. For every measurement the function <code class="docutils literal"><span class="pre">_structureProcedure()</span></code> is called that calls the driver’s <code class="docutils literal"><span class="pre">connect_structure()</span></code> function. If a fiber switch is used to control light in and output, it is ensured that a the tools light source and sink is connected to the correct fiber.</dd>
+</dl>
+</li>
+<li>DUT Storing:</li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>binnning:</li>
+</ol>
+<blockquote>
+<div><dl class="docutils">
+<dt>If defined in the Measurement Script a binning function is called at the end of blocks of the hierarchically highest group. That means if waver groups are present then at the end of each wafer, if wafers are not present then at the end of each chip block. Binning functions are called in <code class="docutils literal"><span class="pre">_callBinningFunction()</span></code> using the Maitre and can be freely programmed in the procedures folder. Every binning function is supplied with:</dt>
+<dd><ol class="first last arabic simple">
+<li>The last measurement-details, which include the waferID, chipID, groupID</li>
+<li>All file names in which measurement results were saved.</li>
+</ol>
+</dd>
+</dl>
+<p>The binning function should return a keyword (e.g. good / bad). The function <code class="docutils literal"><span class="pre">_storeBinningResult()</span></code> saves the result. Wafers are assumed to be placed back into the FOUP either when the next wafer is loaded or at the end of the script. If the DUT is in chip shape <code class="docutils literal"><span class="pre">_storeDie()</span></code> is called.</p>
+</div></blockquote>
+<ol class="loweralpha simple" start="2">
+<li>_storeDie:</li>
+</ol>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">_storeDie(itemID,</span> <span class="pre">binningResult)</span></code> accepts the itemID and binningResult as parameters. The function calls <code class="docutils literal"><span class="pre">_getContainer()</span></code> to make a decision on where to store this die based on the binningResult. Afterwards it makes use of the Prober Driver’s <code class="docutils literal"><span class="pre">store_chip(container)</span></code> to store the chip.</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
 </div>
 
 
@@ -74,7 +125,16 @@ The functionality of ScriptController can be summarized in the following points:
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../index.html">
               <img class="logo" src="../../_static/logo.png" alt="Logo"/>
-            </a></p><div class="relations">
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ScriptController</a><ul>
+<li><a class="reference internal" href="#data-output-of-scriptcontroller">Data Output of ScriptController</a></li>
+<li><a class="reference internal" href="#wafer-and-chip-prober-interaction-scheme-of-scriptcontroller">Wafer and Chip Prober Interaction Scheme of ScriptController</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>

@@ -45,15 +45,15 @@
             
   <div class="section" id="id1">
 <h1>DataIO<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>The <code class="docutils literal"><span class="pre">DataIO</span></code> is a utility that provides functionality to control writing measurement results (in csv format) other output to files and reading data back from such output files. It handles the formatting of that output by parsing several data types.</p>
+<p>The <code class="docutils literal"><span class="pre">DataIO</span></code> is a utility that provides functionality to control writing measurement results (in csv format) other output to files and reading data back from such output files. It handles the formatting of output and input by parsing several data types.</p>
 <dl class="docutils">
 <dt><strong>Interface:</strong></dt>
 <dd><p class="first">The DataIO functionality is cleanly exposed by static methods contained in a single class called DataIO. Those functions are:</p>
-<blockquote class="last">
+<blockquote>
 <div><ul class="simple">
 <li><dl class="first docutils">
 <dt><code class="docutils literal"><span class="pre">writeData(openFile,</span> <span class="pre">data,</span> <span class="pre">Data_Name=''):</span></code></dt>
-<dd>This single function, given an open file object, can write data in that file (in csv) from diffrent data types: It can support single values, suck as <em>strings</em> or <em>numbers</em> as well as multi-dimensional lists consisted of those types. The function will flatten those lists to correctly output the measurement data in csv format.</dd>
+<dd>This single function, given an open file object, can write data in that file (in csv) from different data types: It can support single values, suck as <em>strings</em> or <em>numbers</em> as well as multi-dimensional lists consisted of those types. The function will flatten those lists to correctly output the measurement data in csv format.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
@@ -63,14 +63,21 @@
 </li>
 <li><dl class="first docutils">
 <dt><code class="docutils literal"><span class="pre">get_test_data(path,</span> <span class="pre">test_name):</span></code></dt>
-<dd>This function will parse an retrieve the data of a specified test given the path to thhe file that it is output on.</dd>
+<dd>This function will parse an retrieve the data of a specified test given the path to the file that it is output on.</dd>
 </dl>
 </li>
 </ul>
 </div></blockquote>
+<ul class="last simple">
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">parameter_prep(Stages,</span> <span class="pre">Maitre,</span> <span class="pre">arg_string,func_parameter_list):</span></code></dt>
+<dd>This function should be used to interpret strings as inputs for funtion calls either of devices or the Maitre. The function returns a list with the interpreted paramters. If the input string mentions the Stages-Dictionary or Maitre the funtion will replace them with the object reference. The func_paramter_list should be the expected paramters from the called function. If Stages and Maitre appear in this list they dont need to be specified in the arg_string. The function uses: str(elem).isdigit() to detect whether strings should be casted to floats. Lists can be inserted using this syntax: [1,2.0,3,5] . In lists no spaces or strings are allowed.</dd>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
-<p>Below we see an exmaple of DataIO functions used:</p>
+<p>Below we see an example of DataIO functions used:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_procedure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="nb">file</span><span class="p">):</span>
       <span class="sd">&#39;&#39;&#39;executes experiments that use multiple tools or generalized algorythms&#39;&#39;&#39;</span>
       <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepArguments</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>

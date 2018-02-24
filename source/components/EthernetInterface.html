@@ -1,0 +1,115 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Ethernet Interface &#8212; AutoProber 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Writing a Configuration File" href="../howto/writeConfigFile.html" />
+    <link rel="prev" title="DataViewer" href="DataViewer.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ethernet-interface">
+<h1>Ethernet Interface<a class="headerlink" href="#ethernet-interface" title="Permalink to this headline">¶</a></h1>
+<p>The ethernet interface allows ProberControl to act as a measurement server. It grants access to the Stages dictionary and the Maitre. The server can be configured and switched on from the GUI using the Network menu. Be adviced that no precautions have been taken to harden the software against attacks. Therefore, please make sure that if you start the server the network access to this server is controlled by other means.</p>
+<p>The that can be send to the server are <code class="docutils literal"><span class="pre">(send_Stages,send_Maitre,execute_Stages(),execute_Maitre(),quit)</span></code>. All commands directly call the corresponding functions in the Ethernet Interface Object.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">send_Stages</span></code>: Returns a dictionary containing all available stages and their functions. The list corresponds to the information in the GUI.</li>
+<li><code class="docutils literal"><span class="pre">send_Maitre</span></code>: Returns a list of all modules in the procedure folders and their functions. The list corresponds to the information in the GUI.</li>
+<li><code class="docutils literal"><span class="pre">execute_Stages()</span></code>: Allows a client to execute a function on all tools in the dictionary. A full command should look like: execute_Stages(MLaser.setwavelength(1550)). The function’s return value is send back to the client. If the tool is currently locked in the global measurement handler an error message is returned to the client.</li>
+<li><code class="docutils literal"><span class="pre">execute_Maitre()</span></code>: llows a client to execute a function on all modules loaded in the Maitre. A full command should look like: execute_Stages(Measure.get_power(1550)). Note that Stages and Maitre arguments do not need to be send, as the DataIO class will include them as needed. The function’s return value is send back to the client.</li>
+<li><code class="docutils literal"><span class="pre">quit()</span></code>: Quit ends the communication to the client and frees the socket.</li>
+</ul>
+<p>All data returned to the client are serialized using json.dumps(data). If the client is programmed in python the JSON library allows easy reconstruction of the objects.</p>
+<p>The ethernet interface is not a free running thread. Its update() function is called periodically from the GUI.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="DataViewer.html" title="previous chapter">DataViewer</a></li>
+      <li>Next: <a href="../howto/writeConfigFile.html" title="next chapter">Writing a Configuration File</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/components/EthernetInterface.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Columbia Lightwave Research Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/source/components/EthernetInterface.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

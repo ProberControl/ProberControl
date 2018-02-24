@@ -172,6 +172,14 @@ instruments\.Rotator\_ELL8 module
     :undoc-members:
     :show-inheritance:
 
+instruments\.Sample module
+--------------------------
+
+.. automodule:: instruments.Sample
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.Santec\_TSL\_210H module
 -------------------------------------
 
@@ -208,6 +216,14 @@ instruments\.WT68145B module
 ----------------------------
 
 .. automodule:: instruments.WT68145B
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.template module
+----------------------------
+
+.. automodule:: instruments.template
     :members:
     :undoc-members:
     :show-inheritance:

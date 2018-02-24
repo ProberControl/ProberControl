@@ -42,14 +42,14 @@
           <div class="body" role="main">
             
   <h1>Source code for classes.plotter</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Pipe</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">processing</span> <span class="k">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Pipe</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 
 <div class="viewcode-block" id="close_handler"><a class="viewcode-back" href="../../source/components/classes.html#classes.plotter.close_handler">[docs]</a><span class="k">class</span> <span class="nc">close_handler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shelled_handle</span><span class="p">):</span>
@@ -167,6 +167,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">clear</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">xaxis</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">yaxis</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="c1"># check whether call was local or generated from ethernet_interface</span>
+        <span class="c1"># Traverse Stack and search for the ethernet_interface</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;EthernetInterface&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span>
+
         <span class="n">send</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_pipe</span><span class="o">.</span><span class="n">send</span>
 
         <span class="n">datas</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span><span class="n">title</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">]</span>
