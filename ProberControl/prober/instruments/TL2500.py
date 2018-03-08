@@ -105,6 +105,14 @@ class TL2500(object):
             (2) Prober returns error/success message
         '''
 
+    def get_structure_needs(self, structure):
+        '''
+            Prober gives information on the fibers that need to be connected with PowerMeter and/or MultiMeter
+            attached to the Prober
+
+            (1) Return (power_fiber_id, multi_fiber_id) -- can be None too
+        '''
+
     def connect_structure(self,chip_id,structure_id,active_align=False):
         '''
             Prober connects probes and performs active alignment of optical probes.

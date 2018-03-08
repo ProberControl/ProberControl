@@ -245,6 +245,21 @@ class ScriptController(object):
 
         if 'MProber' in self.stages.keys():
             # Case when 'MProber' is present
+
+            powerMeter = self.stages.get('MProberPower')
+            multiMeter = self.stages.get('MProberMulti')
+            power_out, multi_out = self.stages['MProber'].get_structure_needs(entry['structure'])
+            # connect the according fibers to power/multi-meter
+            if powerMeter is not None and power_out is not None:
+                power_fiber = self.gh.choose_fiber_out(power_out)
+                self.gh.connect_instruments(power_fiber, powerMeter)
+            if multiMeter is not None and multi_out is not None:
+                multi_fiber = self.gh.choose_fiber_out(multi_out)
+                self.gh.connect_instruments(multi_fiber, multiMeter)
+
+            if powerMeter is None and multiMeter is None:
+                raise Exception()
+
             if 'ready' != self.stages['MProber'].connect_structure(entry['chip'],entry['structure']):
                 if not self._promptForErrorHandling('Prober responded with error when coupling structure'):
                     if self._promptForErrorHandling('Do you want to proceed to next structure ?'):

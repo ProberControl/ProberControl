@@ -34,6 +34,8 @@ __all__ = [
     'StepMotor_KST_ZST',
     'StepMotor_MST_DRV',
     'TL2500',
+    'TL2500PowerDummy',
+    'TL2500MultiDummy',
     'AgilentE3643A'
 ]
 

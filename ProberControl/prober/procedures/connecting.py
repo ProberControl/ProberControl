@@ -273,12 +273,16 @@ def connect_structure(Stages,Maitre, path='Coordinates.conf', struct_name='0'):
 
     if 'SignalSource' in coords:
         # fine_allign.set_signal_source(coords['SignalSource'])
-        measurement_function = gmh.get_instr_by_name(coords['SignalSource'])
-        fine_allign.set_meas_fun(measurement_function)
+        measurement_instr = gmh.get_instrument_by_name(coords['SignalSource'])
+        if measurement_instr is None:
+            raise ValueError('connecting: Bad SignalSource specified for structure <{}>: {}'.format(struct_name, coords['SignalSource']))
+        fine_allign.set_meas_fun(measurement_instr.get_power)
     else:
-        # fine_allign.set_signal_source()
-        measurement_function = gmh.get_instrument('PowerMeter').get_power
-        fine_allign.set_meas_fun(measurement_function)
+        # try to fing a PowerMeter
+        measurement_instr = gmh.get_instrument('PowerMeter')
+        if measurement_instr is None:
+            raise ValueError('connecting: No compatible instrument to run fine-align')
+        fine_allign.set_meas_fun(measurement_instr.get_power)
 
     if connect_coordinates( coords, Stages, Maitre):
         return True

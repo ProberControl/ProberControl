@@ -149,6 +149,14 @@
 <span class="sd">            (2) Prober returns error/success message</span>
 <span class="sd">        &#39;&#39;&#39;</span></div>
 
+<div class="viewcode-block" id="TL2500.get_structure_needs"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.get_structure_needs">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_needs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Prober gives information on the fibers that need to be connected with PowerMeter and/or MultiMeter</span>
+<span class="sd">            attached to the Prober</span>
+
+<span class="sd">            (1) Return (power_fiber_id, multi_fiber_id) -- can be None too</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
+
 <div class="viewcode-block" id="TL2500.connect_structure"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.TL2500.TL2500.connect_structure">[docs]</a>    <span class="k">def</span> <span class="nf">connect_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">chip_id</span><span class="p">,</span><span class="n">structure_id</span><span class="p">,</span><span class="n">active_align</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">            Prober connects probes and performs active alignment of optical probes.</span>

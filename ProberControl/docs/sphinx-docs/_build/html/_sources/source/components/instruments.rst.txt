@@ -196,6 +196,22 @@ instruments\.TL2500 module
     :undoc-members:
     :show-inheritance:
 
+instruments\.TL2500MultiDummy module
+------------------------------------
+
+.. automodule:: instruments.TL2500MultiDummy
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+instruments\.TL2500PowerDummy module
+------------------------------------
+
+.. automodule:: instruments.TL2500PowerDummy
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.WT68145B module
 ----------------------------
 

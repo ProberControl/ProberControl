@@ -103,12 +103,12 @@ class SwitchHandler(object):
                 if len(ports[0].strip()) == 0:
                     # we only have output ports
                     bug.writef('we only have output ports')
-                    egress = list(map(lambda x: _parseSwitchPair(x), ports[1].split(',')))
+                    egress = list(map(lambda x: self._parseSwitchPair(x), ports[1].split(',')))
                     ingress = [None] * len(egress)
                 elif len(ports[1].strip()) == 0:
                     # we only have input ports
                     bug.writef('we only have input ports')
-                    ingress = list(map(lambda x: _parseSwitchPair(x), ports[0].split(',')))
+                    ingress = list(map(lambda x: self._parseSwitchPair(x), ports[0].split(',')))
                     egress = [None] * len(ingress)
                 else:
                     # both input and output ports have been specified

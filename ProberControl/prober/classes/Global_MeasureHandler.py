@@ -2,11 +2,6 @@ import inspect
 import threading
 import object_chain
 
-# instrument_info indexes
-FUNCTION = 0
-THRESH = 1
-USER = 2
-
 debug = 0
 def sdebug(msg):
     if debug > 0:
@@ -40,11 +35,6 @@ def _look_for_obj(obj_list, comparator):
 class Global_MeasureHandler(object):
 
     def __init__(self):
-        # Instruments will hold the different intruments types
-        # eg. DC, OPT, etc. as a key to a dict where the val is
-        # another dict with:  (Stage_name) -> []
-        self.Instruments = {}
-        self.__old_locked_dict = {}
         self.TriggerInfo = {}
         self.Stages = {}
         self.__locked = {}
@@ -56,23 +46,6 @@ class Global_MeasureHandler(object):
         self.Stages = stages
         if 'SwitchHandler' in self.Stages.keys():
             self.switchHandler = self.Stages['SwitchHandler']
-
-    def add_locked_instrument(self, scriptHash, instrument):
-        '''Marks an instrument has locked for a particular script'''
-        if scriptHash not in self.__old_locked_dict.keys():
-            self.__old_locked_dict[scriptHash] = [self.get_instrument(instrument)]
-
-        else:
-            instrumentActual = self.get_instrument(instrument)
-
-            if instrumentActual in self.__old_locked_dict[scriptHash]:
-                # Get another instrument
-                # This is the case of the duplicates
-                # Need to handle
-                pass
-            else:
-                self.__old_locked_dict[scriptHash].append(instrumentActual)
-
 
     def get_locked(self):
         with self.__access_lock:
@@ -122,6 +95,7 @@ class Global_MeasureHandler(object):
         raise LookupError('Global_MeasureHandler not called within {}. The stack tracing was inconclusive on the instrument owner.'.format(functions))
 
     def _lock_instrument(self, instr, owner_id):
+        # Requires the lock __access_lock to be acqured first
         owned = self.__locked.get(owner_id)
         if owned is None:
             self.__locked[owner_id] = [instr]
@@ -176,7 +150,7 @@ class Global_MeasureHandler(object):
         with self.__access_lock:
             used = [inst for sub_l in self.__locked.values() for inst in sub_l]
             def isUnused(instrument):
-                return instrument not in used and instrument.whoAmI == inst_type and instrument.fiber_id == fiber_id
+                return instrument not in used and instrument.whoAmI() == inst_type and instrument.fiber_id == fiber_id
 
             found = _look_for_obj(self.Stages.values(), isUnused)
             if found != None:
@@ -193,7 +167,7 @@ class Global_MeasureHandler(object):
     def get_instrument(self, specifiedDevice, additional=False):
         '''
         Finds and returns an unactive instrument corresponding to the one specified
-        Returns None if such instrument was found/available.
+        Returns None if such instrument wasn't found/available.
         NOTE: used to have fiber_id param after specifiedDevice!
         '''
 
@@ -236,7 +210,7 @@ class Global_MeasureHandler(object):
             return None
         TrigNet = triggers[1] if returnTriggerable else triggers[0]
         if TrigNet == None:
-            _print_mh('entry {} does not have {} defined'.format('TriggerOut' if returnTriggerable else 'TriggerOut'))
+            _print_mh('entry {} does not have {} defined'.format('TriggerOut' if returnTriggerable else 'TriggerIn'))
             return None
 
         # serialize access to global ownership dictionary
@@ -289,6 +263,37 @@ class Global_MeasureHandler(object):
         NOTE: used to have fiber_id param after specifiedDevice!
         '''
         return self._get_instrument_triggerX(triggerTarget, specifiedDevice, False, -1, additional)
+
+    def get_instrument_by_name(self, instrumentName):
+        '''
+        Finds and returns the instrument with the specified name
+        Returns None if such instrument wasn't found/available.
+        NOTE: used to have fiber_id param after specifiedDevice!
+        '''
+
+        owner_id = self._get_owner()
+        sdebug('\nget_instrument_by_name > looking for: {}'.format(specifiedDevice))
+
+        # serialize access to global ownership dictionary
+        with self.__access_lock:
+
+            # Try the owned instruments first
+            owned_list = self.__locked.get(owner_id)
+            sdebug('OwnedList<{}>: {}'.format(owner_id, owned_list))
+            if owned_list != None:
+                found = _look_for_obj(owned_list, lambda x: instrumentName == self._get_name_from_instrument(x))
+                if found != None:
+                    return found
+
+            # Then take a look for available instruments
+            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            sdebug('used instruments: {}'.format(used))
+
+            found = _look_for_obj(self.Stages.values(), lambda x: x not in used and instrumentName == self._get_name_from_instrument(x))
+            if found != None:
+                self._lock_instrument(found, owner_id)
+                # self._connect_to_chain(found, owner_id, fiber_id)
+            return found
 
     def _check_owned(self, owner_id, instrument):
         owned_list = self.__locked.get(owner_id)
@@ -346,23 +351,6 @@ class Global_MeasureHandler(object):
                     owned.pop(owned.index(instrumentToRelease))
                     return
             raise KeyError('{} not owned by current user. Should not hold ref to that instance!'.format(instrumentToRelease))
-
-    def call_function(self, instrument, function, *arguments):
-        '''
-        A method used to call functions from a specifc instrument via the GMH
-
-        :returns: An instance of a function call that has been executed
-        '''
-
-        # Will only return objects that are not busy
-        instrumentActual = self.get_instrument(instrument)
-
-        if instrumentActual:
-            functionActual = getattr(instrumentActual,function)
-            if len(arguments) == 1:
-                return functionActual(*arguments)
-        else:
-            return None # returns nothing becuase the instrument wasn't available
 
     def insert_instr(self, stage_name, triggers = None):
         '''

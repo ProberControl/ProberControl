@@ -10,7 +10,7 @@ from ..classes.Global_MeasureHandler import Global_MeasureHandler as g
 # Getting Global_MeasureHandler (singleton)instance; Do not change this!
 gh = g()
 
-def test(data):
+def test(maitre,data):
     pl = NBPlot()
     data = [data,data,data]
     DataList = [[[1,1,1],data,data],[[2,2,2],data,data],[[3,3,3],data,data],[[4,4,4],data,data]]
@@ -21,7 +21,7 @@ def test(data):
     return DataList
 
 
-def get_o_power(wavelength=1550,sweeping=False,result_path=0):
+def get_o_power(maitre,wavelength=1550,sweeping=False,result_path=0):
     laser = gh.get_instrument('Laser', additional=False)
     if laser is not None:
         wavelength = laser.getwavelength()
@@ -35,7 +35,7 @@ def get_o_power(wavelength=1550,sweeping=False,result_path=0):
 
     return data
 
-def get_o_spectrum_OSA(start, stop, step, result_path = 0):
+def get_o_spectrum_OSA(maitre,start, stop, step, result_path = 0):
 
     DataList = []
     osa = gh.get_instrument('OSA')
@@ -46,7 +46,7 @@ def get_o_spectrum_OSA(start, stop, step, result_path = 0):
 
     return DataList
 
-def get_o_spectrum_PowerMeter(start, stop, step, channels, result_path = 0):
+def get_o_spectrum_PowerMeter(maitre,start, stop, step, channels, result_path = 0):
 
     start = float(start)
     stop = float(stop)
@@ -102,12 +102,12 @@ def get_o_spectrum_PowerMeter(start, stop, step, channels, result_path = 0):
 
     return AllDataList
 
-def get_current():
+def get_current(maitre):
     dc = gh.get_instrument('DCSource')
     data = dc.get_current()
     return data
 
-def get_o_spectrum(start,stop,step,result_path=0):
+def get_o_spectrum(maitre,start,stop,step,result_path=0):
 
     laser = gh.get_instrument('Laser')
     pm = gh.get_instrument_triggered_by(laser, 'PowerMeter')
@@ -139,7 +139,7 @@ def get_o_spectrum(start,stop,step,result_path=0):
 
     return DataList
 
-def _thresh_wavelength(start,stop,step,thresh=-60,result_path=0):
+def _thresh_wavelength(maitre,start,stop,step,thresh=-60,result_path=0):
 
     laser = gh.get_instrument('Laser')
     laser.sweepWavelengthsTriggerSetup(float(start),float(stop),float(step))
@@ -156,7 +156,7 @@ def _thresh_wavelength(start,stop,step,thresh=-60,result_path=0):
 
     return DataList
 
-def get_e_spectrum(start=1,stop=1000,step=10,power=0.1,result_path=0):
+def get_e_spectrum(maitre,start=1,stop=1000,step=10,power=0.1,result_path=0):
     rf = gh.get_instrument('RFSource')
     rf.set_power(float(power))
     rf.sweepTriggerSetup(float(start),float(stop),float(step))
@@ -199,10 +199,10 @@ def get_e_spectrum(start=1,stop=1000,step=10,power=0.1,result_path=0):
 
     return data
 
-def get_VI_curve(start = 0, stop = 1, step = 0.1,channel=1,result_path=0):
+def get_VI_curve(maitre,start = 0, stop = 1, step = 0.1,channel=1,result_path=0):
     return dc_sweep_1d(start,stop,step,'get_current',str(int(channel)),result_path,channel)
 
-def dc_power_sweep(start=0,stop=1,step=0.1,result_path=0):
+def dc_power_sweep(maitre,start=0,stop=1,step=0.1,result_path=0):
 
     DataList = []
     dc = gh.get_instrument('DCSource')
@@ -237,7 +237,7 @@ def dc_power_sweep(start=0,stop=1,step=0.1,result_path=0):
     return data
 
 
-def dc_sweep_1d(stages, maitre, start=0,stop=1,step=0.1,func=False,args=False,result_path=0):
+def dc_sweep_1d(maitre, start=0,stop=1,step=0.1,func=False,args=False,result_path=0):
 
     DataList = []
 
@@ -277,7 +277,7 @@ def dc_sweep_1d(stages, maitre, start=0,stop=1,step=0.1,func=False,args=False,re
 
     return DataList
 
-def find_depl_MZI_bias(channel=0,max_volt=5):
+def find_depl_MZI_bias(maitre,channel=0,max_volt=5):
 
      dc_data=dc_power_sweep(channel,0,max_volt,50)
 
@@ -301,7 +301,7 @@ def find_depl_MZI_bias(channel=0,max_volt=5):
 
      return ('Biasing V',opt_volt,'Max Vsignalpp',max_swing,'Extinction Ratio',ext_ratio,'Max Opt Output',max_o_power)
 
-def carac_MZI(dc_sig1_chan,max_volt=5,result_path=0):
+def carac_MZI(maitre,dc_sig1_chan,max_volt=5,result_path=0):
     # Set optimal bias
     # Get Vpi
     # Get Extinction Ratio
@@ -328,7 +328,7 @@ def carac_MZI(dc_sig1_chan,max_volt=5,result_path=0):
 
     return data
 
-def simpleConnectFiberTest():
+def simpleConnectFiberTest(maitre):
     gh = g()
 
     laser = gh.get_instrument('Laser')
@@ -344,7 +344,7 @@ def simpleConnectFiberTest():
     power = p_meter.get_power(wavelength)
     print power
 
-def noFiberMeasureTest():
+def noFiberMeasureTest(maitre):
     # setup
     gh = g()
     laser = gh.get_instrument('Laser')
@@ -357,7 +357,7 @@ def noFiberMeasureTest():
     # print data
     return data
 
-def noFiberTriggerTest():
+def noFiberTriggerTest(maitre):
     # setup
     gh = g()
     dc1 = gh.get_instrument('DCSource')
