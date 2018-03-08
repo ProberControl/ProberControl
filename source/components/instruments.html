@@ -2927,6 +2927,16 @@ and the other probes.</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="instruments.TL2500.TL2500.get_structure_needs">
+<code class="descname">get_structure_needs</code><span class="sig-paren">(</span><em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.get_structure_needs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.get_structure_needs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prober gives information on the fibers that need to be connected with PowerMeter and/or MultiMeter
+attached to the Prober</p>
+<ol class="arabic simple">
+<li>Return (power_fiber_id, multi_fiber_id) – can be None too</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
 <dt id="instruments.TL2500.TL2500.load_bluetape">
 <code class="descname">load_bluetape</code><span class="sig-paren">(</span><em>bluetape_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.load_bluetape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.load_bluetape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prober loads bluetape to die ejector position. Sets state so that following coupling commands are executed for single die coupling.</p>
@@ -3030,6 +3040,36 @@ and the other probes.</dd>
 </tbody>
 </table>
 </dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.TL2500MultiDummy">
+<span id="instruments-tl2500multidummy-module"></span><h2>instruments.TL2500MultiDummy module<a class="headerlink" href="#module-instruments.TL2500MultiDummy" title="Permalink to this headline">¶</a></h2>
+<p>Dummy holder for the multimeter attached to the TL2500 prober system</p>
+<dl class="class">
+<dt id="instruments.TL2500MultiDummy.TL2500MultiDummy">
+<em class="property">class </em><code class="descclassname">instruments.TL2500MultiDummy.</code><code class="descname">TL2500MultiDummy</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=‘0.0.0.0’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500MultiDummy.html#TL2500MultiDummy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500MultiDummy.TL2500MultiDummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="instruments.TL2500MultiDummy.TL2500MultiDummy.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500MultiDummy.html#TL2500MultiDummy.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500MultiDummy.TL2500MultiDummy.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-instruments.TL2500PowerDummy">
+<span id="instruments-tl2500powerdummy-module"></span><h2>instruments.TL2500PowerDummy module<a class="headerlink" href="#module-instruments.TL2500PowerDummy" title="Permalink to this headline">¶</a></h2>
+<p>Dummy holder for the powermeter attached to the TL2500 prober system</p>
+<dl class="class">
+<dt id="instruments.TL2500PowerDummy.TL2500PowerDummy">
+<em class="property">class </em><code class="descclassname">instruments.TL2500PowerDummy.</code><code class="descname">TL2500PowerDummy</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=‘0.0.0.0’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500PowerDummy.html#TL2500PowerDummy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500PowerDummy.TL2500PowerDummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="instruments.TL2500PowerDummy.TL2500PowerDummy.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500PowerDummy.html#TL2500PowerDummy.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500PowerDummy.TL2500PowerDummy.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -3326,6 +3366,8 @@ and the other probes.</dd>
 <li><a class="reference internal" href="#module-instruments.StepMotor_KST_ZST">instruments.StepMotor_KST_ZST module</a></li>
 <li><a class="reference internal" href="#module-instruments.StepMotor_MST_DRV">instruments.StepMotor_MST_DRV module</a></li>
 <li><a class="reference internal" href="#module-instruments.TL2500">instruments.TL2500 module</a></li>
+<li><a class="reference internal" href="#module-instruments.TL2500MultiDummy">instruments.TL2500MultiDummy module</a></li>
+<li><a class="reference internal" href="#module-instruments.TL2500PowerDummy">instruments.TL2500PowerDummy module</a></li>
 <li><a class="reference internal" href="#module-instruments.WT68145B">instruments.WT68145B module</a></li>
 <li><a class="reference internal" href="#module-instruments.template">instruments.template module</a></li>
 <li><a class="reference internal" href="#module-contents">Module contents</a></li>
