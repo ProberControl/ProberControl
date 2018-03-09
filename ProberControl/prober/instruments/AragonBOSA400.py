@@ -171,6 +171,9 @@ class AragonBOSA400(object):
         '''
         pass
 
+    def get_feedback(self):
+        return self.getpower()
+
     def getAuxInputPower(self):
         pass
 

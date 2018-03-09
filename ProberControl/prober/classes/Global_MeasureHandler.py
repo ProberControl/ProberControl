@@ -1,6 +1,7 @@
 import inspect
 import threading
 import object_chain
+from functools import cmp_to_key
 
 debug = 0
 def sdebug(msg):
@@ -30,6 +31,7 @@ def _look_for_obj(obj_list, comparator):
         if comparator(obj):
             return obj
     return None
+
 
 @Singleton
 class Global_MeasureHandler(object):
@@ -140,6 +142,27 @@ class Global_MeasureHandler(object):
     def _get_name_from_instrument(self, instrument):
         return self.Stages.keys()[self.Stages.values().index(instrument)]
 
+    def _get_name_from_instrument(self, instrument):
+        name = self._get_name_from_instrument(instrument)
+        num_s = ''
+        for c in name[::-1]:
+            if not c.isdigit():
+                break
+            num_s += c
+        if len(num_s) == 0:
+            return -1, name
+        return int(num_s[::-1]), name[:-len(num_s)]
+
+    def _instrument_compare(self, left, right):
+        lnum, lname = self._find_trail_number(left)
+        rnum, rname = self._find_trail_number(right)
+        if lname != rname:
+            return -1 if lname < rname else 1
+        return lnum < rnum
+
+    def _order_instr(self, inst_list):
+        return sorted(inst_list, key=cmp_to_key(self._instrument_compare))
+
     def _choose_fiber(self, fiber_id, isFiberIn):
         '''
         lets the user choose the fiber needed
@@ -152,7 +175,7 @@ class Global_MeasureHandler(object):
             def isUnused(instrument):
                 return instrument not in used and instrument.whoAmI() == inst_type and instrument.fiber_id == fiber_id
 
-            found = _look_for_obj(self.Stages.values(), isUnused)
+            found = _look_for_obj(self._order_instr(self.Stages.values()), isUnused)
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_fiber(found, owner_id, fiber_id, isFiberIn)
@@ -182,7 +205,7 @@ class Global_MeasureHandler(object):
                 owned_list = self.__locked.get(owner_id)
                 sdebug('OwnedList<{}>: {}'.format(owner_id, owned_list))
                 if owned_list != None:
-                    found = _look_for_obj(owned_list, lambda x: x.whoAmI() == specifiedDevice)
+                    found = _look_for_obj(self._order_instr(owned_list), lambda x: x.whoAmI() == specifiedDevice)
                     if found != None:
                         return found
 
@@ -193,7 +216,7 @@ class Global_MeasureHandler(object):
                 sdebug('{} | {} - {}'.format('used' if instrument in used else 'not used', instrument.whoAmI(), specifiedDevice))
                 return instrument not in used and instrument.whoAmI() == specifiedDevice
 
-            found = _look_for_obj(self.Stages.values(), isUnused)
+            found = _look_for_obj(self._order_instr(self.Stages.values()), isUnused)
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)
@@ -228,7 +251,7 @@ class Global_MeasureHandler(object):
                         canDoWantedTriggerAction = triggerInfo[0 if returnTriggerable else 1] == TrigNet
                         return instrument.whoAmI() == specifiedDevice and canDoWantedTriggerAction
 
-                    found = _look_for_obj(owned_list, findOwnedTriggerMatch)
+                    found = _look_for_obj(self._order_instr(owned_list), findOwnedTriggerMatch)
                     if found != None:
                         return found
 
@@ -242,7 +265,7 @@ class Global_MeasureHandler(object):
                 canDoWantedTriggerAction = triggerInfo[0 if returnTriggerable else 1] == TrigNet
                 return instrument not in used and instrument.whoAmI() == specifiedDevice and canDoWantedTriggerAction
 
-            found = _look_for_obj(self.Stages.values(), findOtherTriggerMatch)
+            found = _look_for_obj(self._order_instr(self.Stages.values()), findOtherTriggerMatch)
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)
@@ -281,7 +304,7 @@ class Global_MeasureHandler(object):
             owned_list = self.__locked.get(owner_id)
             sdebug('OwnedList<{}>: {}'.format(owner_id, owned_list))
             if owned_list != None:
-                found = _look_for_obj(owned_list, lambda x: instrumentName == self._get_name_from_instrument(x))
+                found = _look_for_obj(self._order_instr(owned_list), lambda x: instrumentName == self._get_name_from_instrument(x))
                 if found != None:
                     return found
 
@@ -289,7 +312,7 @@ class Global_MeasureHandler(object):
             used = [inst for sub_l in self.__locked.values() for inst in sub_l]
             sdebug('used instruments: {}'.format(used))
 
-            found = _look_for_obj(self.Stages.values(), lambda x: x not in used and instrumentName == self._get_name_from_instrument(x))
+            found = _look_for_obj(self._order_instr(self.Stages.values()), lambda x: x not in used and instrumentName == self._get_name_from_instrument(x))
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)

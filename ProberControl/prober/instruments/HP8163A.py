@@ -52,6 +52,9 @@ class HP8163A(object):
         self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:wav '+str(wavelength)+'nm')
         return float(self.gpib.query('read'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow?'))
 
+    def get_feedback(self):
+        return self.get_power()
+
 
     def close(self):
         '''

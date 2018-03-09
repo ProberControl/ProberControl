@@ -67,6 +67,12 @@ class Agilent34401A(object):
         '''
         return float(self.gpib.query('MEAS:CURR:DC? '+str(query_range)+','+str(resolution)))
 
+    def get_feedback(self):
+        '''
+        Requirement for generic feedback
+        '''
+        return self.get_current()
+
     def set_scaling(self,factor=1):
         '''
         Sets the scaling factor of the multimeter instrument.
