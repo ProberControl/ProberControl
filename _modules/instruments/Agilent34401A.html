@@ -111,6 +111,12 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gpib</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;MEAS:CURR:DC? &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">query_range</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">resolution</span><span class="p">)))</span></div>
 
+<div class="viewcode-block" id="Agilent34401A.get_feedback"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Agilent34401A.Agilent34401A.get_feedback">[docs]</a>    <span class="k">def</span> <span class="nf">get_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Requirement for generic feedback</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="Agilent34401A.set_scaling"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Agilent34401A.Agilent34401A.set_scaling">[docs]</a>    <span class="k">def</span> <span class="nf">set_scaling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Sets the scaling factor of the multimeter instrument.</span>
