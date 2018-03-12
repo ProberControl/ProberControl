@@ -12,57 +12,46 @@ import numpy
 import time
 from ..classes.Global_MeasureHandler import Global_MeasureHandler as gh
 
-STD_SOURCE    = 'MPowerMeter'
-SIGNAL_SOURCE = 'MPowerMeter'
-
 # Getting Global_MeasureHandler (singleton)instance; Do not change this!
 gh = gh()
 
 # default unset
 __selected_function = None
+STD_TOOL = "MPowerMeter"
 
 def _report(msg):
     prt_msg = 'fine-allign: ' + msg
     print prt_msg
 
-def set_meas_fun(fn):
+def _set_meas_fun(fn):
     global __selected_function
     __selected_function = fn
 
-def set_signal_source(source_string=''):
-    global SIGNAL_SOURCE
+def set_signal_source(stages, source_string=''):
 
-    if source_string == '':
-        SIGNAL_SOURCE = STD_SOURCE
-        return
+    if source_string in stages.keys():
+        feedbackfunc = getattr(stages[source_string], "get_feedback", None)
+        if callable(feedbackfunc):
+            _set_meas_fun(stages[source_string].get_feedback)
+            return 1
+        else:
+            _report(str(source_string)+" does not supply get_feedback function")
+            return -1;
 
-    if source_string == 'MPOWERMETER':
-        SIGNAL_SOURCE = 'MPOWERMETER'
-        return
+    else:
+        _report(str(source_string)+" is not a member of the Stages Dictionary")
+        return -1;
 
-    if source_string == 'MDCMeter':
-        SIGNAL_SOURCE = 'MDCMeter'
-        return
-
-    print str(source_string)+" does not match configured coupling signal source"
-    return -1
 
 def _get_signal(stages):
-    # global SIGNAL_SOURCE
-
-    # if SIGNAL_SOURCE == 'MPowerMeter':
-        # return stages['MPowerMeter'].get_power()
-
-    # if SIGNAL_SOURCE == 'MDCMeter':
-        # return stages['MDCMeter'].get_current()
     global __selected_function
+
+    if __selected_function == None:
+        if not(set_signal_source(stages, source_string=STD_TOOL) or set_signal_source(stages, source_string=STD_TOOL+"1")):
+            return "Error"
+
     return __selected_function()
 
-    try:
-        temp =  __selected_function()
-        return temp
-    except TypeError as e:
-        print 'Function not available'
 
 def fast_align(stages, target,thresh=-60):
     # If power reading is below threshold search by raster

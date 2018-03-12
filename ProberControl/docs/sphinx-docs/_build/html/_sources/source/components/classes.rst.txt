@@ -44,14 +44,6 @@ classes\.E\_Stage module
     :undoc-members:
     :show-inheritance:
 
-classes\.EthernetInterface module
----------------------------------
-
-.. automodule:: classes.EthernetInterface
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 classes\.Fiber module
 ---------------------
 
@@ -120,6 +112,14 @@ classes\.apt\_util module
 -------------------------
 
 .. automodule:: classes.apt_util
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+classes\.camera module
+----------------------
+
+.. automodule:: classes.camera
     :members:
     :undoc-members:
     :show-inheritance:

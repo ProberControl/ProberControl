@@ -46,7 +46,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="c1"># DEBUG flag</span>
-<span class="n">debug</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">debug</span> <span class="o">=</span> <span class="mi">1</span>
 <div class="viewcode-block" id="sdebug"><a class="viewcode-back" href="../../source/components/classes.html#classes.SwitchHandler.sdebug">[docs]</a><span class="k">def</span> <span class="nf">sdebug</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span> <span class="s1">&#39;SwitchHandler:: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
@@ -79,8 +79,7 @@
         <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;reading config file to fill in switch book...&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readIn</span><span class="p">(</span><span class="n">configFile</span><span class="p">,</span><span class="n">stages</span><span class="p">)</span>
         <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;switch book complete.&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">active_connetions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SwitchHandler.get_switch_state"><a class="viewcode-back" href="../../source/components/classes.html#classes.SwitchHandler.SwitchHandler.get_switch_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_switch_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -91,15 +90,9 @@
         <span class="c1">#NOTE needs update w/ multiple switches</span>
 
         <span class="n">formatted_output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_connetions</span><span class="p">:</span>
-            <span class="n">k_name</span><span class="p">,</span> <span class="n">k_switch</span> <span class="o">=</span> <span class="n">k</span>
-            <span class="n">v_name</span><span class="p">,</span> <span class="n">v_switch</span> <span class="o">=</span> <span class="n">v</span>
-            <span class="n">formatted_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:20}</span><span class="s2"> : </span><span class="si">{:20}</span><span class="s2"> </span><span class="si">{:5}</span><span class="s2"> </span><span class="si">{:20}</span><span class="s2"> </span><span class="si">{:20}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">k_name</span><span class="p">,</span>
-            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">[</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">k_switch</span><span class="p">),</span>
-            <span class="s2">&quot;---&gt;&quot;</span><span class="p">,</span>
-            <span class="n">v_name</span><span class="p">,</span>
-            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">[</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">v_switch</span><span class="p">),</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">formatted_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:15}</span><span class="s2"> </span><span class="si">{:20}{:3}</span><span class="s2"> </span><span class="si">{:5}</span><span class="s2"> </span><span class="si">{:10}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s1">&#39;Device&#39;</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;--&gt;&quot;</span><span class="p">,</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">formatted_output</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">formatted_output</span>
@@ -112,19 +105,18 @@
 <span class="sd">            in_device::out ---&gt; out_device::in</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">pair_in</span><span class="p">),</span> <span class="p">(</span><span class="n">pair_out</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="p">[</span><span class="n">in_device</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="p">[</span><span class="n">out_device</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">pair_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">pair_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="p">(</span><span class="n">switch_in</span><span class="p">,</span> <span class="n">pair_in</span><span class="p">),</span> <span class="p">(</span><span class="n">switch_out</span><span class="p">,</span> <span class="n">pair_out</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="p">[</span><span class="n">in_device</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="p">[</span><span class="n">out_device</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">switch_in</span> <span class="o">!=</span> <span class="n">switch_out</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;SwitchHandler:: Asked to connect devices (</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">) attached to separate switches.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">in_device</span><span class="p">,</span> <span class="n">out_device</span><span class="p">))</span>
 
         <span class="n">ingress</span> <span class="o">=</span> <span class="n">pair_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">egress</span>  <span class="o">=</span> <span class="n">pair_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">egress</span>  <span class="o">=</span> <span class="n">pair_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;connecting </span><span class="si">{}</span><span class="s1">[</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">switch_in</span><span class="p">,</span> <span class="n">gress</span><span class="p">,</span> <span class="n">egress</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">pair_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">quick_connect</span><span class="p">(</span><span class="n">ingress</span><span class="p">,</span> <span class="n">egress</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">switch_in</span><span class="p">]</span><span class="o">.</span><span class="n">quick_connect</span><span class="p">(</span><span class="n">ingress</span><span class="p">,</span> <span class="n">egress</span><span class="p">)</span>
 
-        <span class="c1"># log the connection</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">active_connetions</span><span class="p">[(</span><span class="n">in_device</span><span class="p">,</span> <span class="n">pair_in</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_device</span><span class="p">,</span> <span class="n">pair_out</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updateSwitchBook</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_readIn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configFile</span><span class="p">,</span><span class="n">stages</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Reads in the configFile info&#39;&#39;&#39;</span>
@@ -147,12 +139,12 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># we only have output ports</span>
                     <span class="n">bug</span><span class="o">.</span><span class="n">writef</span><span class="p">(</span><span class="s1">&#39;we only have output ports&#39;</span><span class="p">)</span>
-                    <span class="n">egress</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parseSwitchPair</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">ports</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
+                    <span class="n">egress</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_parseSwitchPair</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">ports</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
                     <span class="n">ingress</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">egress</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">ports</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># we only have input ports</span>
                     <span class="n">bug</span><span class="o">.</span><span class="n">writef</span><span class="p">(</span><span class="s1">&#39;we only have input ports&#39;</span><span class="p">)</span>
-                    <span class="n">ingress</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parseSwitchPair</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">ports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
+                    <span class="n">ingress</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_parseSwitchPair</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">ports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
                     <span class="n">egress</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ingress</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># both input and output ports have been specified</span>
@@ -183,8 +175,18 @@
         <span class="n">switch</span><span class="p">,</span> <span class="n">port_s</span> <span class="o">=</span> <span class="n">bracket_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">switch</span><span class="p">,</span> <span class="n">port_s</span>
 
+    <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;makes connections between ports for SwitchIntegration.__init__()&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Call function for making connections</span>
+            <span class="n">switch</span><span class="p">,</span> <span class="n">pair</span> <span class="o">=</span> <span class="n">entry</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">switch</span><span class="p">]</span><span class="o">.</span><span class="n">quick_connect</span><span class="p">(</span>
+                <span class="n">ingress</span><span class="o">=</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">egress</span><span class="o">=</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">)</span>
 
-    <span class="c1">## NOTE Thinking about getting rid of this</span>
+    <span class="c1">## Thinking about getting rid of this</span>
+    <span class="c1">## Why is it here? What was the original intention?</span>
     <span class="k">def</span> <span class="nf">_integrateStages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stages</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Integrates the stages dictionary after boot&#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">actualObject</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">stages</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">stages</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
@@ -192,6 +194,40 @@
                 <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">actualObject</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                     <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;ref&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">actualObject</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
+    <span class="k">def</span> <span class="nf">_updateSwitchBook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Updates the global switch_book following a new connection being made&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">s_id</span><span class="p">,</span> <span class="n">switch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">:</span>
+            <span class="n">actual</span> <span class="o">=</span> <span class="n">switch</span><span class="o">.</span><span class="n">get_zip_connections</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">s_id</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">actual</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasChangedOutput</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">pair</span><span class="p">):</span> <span class="c1"># then this device changed output</span>
+                        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        	<span class="n">entry</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                        <span class="k">elif</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        	<span class="n">entry</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                        	<span class="nb">print</span> <span class="s1">&#39;Error encoding switch configuration&#39;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">switch_book</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">s_id</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hasLostOutput</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">pair</span><span class="p">,</span> <span class="n">actual</span><span class="p">):</span> <span class="c1"># then this device changed output</span>
+                        <span class="n">entry</span> <span class="o">=</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+                        <span class="c1"># TODO what is this supposed to be doing !?</span>
+
+    <span class="k">def</span> <span class="nf">_hasChangedOutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">pair</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;helper for _updateSwitchBook&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">:</span>
+        	<span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        		<span class="k">return</span> <span class="kc">False</span>
+        	<span class="k">else</span><span class="p">:</span>
+        		<span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_hasLostOutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">pair</span><span class="p">,</span> <span class="n">actual</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;helper for _updateSwitchBook&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">actual</span><span class="p">]</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">actual</span><span class="p">]</span>
 
 <div class="viewcode-block" id="SwitchHandler.whoAmI"><a class="viewcode-back" href="../../source/components/classes.html#classes.SwitchHandler.SwitchHandler.whoAmI">[docs]</a>    <span class="k">def</span> <span class="nf">whoAmI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;SwitchHandler&#39;</span></div>

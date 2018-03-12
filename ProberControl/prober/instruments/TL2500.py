@@ -17,7 +17,6 @@ class TL2500(object):
         '''
         self.active = False
 
-
     def whoAmI(self):
         ''':returns: instrument attributes'''
         return 'Prober'

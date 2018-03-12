@@ -36,6 +36,14 @@ instruments\.AndoAQ4321 module
     :undoc-members:
     :show-inheritance:
 
+instruments\.AndoAQ6317 module
+------------------------------
+
+.. automodule:: instruments.AndoAQ6317
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.AnritsuMS2667C module
 ----------------------------------
 
@@ -164,6 +172,14 @@ instruments\.Rotator\_ELL8 module
     :undoc-members:
     :show-inheritance:
 
+instruments\.Sample module
+--------------------------
+
+.. automodule:: instruments.Sample
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.Santec\_TSL\_210H module
 -------------------------------------
 
@@ -192,22 +208,6 @@ instruments\.TL2500 module
 --------------------------
 
 .. automodule:: instruments.TL2500
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-instruments\.TL2500MultiDummy module
-------------------------------------
-
-.. automodule:: instruments.TL2500MultiDummy
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-instruments\.TL2500PowerDummy module
-------------------------------------
-
-.. automodule:: instruments.TL2500PowerDummy
     :members:
     :undoc-members:
     :show-inheritance:

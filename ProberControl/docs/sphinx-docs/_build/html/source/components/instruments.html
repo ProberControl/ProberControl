@@ -89,12 +89,6 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.Agilent34401A.Agilent34401A.get_feedback">
-<code class="descname">get_feedback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Agilent34401A.html#Agilent34401A.get_feedback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Agilent34401A.Agilent34401A.get_feedback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Requirement for generic feedback</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.Agilent34401A.Agilent34401A.get_scaling">
 <code class="descname">get_scaling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/Agilent34401A.html#Agilent34401A.get_scaling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.Agilent34401A.Agilent34401A.get_scaling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the scaling factor.</p>
@@ -563,6 +557,48 @@ Remeber to shut off laser after sweep ends</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-instruments.AndoAQ6317">
+<span id="instruments-andoaq6317-module"></span><h2>instruments.AndoAQ6317 module<a class="headerlink" href="#module-instruments.AndoAQ6317" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="instruments.AndoAQ6317.AndoAQ6317">
+<em class="property">class </em><code class="descclassname">instruments.AndoAQ6317.</code><code class="descname">AndoAQ6317</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=’GPIB0::2::INSTR’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class models the AndoAQ4321 optical soectrum Analyzer.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently this class and therefore get_o_spectrum() is explicitly written to set up the connection and work only with the AQ4321 Laser.</p>
+</div>
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.change_state">
+<code class="descname">change_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.change_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.change_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.checkStatus">
+<code class="descname">checkStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.checkStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.checkStatus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.get_o_spectrum">
+<code class="descname">get_o_spectrum</code><span class="sig-paren">(</span><em>start</em>, <em>stop</em>, <em>step</em>, <em>result_path=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.get_o_spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.get_o_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="instruments.AndoAQ6317.AndoAQ6317.whoAmI">
+<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AndoAQ6317.html#AndoAQ6317.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AndoAQ6317.AndoAQ6317.whoAmI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">reference to device</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-instruments.AnritsuMS2667C">
 <span id="instruments-anritsums2667c-module"></span><h2>instruments.AnritsuMS2667C module<a class="headerlink" href="#module-instruments.AnritsuMS2667C" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -738,11 +774,6 @@ For Trigger Sweep, send shut-off-laser command after sweep ends (sweep end condi
 </table>
 <p>NOTE: polarization arg doesn’t do anything yet!</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="instruments.AragonBOSA400.AragonBOSA400.get_feedback">
-<code class="descname">get_feedback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/AragonBOSA400.html#AragonBOSA400.get_feedback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.AragonBOSA400.AragonBOSA400.get_feedback" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="instruments.AragonBOSA400.AragonBOSA400.get_max_wavelength">
@@ -1379,11 +1410,6 @@ position markers make sense</p>
 <dl class="method">
 <dt id="instruments.HP8163A.HP8163A.config_meter">
 <code class="descname">config_meter</code><span class="sig-paren">(</span><em>range</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.config_meter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.config_meter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="instruments.HP8163A.HP8163A.get_feedback">
-<code class="descname">get_feedback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/HP8163A.html#HP8163A.get_feedback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.HP8163A.HP8163A.get_feedback" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2425,6 +2451,9 @@ Helper-function for delta_move() and abs_move() functions.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="instruments-sample-module">
+<h2>instruments.Sample module<a class="headerlink" href="#instruments-sample-module" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-instruments.Santec_TSL_210H">
 <span id="instruments-santec-tsl-210h-module"></span><h2>instruments.Santec_TSL_210H module<a class="headerlink" href="#module-instruments.Santec_TSL_210H" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -2943,16 +2972,6 @@ and the other probes.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="instruments.TL2500.TL2500.get_structure_needs">
-<code class="descname">get_structure_needs</code><span class="sig-paren">(</span><em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.get_structure_needs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.get_structure_needs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prober gives information on the fibers that need to be connected with PowerMeter and/or MultiMeter
-attached to the Prober</p>
-<ol class="arabic simple">
-<li>Return (power_fiber_id, multi_fiber_id) – can be None too</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
 <dt id="instruments.TL2500.TL2500.load_bluetape">
 <code class="descname">load_bluetape</code><span class="sig-paren">(</span><em>bluetape_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500.html#TL2500.load_bluetape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500.TL2500.load_bluetape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prober loads bluetape to die ejector position. Sets state so that following coupling commands are executed for single die coupling.</p>
@@ -3056,36 +3075,6 @@ attached to the Prober</p>
 </tbody>
 </table>
 </dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-instruments.TL2500MultiDummy">
-<span id="instruments-tl2500multidummy-module"></span><h2>instruments.TL2500MultiDummy module<a class="headerlink" href="#module-instruments.TL2500MultiDummy" title="Permalink to this headline">¶</a></h2>
-<p>Dummy holder for the multimeter attached to the TL2500 prober system</p>
-<dl class="class">
-<dt id="instruments.TL2500MultiDummy.TL2500MultiDummy">
-<em class="property">class </em><code class="descclassname">instruments.TL2500MultiDummy.</code><code class="descname">TL2500MultiDummy</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=‘0.0.0.0’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500MultiDummy.html#TL2500MultiDummy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500MultiDummy.TL2500MultiDummy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="instruments.TL2500MultiDummy.TL2500MultiDummy.whoAmI">
-<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500MultiDummy.html#TL2500MultiDummy.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500MultiDummy.TL2500MultiDummy.whoAmI" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-instruments.TL2500PowerDummy">
-<span id="instruments-tl2500powerdummy-module"></span><h2>instruments.TL2500PowerDummy module<a class="headerlink" href="#module-instruments.TL2500PowerDummy" title="Permalink to this headline">¶</a></h2>
-<p>Dummy holder for the powermeter attached to the TL2500 prober system</p>
-<dl class="class">
-<dt id="instruments.TL2500PowerDummy.TL2500PowerDummy">
-<em class="property">class </em><code class="descclassname">instruments.TL2500PowerDummy.</code><code class="descname">TL2500PowerDummy</code><span class="sig-paren">(</span><em>res_manager</em>, <em>address=‘0.0.0.0’</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500PowerDummy.html#TL2500PowerDummy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500PowerDummy.TL2500PowerDummy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="instruments.TL2500PowerDummy.TL2500PowerDummy.whoAmI">
-<code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/instruments/TL2500PowerDummy.html#TL2500PowerDummy.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#instruments.TL2500PowerDummy.TL2500PowerDummy.whoAmI" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -3362,6 +3351,7 @@ attached to the Prober</p>
 <li><a class="reference internal" href="#module-instruments.Agilent34401A">instruments.Agilent34401A module</a></li>
 <li><a class="reference internal" href="#module-instruments.AgilentE3643A">instruments.AgilentE3643A module</a></li>
 <li><a class="reference internal" href="#module-instruments.AndoAQ4321">instruments.AndoAQ4321 module</a></li>
+<li><a class="reference internal" href="#module-instruments.AndoAQ6317">instruments.AndoAQ6317 module</a></li>
 <li><a class="reference internal" href="#module-instruments.AnritsuMS2667C">instruments.AnritsuMS2667C module</a></li>
 <li><a class="reference internal" href="#module-instruments.AragonBOSA400">instruments.AragonBOSA400 module</a></li>
 <li><a class="reference internal" href="#module-instruments.DSensor_ILD1420">instruments.DSensor_ILD1420 module</a></li>
@@ -3378,12 +3368,11 @@ attached to the Prober</p>
 <li><a class="reference internal" href="#module-instruments.RSY01">instruments.RSY01 module</a></li>
 <li><a class="reference internal" href="#module-instruments.Rotator_CR1_Z7">instruments.Rotator_CR1_Z7 module</a></li>
 <li><a class="reference internal" href="#module-instruments.Rotator_ELL8">instruments.Rotator_ELL8 module</a></li>
+<li><a class="reference internal" href="#instruments-sample-module">instruments.Sample module</a></li>
 <li><a class="reference internal" href="#module-instruments.Santec_TSL_210H">instruments.Santec_TSL_210H module</a></li>
 <li><a class="reference internal" href="#module-instruments.StepMotor_KST_ZST">instruments.StepMotor_KST_ZST module</a></li>
 <li><a class="reference internal" href="#module-instruments.StepMotor_MST_DRV">instruments.StepMotor_MST_DRV module</a></li>
 <li><a class="reference internal" href="#module-instruments.TL2500">instruments.TL2500 module</a></li>
-<li><a class="reference internal" href="#module-instruments.TL2500MultiDummy">instruments.TL2500MultiDummy module</a></li>
-<li><a class="reference internal" href="#module-instruments.TL2500PowerDummy">instruments.TL2500PowerDummy module</a></li>
 <li><a class="reference internal" href="#module-instruments.WT68145B">instruments.WT68145B module</a></li>
 <li><a class="reference internal" href="#module-instruments.template">instruments.template module</a></li>
 <li><a class="reference internal" href="#module-contents">Module contents</a></li>
