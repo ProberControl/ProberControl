@@ -117,36 +117,9 @@
 <div class="section" id="module-procedures.raster">
 <span id="procedures-raster-module"></span><h2>procedures.raster module<a class="headerlink" href="#module-procedures.raster" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="procedures.raster.cross_scan">
-<code class="descclassname">procedures.raster.</code><code class="descname">cross_scan</code><span class="sig-paren">(</span><em>xyz</em>, <em>p_meter</em>, <em>size</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#cross_scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.cross_scan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs a separate scan on each axis of length size*step.
-Should be used after the fiber has been somewhat alligned</p>
-<p>xyz (XYZ_Stage)
-p_meter (Power Meter) Power meter instance
-size (int): the number of data point to take
-step (int): the step size</p>
-<p>retruns [y_axis_data, x_axis_data]</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="procedures.raster.cross_scan_d">
 <code class="descclassname">procedures.raster.</code><code class="descname">cross_scan_d</code><span class="sig-paren">(</span><em>stages</em>, <em>target</em>, <em>size</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#cross_scan_d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.cross_scan_d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="function">
-<dt id="procedures.raster.generate_map">
-<code class="descclassname">procedures.raster.</code><code class="descname">generate_map</code><span class="sig-paren">(</span><em>xyz</em>, <em>p_meter</em>, <em>size</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#generate_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.generate_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>generates a map 3d map representing how much light is coupled
-over a specified region (size x step)</p>
-<p>xyz (XYZ_Stage)
-p_meter (Power Meter) - instance
-size (2-tuple): the dimension of the region scanned
-step (int): the step size</p>
-<dl class="docutils">
-<dt>returns a 2 dimensional list following the convention:</dt>
-<dd>returned_map[3][10] = the “power”(actually voltage for now) at point (3,10)</dd>
-</dl>
-</dd></dl>
 
 <dl class="function">
 <dt id="procedures.raster.generate_map_d">
@@ -161,8 +134,8 @@ step (int): the step size</p>
 <dl class="function">
 <dt id="procedures.raster.map_image">
 <code class="descclassname">procedures.raster.</code><code class="descname">map_image</code><span class="sig-paren">(</span><em>c_map</em>, <em>im_size</em>, <em>full_path=None</em>, <em>show=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#map_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.map_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes a map returned from genearte_map() and visualizes it</p>
-<p>c_map (2d-list): map from generate_map()
+<dd><p>Takes a map returned from genearte_map() and visualizes it
+c_map (2d-list): map from generate_map()
 im_size(2-tuple): the dimensions of the produced image</p>
 </dd></dl>
 
@@ -177,6 +150,11 @@ im_size(2-tuple): the dimensions of the produced image</p>
 the voltage on the optimal point</dd>
 </dl>
 </dd></dl>
+
+<dl class="function">
+<dt id="procedures.raster.set_signal_source">
+<code class="descclassname">procedures.raster.</code><code class="descname">set_signal_source</code><span class="sig-paren">(</span><em>stages</em>, <em>source_string=”</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#set_signal_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.set_signal_source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-contents">

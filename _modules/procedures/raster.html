@@ -50,21 +50,56 @@
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;win&#39;</span><span class="p">):</span>    <span class="c1"># because of problems with OpenCV on linux</span>
     <span class="kn">import</span> <span class="nn">cv2</span>
 
+<span class="c1"># default unset</span>
+<span class="n">__selected_function</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">STD_TOOL</span> <span class="o">=</span> <span class="s2">&quot;MPowerMeter&quot;</span>
 
-<div class="viewcode-block" id="generate_map"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.generate_map">[docs]</a><span class="k">def</span> <span class="nf">generate_map</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">p_meter</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_report</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="n">prt_msg</span> <span class="o">=</span> <span class="s1">&#39;raster: &#39;</span> <span class="o">+</span> <span class="n">msg</span>
+    <span class="nb">print</span> <span class="n">prt_msg</span>
+
+<span class="k">def</span> <span class="nf">_set_meas_fun</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__selected_function</span>
+    <span class="n">__selected_function</span> <span class="o">=</span> <span class="n">fn</span>
+
+<div class="viewcode-block" id="set_signal_source"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.set_signal_source">[docs]</a><span class="k">def</span> <span class="nf">set_signal_source</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">source_string</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">source_string</span> <span class="ow">in</span> <span class="n">stages</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">feedbackfunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">source_string</span><span class="p">],</span> <span class="s2">&quot;get_feedback&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">feedbackfunc</span><span class="p">):</span>
+            <span class="n">_set_meas_fun</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">source_string</span><span class="p">]</span><span class="o">.</span><span class="n">get_feedback</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_report</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source_string</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; does not supply get_feedback function&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_report</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source_string</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is not a member of the Stages Dictionary&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_signal</span><span class="p">(</span><span class="n">stages</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">__selected_function</span>
+
+    <span class="k">if</span> <span class="n">__selected_function</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">set_signal_source</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">source_string</span><span class="o">=</span><span class="n">STD_TOOL</span><span class="p">)</span> <span class="ow">or</span> <span class="n">set_signal_source</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">source_string</span><span class="o">=</span><span class="n">STD_TOOL</span><span class="o">+</span><span class="s2">&quot;1&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+
+    <span class="k">return</span> <span class="n">__selected_function</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">_generate_map</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">     generates a map 3d map representing how much light is coupled</span>
 <span class="sd">     over a specified region (size x step)</span>
-<span class="sd">     </span>
+
 <span class="sd">     xyz (XYZ_Stage)</span>
-<span class="sd">     p_meter (Power Meter) - instance</span>
 <span class="sd">     size (2-tuple): the dimension of the region scanned</span>
-<span class="sd">     step (int): the step size </span>
-<span class="sd">     </span>
+<span class="sd">     step (int): the step size</span>
+
 <span class="sd">     returns a 2 dimensional list following the convention:</span>
 <span class="sd">        returned_map[3][10] = the &quot;power&quot;(actually voltage for now) at point (3,10)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    
+
     <span class="nb">map</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># place the current point at the center</span>
     <span class="n">cur_pos</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
@@ -77,44 +112,43 @@
         <span class="n">line</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>     <span class="c1"># length / y-axis</span>
             <span class="c1"># get the voltage reading</span>
-            <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p_meter</span><span class="o">.</span><span class="n">get_power</span><span class="p">()))</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">_get_signal</span><span class="p">(</span><span class="n">stages</span><span class="p">)))</span>
             <span class="c1"># move to the next place</span>
             <span class="n">cur_pos</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
             <span class="n">new_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
             <span class="n">xyz</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
-        
+
         <span class="nb">map</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span>
-            
+
         <span class="n">cur_pos</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
         <span class="n">new_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">step</span><span class="p">,</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="n">xyz</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
-        
+
     <span class="c1"># return to initial scanning point</span>
     <span class="n">xyz</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">initial_pos</span><span class="p">)</span>
-        
-    <span class="k">return</span> <span class="nb">map</span></div>
-    
+
+    <span class="k">return</span> <span class="nb">map</span>
+
 <div class="viewcode-block" id="generate_map_d"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.generate_map_d">[docs]</a><span class="k">def</span> <span class="nf">generate_map_d</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">generate_map</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;MAgilent34401A&#39;</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
-     
+    <span class="k">return</span> <span class="n">_generate_map</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="map_image"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.map_image">[docs]</a><span class="k">def</span> <span class="nf">map_image</span><span class="p">(</span><span class="n">c_map</span><span class="p">,</span> <span class="n">im_size</span><span class="p">,</span> <span class="n">full_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">     Takes a map returned from genearte_map() and visualizes it</span>
-<span class="sd">     </span>
 <span class="sd">     c_map (2d-list): map from generate_map()</span>
 <span class="sd">     im_size(2-tuple): the dimensions of the produced image</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    
+
     <span class="c1"># calculations - normalization</span>
-    <span class="n">c_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_map</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> 
+    <span class="n">c_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_map</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
     <span class="n">maxi</span><span class="p">,</span> <span class="n">mini</span> <span class="o">=</span> <span class="n">c_map</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">c_map</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
     <span class="n">c_map</span> <span class="o">-=</span> <span class="n">mini</span>
     <span class="n">c_map</span> <span class="o">/=</span> <span class="n">maxi</span> <span class="o">-</span> <span class="n">mini</span>
     <span class="n">fx_c</span> <span class="o">=</span> <span class="n">im_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">c_map</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">fy_c</span> <span class="o">=</span> <span class="n">im_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">c_map</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    
+
     <span class="nb">print</span> <span class="s1">&#39;Max. Voltage: </span><span class="si">{}</span><span class="s1"> | Min. Voltage: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxi</span><span class="p">,</span> <span class="n">mini</span><span class="p">)</span>
-    
+
     <span class="c1"># non-blurry scaling</span>
     <span class="n">c_map</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">c_map</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fx</span><span class="o">=</span><span class="n">fx_c</span><span class="p">,</span> <span class="n">fy</span><span class="o">=</span><span class="n">fy_c</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_NEAREST</span><span class="p">)</span>
     <span class="n">bgr_grey_map</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">c_map</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_GRAY2BGR</span><span class="p">)</span>
@@ -122,17 +156,17 @@
     <span class="n">grey_map_u8</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">bgr_grey_map</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">255.0</span><span class="p">)</span>
     <span class="c1"># jet-coloring</span>
     <span class="n">col_map_u8</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">applyColorMap</span><span class="p">(</span><span class="n">grey_map_u8</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLORMAP_JET</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">full_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">col_map_u8</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
         <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="n">col_map_u8</span><span class="p">)</span>
         <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span></div>
-    
+
 <div class="viewcode-block" id="make_map"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.make_map">[docs]</a><span class="k">def</span> <span class="nf">make_map</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">fiber</span><span class="p">,</span> <span class="n">size_x</span><span class="p">,</span> <span class="n">size_y</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-    <span class="nb">map</span> <span class="o">=</span> <span class="n">generate_map</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">fiber</span><span class="p">],</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;MPowerMeter&#39;</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">size_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">size_y</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">))</span>
+    <span class="nb">map</span> <span class="o">=</span> <span class="n">_generate_map</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">fiber</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">size_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">size_y</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">))</span>
     <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;_data.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">map</span> <span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
@@ -140,34 +174,33 @@
     <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">map_image</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">),</span> <span class="n">filename</span><span class="p">)</span>
     <span class="nb">print</span> <span class="s1">&#39;make_map done.&#39;</span></div>
-    
+
 <div class="viewcode-block" id="optimal_point"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.optimal_point">[docs]</a><span class="k">def</span> <span class="nf">optimal_point</span><span class="p">(</span><span class="n">c_map</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">     find the point of highest voltage in map scanned by genearte_map()</span>
-<span class="sd">     </span>
+
 <span class="sd">     c_map (2d-list): map from generate_map()</span>
-<span class="sd">     </span>
+
 <span class="sd">     returns list containing:</span>
 <span class="sd">        2-tuple (x,y) containing the coordinates of the optimal point</span>
 <span class="sd">        the voltage on the optimal point</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    
+
     <span class="n">c_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_map</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">c_map</span><span class="o">.</span><span class="n">argmax</span><span class="p">(),</span> <span class="n">c_map</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">c_map</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span></div>
-    
-<div class="viewcode-block" id="cross_scan"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.cross_scan">[docs]</a><span class="k">def</span> <span class="nf">cross_scan</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">p_meter</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_cross_scan</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">     Performs a separate scan on each axis of length size*step.</span>
 <span class="sd">     Should be used after the fiber has been somewhat alligned</span>
-<span class="sd">     </span>
+
 <span class="sd">     xyz (XYZ_Stage)</span>
-<span class="sd">     p_meter (Power Meter) Power meter instance</span>
 <span class="sd">     size (int): the number of data point to take</span>
 <span class="sd">     step (int): the step size</span>
-<span class="sd">     </span>
-<span class="sd">     retruns [y_axis_data, x_axis_data] </span>
+
+<span class="sd">     retruns [y_axis_data, x_axis_data]</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    
+
     <span class="c1"># Y-Axis</span>
     <span class="n">y_axis</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># go to far end to begin scanning</span>
@@ -176,13 +209,13 @@
     <span class="n">xyz</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
     <span class="c1"># start scanning</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-        <span class="n">y_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p_meter</span><span class="o">.</span><span class="n">get_power</span><span class="p">()))</span>
+        <span class="n">y_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">_get_signal</span><span class="p">(</span><span class="n">stages</span><span class="p">)))</span>
         <span class="n">xyz</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">)</span>
     <span class="c1"># go back to initial pos</span>
     <span class="n">cur_pos</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
     <span class="n">new_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">size</span><span class="o">*</span><span class="n">step</span><span class="p">,</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">xyz</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
-    
+
     <span class="c1"># X-Axis</span>
     <span class="n">x_axis</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># go to far end to begin scanning</span>
@@ -191,19 +224,19 @@
     <span class="n">xyz</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
     <span class="c1"># start scanning</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-        <span class="n">y_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p_meter</span><span class="o">.</span><span class="n">get_power</span><span class="p">()))</span>
+        <span class="n">y_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">_get_signal</span><span class="p">(</span><span class="n">stages</span><span class="p">)))</span>
         <span class="n">xyz</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>
     <span class="c1"># go back to initial pos</span>
     <span class="n">cur_pos</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
     <span class="n">new_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">size</span><span class="o">*</span><span class="n">step</span><span class="p">,</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cur_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">xyz</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
-    
-    <span class="k">return</span> <span class="p">[</span><span class="n">y_axis</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">]</span></div>
-    
-<div class="viewcode-block" id="cross_scan_d"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.cross_scan_d">[docs]</a><span class="k">def</span> <span class="nf">cross_scan_d</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">cross_scan</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">stages</span><span class="p">[</span><span class="s1">&#39;MPowerMeter&#39;</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
 
-    
+    <span class="k">return</span> <span class="p">[</span><span class="n">y_axis</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">]</span>
+
+<div class="viewcode-block" id="cross_scan_d"><a class="viewcode-back" href="../../source/components/procedures.html#procedures.raster.cross_scan_d">[docs]</a><span class="k">def</span> <span class="nf">cross_scan_d</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_cross_scan</span><span class="p">(</span><span class="n">stages</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
+
+
 
 
 <span class="sd">&#39;&#39;&#39;</span>

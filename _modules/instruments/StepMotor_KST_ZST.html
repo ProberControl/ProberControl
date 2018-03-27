@@ -174,7 +174,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="c1"># check weather we are within limits</span>
+        <span class="c1"># check whether we are within limits</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">+</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="n">LIMIT_SWITCH</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span> <span class="o">+</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Out of bounds error (dist:</span><span class="si">{}</span><span class="s1">, pos:</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm_pos</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>

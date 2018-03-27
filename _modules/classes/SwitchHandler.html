@@ -88,13 +88,11 @@
 
 <span class="sd">        :returns: String of all connections between devices</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="c1">#NOTE needs update w/ multiple switches</span>
-
         <span class="n">formatted_output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_connetions</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_connetions</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
             <span class="n">k_name</span><span class="p">,</span> <span class="n">k_switch</span> <span class="o">=</span> <span class="n">k</span>
             <span class="n">v_name</span><span class="p">,</span> <span class="n">v_switch</span> <span class="o">=</span> <span class="n">v</span>
-            <span class="n">formatted_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:20}</span><span class="s2"> : </span><span class="si">{:20}</span><span class="s2"> </span><span class="si">{:5}</span><span class="s2"> </span><span class="si">{:20}</span><span class="s2"> </span><span class="si">{:20}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">formatted_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:15}</span><span class="s2"> : </span><span class="si">{:15}</span><span class="s2"> </span><span class="si">{:5}</span><span class="s2"> </span><span class="si">{:15}</span><span class="s2"> </span><span class="si">{:15}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">k_name</span><span class="p">,</span>
             <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">[</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">k_switch</span><span class="p">),</span>
             <span class="s2">&quot;---&gt;&quot;</span><span class="p">,</span>
@@ -119,7 +117,8 @@
         <span class="n">ingress</span> <span class="o">=</span> <span class="n">pair_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">egress</span>  <span class="o">=</span> <span class="n">pair_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;connecting </span><span class="si">{}</span><span class="s1">[</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">switch_in</span><span class="p">,</span> <span class="n">gress</span><span class="p">,</span> <span class="n">egress</span><span class="p">))</span>
+        <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;connecting </span><span class="si">{}</span><span class="s1">[</span><span class="si">{}</span><span class="s1">] - </span><span class="si">{}</span><span class="s1">[</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair_in</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ingress</span><span class="p">,</span> <span class="n">pair_out</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">egress</span><span class="p">))</span>
+        <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;under swicth: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">pair_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">pair_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">quick_connect</span><span class="p">(</span><span class="n">ingress</span><span class="p">,</span> <span class="n">egress</span><span class="p">)</span>
 

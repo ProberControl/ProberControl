@@ -212,6 +212,14 @@ instruments\.TL2500PowerDummy module
     :undoc-members:
     :show-inheritance:
 
+instruments\.TektronixCSA8000 module
+------------------------------------
+
+.. automodule:: instruments.TektronixCSA8000
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 instruments\.WT68145B module
 ----------------------------
 
