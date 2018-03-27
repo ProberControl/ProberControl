@@ -1,9 +1,9 @@
-MeasureHandler
+Global Measure Handler
 ==============
 
-The measure handler is the entity that will control and distribute access of the measurement instruments, such as dc multi-meters or optical power-meters, to the procedures or objects that require them. The handler takes away from the specific functions the responsibility to know exactly what instruments they are dealing with. The functions will only need to provide the type of instrument they need and the measure handler will perform all the necessary work to find such an instrument.
+The measure handler is the entity that controls and distributes access of the measurement instruments, such as dc multi-meters or optical power-meters, to the procedures or objects that require them. The handler takes away from the specific functions the responsibility to know exactly what instruments(models) they are dealing with. The functions will only need to provide the type of instrument they need and the measure handler will perform all the necessary work to find such an instrument.
 
-**Interface:**
+**Description**
     The measure handler functionality is cleanly exposed by a single class called Global_MeasureHandler. The class utilizes a Singleton scheme so the same object will be accessed from anywhere in the code. The constructor only needs a reference to the Stages dictionary:
 
 .. code-block:: python
@@ -14,42 +14,78 @@ The measure handler is the entity that will control and distribute access of the
             self.Instruments = {}
             self.Stages = Stages
 
-Internally the class should utilize a two level table[1]_ to classify the different instruments. It should look like this:
+.
+    Internally the class keeps information about:
+        - All the instruments (and fibers) that were registered in the main configuration file
+        - Which instruments are at any time owned by a user (eg. instance of ScriptController, GUI)
+        - The triggering networks, meaning which instrument can trigger which other instrument, as defined in the configuration file
 
-.. image:: ../../_static/diagram.png
-    :height: 300px
-    :width: 600px
-    :align: center
+    ... and provides functionality to control:
+        - The provision of instruments according to type
+        - The serialization to instrument ownership
+        - The interconnection of "owned" instruments through the ``SwitchHandler``
 
-The core of the measure handler’s functionality lies on the nature of the attribute type in the main dictionary. In the current implementation this attribute is the measurement type the instrument performs (ex. DC, RF, optical). The attribute type could as well be the kind of function that the specific interface of the instrument exposes (ex. Does it implement get_current() ?). The final entries are triplets (function, threshold, user). What the user of the Global_MeasureHandler is interested in is the measurement function and any associated values that help in the tests (ex. the power threshold for optical coupling).
+    The Global_MeasureHandler is a necessary and fundamental entity of the ProberControl framework and serves to optimally utilize the available instruments of a setup. It enables the correct parallelization of test recipe execution, keeping tally of available and used instruments and implementing a sophisticated internal locking scheme, which is necessary for thread safety.
 
-A description of the class’s methods is provided below:
-    ``insert_instr(stage_name, triggerNetwork)``
-        This is the function that adds an instrument to the measure_handler.
-    ``get_instrument(specifiedDevice, additional=False)``
+    The class was originally to be used explicitly in the custom measurement functions defined by the test engineer, but is now also used internally in the software, for organization purposes.
+
+**Interface**
+    The Global_MeasureHandler exposes a simplistic API that is intuitive and easy to use, while providing a full range of options for the test engineer writing the measurement functions. Below are the most important/useful methods:
+
+``get_instrument(specifiedDevice, additional=False)``
         Finds and returns an inactive instrument corresponding to the one specified. Returns None if such instrument was found/available.
-    ``get_instrument_triggered_by(self, triggerSource, specifiedDevice, additional=False)``
-        Finds and returns an unactive instrument, corresponding to the one specified, that can be triggered by trigger_source
-    ``connect_instruments(self, transmitting_instrument, receiving_instrument)``
-        Connects two instruments together through the SwitchHandler.
-    PARALLELISM
-        In the method descriptions above the notion of availability is extensively referenced. The general idea behind that is that we would like in the future for the testing procedure to become pipelined so that different tests can be performed at the same time. In that case strict mechanism has to be defined to distribute the instrument resources. The Global_MeasureHandler is also responsible for that. This is what the user field in the table entries are for. Also if tests are to be performed in parallel, the measure_handler should be completely thread safe, securing the data structure with locks where necessary.
-        SIDE EFFECTS
-    CONFIGURATION FILE
-        Because of the way we want the measure handler to work, we need to get instrument classification information from somewhere (that would go into the insert_instr call). Thus, the ProberConfig.conf file and its parsing mechanism within ProberControl.py should expand to accommodate the insertion of descriptions at least for the instrument entries that are used for measurements (whose names begin with ‘M’).
-    SWITCHING
-        The development of Global_MeasureHandler should also allow for an efficient way of interacting with the module that will control the large switch which will connect the different components. Some example code could look like:
+``get_instrument_triggered_by(triggerSource, specifiedDevice, additional=False)``
+        Finds and returns an inactive instrument, corresponding to the one specified, that can be triggered by trigger_source instrument
+``get_instrument_triggering(triggerTarget, specifiedDevice, additional=False)``
+        Finds and returns an inactive instrument, corresponding to the one specified, that can trigger trigger_source instrument
+``get_instrument_by_name(instrumentName)``
+        Finds and returns the instrument with the specified name, used in the cases where a specific model in necessary
+``choose_fiber_in(self, fiber_id)``
+        Returns a holder to the input fiber with id fiber_id (as specified in the configuration file)
+``choose_fiber_out(self, fiber_id)``
+        Returns a holder to the output fiber with id fiber_id (as specified in the configuration file)
+``connect_instruments(self, transmitting_instrument, receiving_instrument)``
+        Connects two instruments together (through the SwitchHandler)
+
+
+    The functions of the family get_instrument... listed above all return **None** if the instrument is not found or is already in use by a different user. In a multi-threaded environment, however, it makes sense for to wait for the instrument to become available before returning to the user. As such, the following blocking alternatives exist (denoted by the **_w** for "wait"):
+
+``get_instrument_w(specifiedDevice, additional=False, timeout=0.0)``
+``get_instrument_triggered_by_w(triggerSource, specifiedDevice, additional=False, timeout=0.0)``
+``get_instrument_triggering_w(triggerTarget, specifiedDevice, additional=False, timeout=0.0)``
+``get_instrument_by_name_w(instrumentName)``
+
+    The functions above take the exact arguments as the respective non-blocking ones, plus an optional parameter ``timeout`` which determines how long to wait if the instrument is not available. A timeout of 0 means wait until it becomes available.
+
+**Example**
+    Here is an examples which demonstrate the ease of use of the Global_MeasureHandler API for measurement functions:
 
 .. code-block:: python
 
-    def some_test_function(blah, blah):
-        g_mh = Global_MeasureHandler()
-        # more stuff...
+    def simpleConnectFiberTest():
+        gh = Global_MeasureHandler()
 
-    fun, thresh = g_mh.get_instr('DC', True)
-    switch.connect(switch_id_of(fun), this_fiber)
-    #continue with test...
+        # wait for laser
+        laser = gh.get_instrument_w('Laser')
+        # choose input fiber
+        fiber_in = gh.choose_fiber_in(1)
+        # connect laser to fiber
+        gh.connect_instruments(laser, fiber_in)
 
-The GUI is based on Tkinter. The constructor has the following dynamic parts:
-1.    It generates the line with Item 6,7,8 dynamically depending whether a stage or measurement tool is connected
-2.    Line A is equipped with buttons representing the stages keys in the stages Dictionary.
+        # choose output fiber
+        fiber_out = gh.choose_fiber_out(3)
+        # wait for a powermeter
+        p_meter = gh.get_instrument_triggered_by_w(laser, 'PowerMeter')
+        # connect fiber to powermeter
+        gh.connect_instruments(fiber_out, p_meter)
+
+        # make measurement
+        wavelength = 1550
+        laser.setwavelength(wavelength)
+        power = p_meter.get_power(wavelength)
+        print power
+
+.
+    Here we use the blocking version of get_instrument which means that if all lasers and all power-meters are in use, we will wait until some are available. We also demonstrate the use of the trigger-conscious functions. The powermeter selected will by triggerable by the laser.
+
+    We can see how in 6 lines of code with Global_MeasureHandler we have acquired and connected together all the instruments we need to make an optical power measurement!

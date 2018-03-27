@@ -36,7 +36,8 @@ __all__ = [
     'TL2500',
     'TL2500PowerDummy',
     'TL2500MultiDummy',
-    'AgilentE3643A'
+    'AgilentE3643A',
+    'TektronixCSA8000'
 ]
 
 pipe_instrument_groups = {

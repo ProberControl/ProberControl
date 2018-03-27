@@ -337,6 +337,8 @@ class Application(tk.Frame):
         ArgList = DataIO.parameter_prep(Stages = self.Stages, Maitre = self.Maitre,arg_string = self.ArgText.get(),func_parameter_list = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc))
 
         print self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList)
+        self.gh.release_current_user_instruments()
+
 
     def FuncBoxChange(self,choice):
         self.ActiveFunc = self.Maitre.get_func_name(self.ActiveMod).index(choice)

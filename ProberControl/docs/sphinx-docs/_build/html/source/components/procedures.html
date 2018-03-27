@@ -114,42 +114,12 @@
 <div class="section" id="procedures-random-module">
 <h2>procedures.random module<a class="headerlink" href="#procedures-random-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="procedures-randomwalk-module">
-<h2>procedures.randomWalk module<a class="headerlink" href="#procedures-randomwalk-module" title="Permalink to this headline">¶</a></h2>
-</div>
 <div class="section" id="module-procedures.raster">
 <span id="procedures-raster-module"></span><h2>procedures.raster module<a class="headerlink" href="#module-procedures.raster" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="procedures.raster.cross_scan">
-<code class="descclassname">procedures.raster.</code><code class="descname">cross_scan</code><span class="sig-paren">(</span><em>xyz</em>, <em>p_meter</em>, <em>size</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#cross_scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.cross_scan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs a separate scan on each axis of length size*step.
-Should be used after the fiber has been somewhat alligned</p>
-<p>xyz (XYZ_Stage)
-p_meter (Power Meter) Power meter instance
-size (int): the number of data point to take
-step (int): the step size</p>
-<p>retruns [y_axis_data, x_axis_data]</p>
-</dd></dl>
-
 <dl class="function">
 <dt id="procedures.raster.cross_scan_d">
 <code class="descclassname">procedures.raster.</code><code class="descname">cross_scan_d</code><span class="sig-paren">(</span><em>stages</em>, <em>target</em>, <em>size</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#cross_scan_d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.cross_scan_d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="function">
-<dt id="procedures.raster.generate_map">
-<code class="descclassname">procedures.raster.</code><code class="descname">generate_map</code><span class="sig-paren">(</span><em>xyz</em>, <em>p_meter</em>, <em>size</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#generate_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.generate_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>generates a map 3d map representing how much light is coupled
-over a specified region (size x step)</p>
-<p>xyz (XYZ_Stage)
-p_meter (Power Meter) - instance
-size (2-tuple): the dimension of the region scanned
-step (int): the step size</p>
-<dl class="docutils">
-<dt>returns a 2 dimensional list following the convention:</dt>
-<dd>returned_map[3][10] = the “power”(actually voltage for now) at point (3,10)</dd>
-</dl>
-</dd></dl>
 
 <dl class="function">
 <dt id="procedures.raster.generate_map_d">
@@ -164,8 +134,8 @@ step (int): the step size</p>
 <dl class="function">
 <dt id="procedures.raster.map_image">
 <code class="descclassname">procedures.raster.</code><code class="descname">map_image</code><span class="sig-paren">(</span><em>c_map</em>, <em>im_size</em>, <em>full_path=None</em>, <em>show=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#map_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.map_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes a map returned from genearte_map() and visualizes it</p>
-<p>c_map (2d-list): map from generate_map()
+<dd><p>Takes a map returned from genearte_map() and visualizes it
+c_map (2d-list): map from generate_map()
 im_size(2-tuple): the dimensions of the produced image</p>
 </dd></dl>
 
@@ -181,28 +151,9 @@ the voltage on the optimal point</dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-procedures.vision">
-<span id="procedures-vision-module"></span><h2>procedures.vision module<a class="headerlink" href="#module-procedures.vision" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="procedures.vision.calibrateProbe">
-<code class="descclassname">procedures.vision.</code><code class="descname">calibrateProbe</code><span class="sig-paren">(</span><em>Stages</em>, <em>calibrating_stage</em>, <em>video</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#calibrateProbe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.calibrateProbe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="procedures.vision.setChipAngle">
-<code class="descclassname">procedures.vision.</code><code class="descname">setChipAngle</code><span class="sig-paren">(</span><em>stages</em>, <em>video</em>, <em>chip</em>, <em>desired_angle</em>, <em>res=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#setChipAngle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.setChipAngle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set angle of chip edge as seen by video feed using chip stage</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="procedures.vision.setEWOffset">
-<code class="descclassname">procedures.vision.</code><code class="descname">setEWOffset</code><span class="sig-paren">(</span><em>stages</em>, <em>video</em>, <em>chip_stage</em>, <em>res=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#setEWOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.setEWOffset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="procedures.vision.setNSOffset">
-<code class="descclassname">procedures.vision.</code><code class="descname">setNSOffset</code><span class="sig-paren">(</span><em>stages</em>, <em>video</em>, <em>chip_stage</em>, <em>desired_offset</em>, <em>res=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/vision.html#setNSOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.vision.setNSOffset" title="Permalink to this definition">¶</a></dt>
+<dt id="procedures.raster.set_signal_source">
+<code class="descclassname">procedures.raster.</code><code class="descname">set_signal_source</code><span class="sig-paren">(</span><em>stages</em>, <em>source_string=”</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/procedures/raster.html#set_signal_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#procedures.raster.set_signal_source" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -230,9 +181,7 @@ the voltage on the optimal point</dd>
 <li><a class="reference internal" href="#procedures-connecting-module">procedures.connecting module</a></li>
 <li><a class="reference internal" href="#procedures-fine-allign-module">procedures.fine_allign module</a></li>
 <li><a class="reference internal" href="#procedures-random-module">procedures.random module</a></li>
-<li><a class="reference internal" href="#procedures-randomwalk-module">procedures.randomWalk module</a></li>
 <li><a class="reference internal" href="#module-procedures.raster">procedures.raster module</a></li>
-<li><a class="reference internal" href="#module-procedures.vision">procedures.vision module</a></li>
 <li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>

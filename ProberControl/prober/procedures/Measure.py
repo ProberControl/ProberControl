@@ -23,12 +23,15 @@ def test(maitre,data):
 
 def get_o_power(maitre,wavelength=1550,sweeping=False,result_path=0):
     laser = gh.get_instrument('Laser', additional=False)
+    print "laser "+str(laser)
     if laser is not None:
         wavelength = laser.getwavelength()
 
     pm = gh.get_instrument('PowerMeter')
+    print "PM "+str(pm)
     gh.connect_instruments(laser, pm)
     data = pm.get_power(float(wavelength))
+    print data
 
     if result_path != 0:
         DataIO.writeData(result_path,data,'get_o_power')
@@ -120,7 +123,7 @@ def get_o_spectrum(maitre,start,stop,step,result_path=0):
 
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
         laser.trigger()
-        DataList.append([x,get_o_power(x,True)])
+        DataList.append([x,pm.get_o_power(x,True)])
 
 
     laser.setwavelength(init_wavelength)
@@ -328,14 +331,16 @@ def carac_MZI(maitre,dc_sig1_chan,max_volt=5,result_path=0):
 
     return data
 
-def simpleConnectFiberTest(maitre):
+def simpleConnectFiberTest():
     gh = g()
 
     laser = gh.get_instrument('Laser')
+    print 'laser, ' + str(laser)
     fiber_in = gh.choose_fiber_in(1)
+    print 'fiber ' + str(fiber_in)
     gh.connect_instruments(laser, fiber_in)
 
-    fiber_out = gh.choose_fiber_out(2)
+    fiber_out = gh.choose_fiber_out(3)
     p_meter = gh.get_instrument('PowerMeter')
     gh.connect_instruments(fiber_out, p_meter)
 
@@ -343,6 +348,8 @@ def simpleConnectFiberTest(maitre):
     laser.setwavelength(wavelength)
     power = p_meter.get_power(wavelength)
     print power
+
+    return power
 
 def noFiberMeasureTest(maitre):
     # setup
@@ -366,6 +373,29 @@ def noFiberTriggerTest(maitre):
     dc1.setvoltage(1)
     dc2.setvoltage(2)
     # output
+    return 'Test complete.'
+
+def testConnectDebug():
+    gh = g()
+    las = gh.get_instrument('Laser')
+    fib = gh.get_instrument('OSA')
+    # fib = gh.choose_fiber_in(1)
+    print 'laser: {}\nfiber: {}\n'.format(las, fib)
+
+    gh.connect_instruments(las, fib)
+    return 23.0
+
+def testBlockingCalls():
+    print 'entering blocking instance'
+    gh = g()
+    osa = gh.get_instrument_w('OSA', additional=True)
+    osa.getSpectrum(1550, 1551, 0.1, 0)
+    for i in xrange(10):
+        print 'sleeping ...{}'.format(i + 1)
+        time.sleep(1)
+    osa.getSpectrum(1552, 1553, 0.1, 0)
+    print 'blocking instance done.'
+
     return 'Test complete.'
 
 

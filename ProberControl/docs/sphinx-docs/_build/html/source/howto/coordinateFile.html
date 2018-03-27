@@ -46,7 +46,7 @@
   <div class="section" id="writing-a-coordinate-file">
 <h1>Writing a Coordinate File<a class="headerlink" href="#writing-a-coordinate-file" title="Permalink to this headline">¶</a></h1>
 <p>Structures on chip are defined by the 2 dimensional coordinates of the IO ports, no matter whether the ports are electrical or optical.</p>
-<p>Each structure must be listed on the coordinates files a typical entry would be:</p>
+<p>Each structure must be listed on the coordinates files a basic entry would be:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">## Structure Name</span>
 <span class="n">BSplit3</span>
 <span class="c1">#OW</span>
@@ -57,13 +57,35 @@
 </pre></div>
 </div>
 <p>Each structure must be confined within a set of two <code class="docutils literal"><span class="pre">##</span></code>. The Structure Name will be used to in <code class="docutils literal"><span class="pre">ProberControl</span></code> to refer to this structure. To define the stage for an optical stages oriented in the West a first line <code class="docutils literal"><span class="pre">#OW</span></code> is followed by the coordinates x and y. An electrical stage on the north would be defined as <code class="docutils literal"><span class="pre">#EN</span></code>, etc. Although internally the ProberControl has dedicated coordinate systems for each stage (see figure) the coordinates file always refers to the chip coordinate system which is the same as a south oriented stage.</p>
-<a class="reference internal image-reference" href="../../_images/coordinatePlanes.PNG"><img alt="../../_images/coordinatePlanes.PNG" class="align-center" src="../../_images/coordinatePlanes.PNG" style="width: 450px; height: 500px;" /></a>
-<p>Note that the y axis is reversed compared to an intuitive coordinate system. When a structure is connected the software will try to fine align the optical probes. The default signal source is a connected powermeter. However, different sources can be defined using:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#SignalSource</span>
-<span class="n">MDCSource</span>
+<a class="reference internal image-reference" href="../../_images/coordinatePlanes.PNG"><img alt="../../_images/coordinatePlanes.PNG" class="align-center" src="../../_images/coordinatePlanes.PNG" style="width: 225px; height: 250px;" /></a>
+<p>Note that the y axis is reversed compared to an intuitive coordinate system.</p>
+<p>Coordinates for fiber arrays or multi-channel probes should always reference the left-most (when looking along the device) channel of the device:</p>
+<a class="reference internal image-reference" href="../../_images/multiChannelCoordinate.png"><img alt="../../_images/multiChannelCoordinate.png" class="align-center" src="../../_images/multiChannelCoordinate.png" style="width: 437px; height: 236px;" /></a>
+<p>When a structure is connected the system will try to fine align the optical probes using a feedback loop. The feedback loop in and outputs are defined as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#FeedbackIn</span>
+<span class="n">Current</span><span class="p">:</span><span class="mf">0.001</span><span class="p">,</span><span class="n">EN</span><span class="p">:</span><span class="mi">1</span>
+<span class="c1">#FeedbackOut</span>
+<span class="n">Power</span><span class="p">,</span><span class="n">OW</span><span class="p">:</span><span class="mi">8</span>
+<span class="c1">#Continuous</span>
+<span class="kc">True</span>
 </pre></div>
 </div>
-<p>In this example a DC Source is used specifically its get_current() function, which is needed when a photodiode is coupled.</p>
+<p>In this example a DC Source is used to source 1 mA of current into port 1 of the electrical probe in the north. The signal is picked up on the optical probe in the west on fiber 8 and the measured power is used as a the feedback signal. The #Continous True makes the system continously optimize its position as apposed to optimize only once.</p>
+<p>Options for the input are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#FeedbackIn</span>
+<span class="n">Current</span><span class="p">:</span><span class="mf">0.001</span><span class="p">,</span><span class="n">EN</span><span class="p">:</span><span class="mi">1</span>
+<span class="c1">#FeedbackIn</span>
+<span class="n">Power</span><span class="p">:</span><span class="mi">1550</span><span class="p">,</span><span class="n">OW</span><span class="p">:</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>where the second options defines a laser light at a 1550 nm wavelength supplied at optical probe in the west on fiber 1.</p>
+<p>Options for the output are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#FeedbackOut</span>
+<span class="n">Power</span><span class="p">,</span><span class="n">OW</span><span class="p">:</span><span class="mi">8</span>
+<span class="c1">#FeedbackOut</span>
+<span class="n">Current</span><span class="p">,</span><span class="n">ES</span><span class="p">:</span><span class="mi">2</span>
+</pre></div>
+</div>
 </div>
 
 

@@ -46,6 +46,12 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
 
+<span class="c1"># DEBUG flag</span>
+<span class="n">debug</span> <span class="o">=</span> <span class="mi">0</span>
+<div class="viewcode-block" id="sdebug"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.sdebug">[docs]</a><span class="k">def</span> <span class="nf">sdebug</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;Polatis:: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Polatis"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis">[docs]</a><span class="k">class</span> <span class="nc">Polatis</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This class models the Polatis 16x16 optical switch. Dependencies: PyVisa, datetime, time.</span>
@@ -110,6 +116,10 @@
         <span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_switch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;*RST;&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Polatis.close"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;instrument cleanup&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="Polatis.quick_connect"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.quick_connect">[docs]</a>    <span class="k">def</span> <span class="nf">quick_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ingress</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">egress</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 
@@ -121,10 +131,13 @@
 <span class="sd">        :type egress: integer</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
+        <span class="n">ingress</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ingress</span><span class="p">)</span>
+        <span class="n">egress</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">egress</span><span class="p">)</span>
+        
         <span class="k">if</span> <span class="n">ingress</span> <span class="o">&gt;</span> <span class="n">egress</span><span class="p">:</span>
-        	<span class="n">buffer</span> <span class="o">=</span> <span class="n">egress</span>
+        	<span class="n">buff</span> <span class="o">=</span> <span class="n">egress</span>
         	<span class="n">egress</span> <span class="o">=</span> <span class="n">ingress</span>
-        	<span class="n">ingress</span> <span class="o">=</span> <span class="n">buffer</span>
+        	<span class="n">ingress</span> <span class="o">=</span> <span class="n">buff</span>
 
         <span class="n">ingress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__formatConventional</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ingress</span><span class="p">))</span>
         <span class="n">egress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__formatConventional</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">egress</span><span class="p">))</span>
@@ -132,6 +145,7 @@
         <span class="n">ports</span> <span class="o">=</span> <span class="n">ingress</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">+</span><span class="n">egress</span>
 
         <span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sdebug</span><span class="p">(</span><span class="s1">&#39;sending command to switch &gt;&gt; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;:oxc:swit:conn:add&#39;</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">ports</span><span class="o">+</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_switch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;:oxc:swit:conn:add&#39;</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">ports</span><span class="o">+</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Polatis.make_connections"><a class="viewcode-back" href="../../source/components/instruments.html#instruments.Polatis.Polatis.make_connections">[docs]</a>    <span class="k">def</span> <span class="nf">make_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ingress</span><span class="p">,</span> <span class="n">egress</span><span class="p">,</span> <span class="n">explicit</span><span class="o">=</span><span class="s1">&#39;only&#39;</span><span class="p">):</span>

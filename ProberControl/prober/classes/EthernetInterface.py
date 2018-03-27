@@ -61,6 +61,7 @@ class Eth_Server():
 
                 else:
                     data = s.recv(1024)
+
                     if data:
                         for func in self.commands:
                             if func.__name__ in data:

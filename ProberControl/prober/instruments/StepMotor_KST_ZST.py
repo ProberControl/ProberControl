@@ -130,7 +130,7 @@ class StepMotor_KST_ZST(Motor):
         '''
 
         self.moving = True
-        # check weather we are within limits
+        # check whether we are within limits
         if self.mm_pos + dist > LIMIT_SWITCH or self.mm_pos + dist < 0:
             self.logger.error('Out of bounds error (dist:{}, pos:{})'.format(dist, self.mm_pos), extra=self.ext)
             self.moving = False

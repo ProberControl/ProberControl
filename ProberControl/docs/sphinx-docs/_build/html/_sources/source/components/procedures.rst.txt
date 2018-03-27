@@ -52,26 +52,10 @@ procedures\.random module
     :undoc-members:
     :show-inheritance:
 
-procedures\.randomWalk module
------------------------------
-
-.. automodule:: procedures.randomWalk
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 procedures\.raster module
 -------------------------
 
 .. automodule:: procedures.raster
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-procedures\.vision module
--------------------------
-
-.. automodule:: procedures.vision
     :members:
     :undoc-members:
     :show-inheritance:

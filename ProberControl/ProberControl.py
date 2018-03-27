@@ -16,7 +16,7 @@ try:
 
     def cleanUp(stages):
         '''Release instrument resources'''
-        for stage in stages.iteritems():
+        for stage in stages.values():
             if getattr(stage, 'close', None) is not None:
                 # NOTE only call close on instruments that have it
                 # implemented

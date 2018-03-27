@@ -1,3 +1,7 @@
+import socket
+import sys
+import time
+
 class TL2500(object):
     '''
     This class handles the communication with the fiContec TL2500 system.
@@ -5,7 +9,7 @@ class TL2500(object):
     .. note::
     '''
 
-    def __init__(self, interface=None, address=None):
+    def __init__(self, res_manager, address='127.0.0.1:8888'):
         '''
             Add all code needed to start the communication with the TL2500.
 
@@ -15,6 +19,21 @@ class TL2500(object):
 
             The self.active is needed by the framework and should be toggled by the functions whenever they start to perform non atomic code and toggled back to false afterwads
         '''
+        self.active = False
+
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        ip_address = address.split(":")[0]
+        port       = int(address.split(":")[1])
+
+        try:
+            self.sock.connect((ip_address, port))
+
+
+        except Exception:
+            print("Error in Connection")
+
+
         self.active = False
 
     def whoAmI(self):
@@ -104,6 +123,7 @@ class TL2500(object):
             (2) Prober returns error/success message
         '''
 
+
     def get_structure_needs(self, structure):
         '''
             Prober gives information on the fibers that need to be connected with PowerMeter and/or MultiMeter
@@ -169,3 +189,75 @@ class TL2500(object):
             returns 'ready' / 'error'
         '''
         return 'ready'
+
+    def close(self):
+        self.sock.close()
+
+    def test_connection(self):
+        self.sock.sendall('ANSWER ME FROM WITHIN THE CLASS\n')
+        print self.sock.recv(1024)
+
+
+if __name__ == "__main__":
+    IP_ADDRESS      = "127.0.0.1"
+    PORT            = 8888
+    STOP_AT_TEST    = 1
+
+    ## 1 Base Cummincation - Just Send 'HELLO WORLD'
+    if STOP_AT_TEST > 0:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        try:
+            sock.connect((IP_ADDRESS, PORT))
+            sock.sendall('HELLO WORLD\n')
+            sock.close()
+
+        except Exception:
+            print("Error in Connection")
+
+    ## 2 Base Cummincation -  Send 'ANSWER ME' and print answer
+    if STOP_AT_TEST > 1:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        try:
+            sock.connect((IP_ADDRESS, PORT))
+            sock.sendall('ANSWER ME\n')
+            print sock.recv(1024)
+            sock.close()
+
+        except Exception:
+            print("Error in Connection")
+
+    ## 3 Same functionalit as in #2 but using the Prober Class
+    if STOP_AT_TEST > 2:
+        prober = TL2500(None, IP_ADDRESS+":"+str(PORT))
+
+        prober.test_connection()
+        prober.close()
+
+    ## 4 Full Chip Loading Example
+    if STOP_AT_TEST > 3:
+        # DUMMY FUNCTION FOR prepare_for_coupling
+        def prepare_for_coupling(needs):
+            print "ProberControl Ready for Coupling "
+
+        # Initiate communication channel with TL2500
+        prober = TL2500(None, IP_ADDRESS+":"+str(PORT))
+
+        # Check for the state of the prober
+        prober.get_state()
+
+        # Load Chip
+        prober.load_chip('Chip54')
+
+        # What is needed to couple the structure
+        needs = prober.get_structure_needs('BSplit3')
+
+        # ProberControl switches-on lasers , sets switches etc
+        prepare_for_coupling(needs)   #JUST FOR FLOW_IDEA
+
+        # Couple the structure
+        prober.connect_structure('BSplit3',False)
+
+        # Stop communication
+        prober.close()

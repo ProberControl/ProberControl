@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>MeasureHandler &#8212; AutoProber 2.0 documentation</title>
+    <title>Global Measure Handler &#8212; AutoProber 2.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -43,11 +43,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="measurehandler">
-<h1>MeasureHandler<a class="headerlink" href="#measurehandler" title="Permalink to this headline">¶</a></h1>
-<p>The measure handler is the entity that will control and distribute access of the measurement instruments, such as dc multi-meters or optical power-meters, to the procedures or objects that require them. The handler takes away from the specific functions the responsibility to know exactly what instruments they are dealing with. The functions will only need to provide the type of instrument they need and the measure handler will perform all the necessary work to find such an instrument.</p>
+  <div class="section" id="global-measure-handler">
+<h1>Global Measure Handler<a class="headerlink" href="#global-measure-handler" title="Permalink to this headline">¶</a></h1>
+<p>The measure handler is the entity that controls and distributes access of the measurement instruments, such as dc multi-meters or optical power-meters, to the procedures or objects that require them. The handler takes away from the specific functions the responsibility to know exactly what instruments(models) they are dealing with. The functions will only need to provide the type of instrument they need and the measure handler will perform all the necessary work to find such an instrument.</p>
 <dl class="docutils">
-<dt><strong>Interface:</strong></dt>
+<dt><strong>Description</strong></dt>
 <dd>The measure handler functionality is cleanly exposed by a single class called Global_MeasureHandler. The class utilizes a Singleton scheme so the same object will be accessed from anywhere in the code. The constructor only needs a reference to the Stages dictionary:</dd>
 </dl>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@Singleton</span>        <span class="c1"># apply the Singleton decorator</span>
@@ -57,42 +57,87 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Stages</span> <span class="o">=</span> <span class="n">Stages</span>
 </pre></div>
 </div>
-<p>Internally the class should utilize a two level table[1]_ to classify the different instruments. It should look like this:</p>
-<a class="reference internal image-reference" href="../../_images/diagram.png"><img alt="../../_images/diagram.png" class="align-center" src="../../_images/diagram.png" style="width: 600px; height: 300px;" /></a>
-<p>The core of the measure handler’s functionality lies on the nature of the attribute type in the main dictionary. In the current implementation this attribute is the measurement type the instrument performs (ex. DC, RF, optical). The attribute type could as well be the kind of function that the specific interface of the instrument exposes (ex. Does it implement get_current() ?). The final entries are triplets (function, threshold, user). What the user of the Global_MeasureHandler is interested in is the measurement function and any associated values that help in the tests (ex. the power threshold for optical coupling).</p>
 <dl class="docutils">
-<dt>A description of the class’s methods is provided below:</dt>
-<dd><dl class="first last docutils">
-<dt><code class="docutils literal"><span class="pre">insert_instr(stage_name,</span> <span class="pre">triggerNetwork)</span></code></dt>
-<dd>This is the function that adds an instrument to the measure_handler.</dd>
-<dt><code class="docutils literal"><span class="pre">get_instrument(specifiedDevice,</span> <span class="pre">additional=False)</span></code></dt>
-<dd>Finds and returns an inactive instrument corresponding to the one specified. Returns None if such instrument was found/available.</dd>
-<dt><code class="docutils literal"><span class="pre">get_instrument_triggered_by(self,</span> <span class="pre">triggerSource,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False)</span></code></dt>
-<dd>Finds and returns an unactive instrument, corresponding to the one specified, that can be triggered by trigger_source</dd>
-<dt><code class="docutils literal"><span class="pre">connect_instruments(self,</span> <span class="pre">transmitting_instrument,</span> <span class="pre">receiving_instrument)</span></code></dt>
-<dd>Connects two instruments together through the SwitchHandler.</dd>
-<dt>PARALLELISM</dt>
-<dd>In the method descriptions above the notion of availability is extensively referenced. The general idea behind that is that we would like in the future for the testing procedure to become pipelined so that different tests can be performed at the same time. In that case strict mechanism has to be defined to distribute the instrument resources. The Global_MeasureHandler is also responsible for that. This is what the user field in the table entries are for. Also if tests are to be performed in parallel, the measure_handler should be completely thread safe, securing the data structure with locks where necessary.
-SIDE EFFECTS</dd>
-<dt>CONFIGURATION FILE</dt>
-<dd>Because of the way we want the measure handler to work, we need to get instrument classification information from somewhere (that would go into the insert_instr call). Thus, the ProberConfig.conf file and its parsing mechanism within ProberControl.py should expand to accommodate the insertion of descriptions at least for the instrument entries that are used for measurements (whose names begin with ‘M’).</dd>
-<dt>SWITCHING</dt>
-<dd>The development of Global_MeasureHandler should also allow for an efficient way of interacting with the module that will control the large switch which will connect the different components. Some example code could look like:</dd>
-</dl>
+<dt>.</dt>
+<dd><dl class="first docutils">
+<dt>Internally the class keeps information about:</dt>
+<dd><ul class="first last simple">
+<li>All the instruments (and fibers) that were registered in the main configuration file</li>
+<li>Which instruments are at any time owned by a user (eg. instance of ScriptController, GUI)</li>
+<li>The triggering networks, meaning which instrument can trigger which other instrument, as defined in the configuration file</li>
+</ul>
+</dd>
+<dt>… and provides functionality to control:</dt>
+<dd><ul class="first last simple">
+<li>The provision of instruments according to type</li>
+<li>The serialization to instrument ownership</li>
+<li>The interconnection of “owned” instruments through the <code class="docutils literal"><span class="pre">SwitchHandler</span></code></li>
+</ul>
 </dd>
 </dl>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">some_test_function</span><span class="p">(</span><span class="n">blah</span><span class="p">,</span> <span class="n">blah</span><span class="p">):</span>
-    <span class="n">g_mh</span> <span class="o">=</span> <span class="n">Global_MeasureHandler</span><span class="p">()</span>
-    <span class="c1"># more stuff...</span>
+<p>The Global_MeasureHandler is a necessary and fundamental entity of the ProberControl framework and serves to optimally utilize the available instruments of a setup. It enables the correct parallelization of test recipe execution, keeping tally of available and used instruments and implementing a sophisticated internal locking scheme, which is necessary for thread safety.</p>
+<p class="last">The class was originally to be used explicitly in the custom measurement functions defined by the test engineer, but is now also used internally in the software, for organization purposes.</p>
+</dd>
+<dt><strong>Interface</strong></dt>
+<dd>The Global_MeasureHandler exposes a simplistic API that is intuitive and easy to use, while providing a full range of options for the test engineer writing the measurement functions. Below are the most important/useful methods:</dd>
+<dt><code class="docutils literal"><span class="pre">get_instrument(specifiedDevice,</span> <span class="pre">additional=False)</span></code></dt>
+<dd>Finds and returns an inactive instrument corresponding to the one specified. Returns None if such instrument was found/available.</dd>
+<dt><code class="docutils literal"><span class="pre">get_instrument_triggered_by(triggerSource,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False)</span></code></dt>
+<dd>Finds and returns an inactive instrument, corresponding to the one specified, that can be triggered by trigger_source instrument</dd>
+<dt><code class="docutils literal"><span class="pre">get_instrument_triggering(triggerTarget,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False)</span></code></dt>
+<dd>Finds and returns an inactive instrument, corresponding to the one specified, that can trigger trigger_source instrument</dd>
+<dt><code class="docutils literal"><span class="pre">get_instrument_by_name(instrumentName)</span></code></dt>
+<dd>Finds and returns the instrument with the specified name, used in the cases where a specific model in necessary</dd>
+<dt><code class="docutils literal"><span class="pre">choose_fiber_in(self,</span> <span class="pre">fiber_id)</span></code></dt>
+<dd>Returns a holder to the input fiber with id fiber_id (as specified in the configuration file)</dd>
+<dt><code class="docutils literal"><span class="pre">choose_fiber_out(self,</span> <span class="pre">fiber_id)</span></code></dt>
+<dd>Returns a holder to the output fiber with id fiber_id (as specified in the configuration file)</dd>
+<dt><code class="docutils literal"><span class="pre">connect_instruments(self,</span> <span class="pre">transmitting_instrument,</span> <span class="pre">receiving_instrument)</span></code></dt>
+<dd><blockquote class="first">
+<div>Connects two instruments together (through the SwitchHandler)</div></blockquote>
+<p class="last">The functions of the family get_instrument… listed above all return <strong>None</strong> if the instrument is not found or is already in use by a different user. In a multi-threaded environment, however, it makes sense for to wait for the instrument to become available before returning to the user. As such, the following blocking alternatives exist (denoted by the <strong>_w</strong> for “wait”):</p>
+</dd>
+</dl>
+<p><code class="docutils literal"><span class="pre">get_instrument_w(specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code>
+<code class="docutils literal"><span class="pre">get_instrument_triggered_by_w(triggerSource,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code>
+<code class="docutils literal"><span class="pre">get_instrument_triggering_w(triggerTarget,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code>
+<code class="docutils literal"><span class="pre">get_instrument_by_name_w(instrumentName)</span></code></p>
+<blockquote>
+<div>The functions above take the exact arguments as the respective non-blocking ones, plus an optional parameter <code class="docutils literal"><span class="pre">timeout</span></code> which determines how long to wait if the instrument is not available. A timeout of 0 means wait until it becomes available.</div></blockquote>
+<dl class="docutils">
+<dt><strong>Example</strong></dt>
+<dd>Here is an examples which demonstrate the ease of use of the Global_MeasureHandler API for measurement functions:</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">simpleConnectFiberTest</span><span class="p">():</span>
+    <span class="n">gh</span> <span class="o">=</span> <span class="n">Global_MeasureHandler</span><span class="p">()</span>
 
-<span class="n">fun</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">g_mh</span><span class="o">.</span><span class="n">get_instr</span><span class="p">(</span><span class="s1">&#39;DC&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
-<span class="n">switch</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">switch_id_of</span><span class="p">(</span><span class="n">fun</span><span class="p">),</span> <span class="n">this_fiber</span><span class="p">)</span>
-<span class="c1">#continue with test...</span>
+    <span class="c1"># wait for laser</span>
+    <span class="n">laser</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">get_instrument_w</span><span class="p">(</span><span class="s1">&#39;Laser&#39;</span><span class="p">)</span>
+    <span class="c1"># choose input fiber</span>
+    <span class="n">fiber_in</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">choose_fiber_in</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># connect laser to fiber</span>
+    <span class="n">gh</span><span class="o">.</span><span class="n">connect_instruments</span><span class="p">(</span><span class="n">laser</span><span class="p">,</span> <span class="n">fiber_in</span><span class="p">)</span>
+
+    <span class="c1"># choose output fiber</span>
+    <span class="n">fiber_out</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">choose_fiber_out</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="c1"># wait for a powermeter</span>
+    <span class="n">p_meter</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">get_instrument_triggered_by_w</span><span class="p">(</span><span class="n">laser</span><span class="p">,</span> <span class="s1">&#39;PowerMeter&#39;</span><span class="p">)</span>
+    <span class="c1"># connect fiber to powermeter</span>
+    <span class="n">gh</span><span class="o">.</span><span class="n">connect_instruments</span><span class="p">(</span><span class="n">fiber_out</span><span class="p">,</span> <span class="n">p_meter</span><span class="p">)</span>
+
+    <span class="c1"># make measurement</span>
+    <span class="n">wavelength</span> <span class="o">=</span> <span class="mi">1550</span>
+    <span class="n">laser</span><span class="o">.</span><span class="n">setwavelength</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
+    <span class="n">power</span> <span class="o">=</span> <span class="n">p_meter</span><span class="o">.</span><span class="n">get_power</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">power</span>
 </pre></div>
 </div>
-<p>The GUI is based on Tkinter. The constructor has the following dynamic parts:
-1.    It generates the line with Item 6,7,8 dynamically depending whether a stage or measurement tool is connected
-2.    Line A is equipped with buttons representing the stages keys in the stages Dictionary.</p>
+<dl class="docutils">
+<dt>.</dt>
+<dd><p class="first">Here we use the blocking version of get_instrument which means that if all lasers and all power-meters are in use, we will wait until some are available. We also demonstrate the use of the trigger-conscious functions. The powermeter selected will by triggerable by the laser.</p>
+<p class="last">We can see how in 6 lines of code with Global_MeasureHandler we have acquired and connected together all the instruments we need to make an optical power measurement!</p>
+</dd>
+</dl>
 </div>
 
 

@@ -44,13 +44,11 @@ class SwitchHandler(object):
 
         :returns: String of all connections between devices
         '''
-        #NOTE needs update w/ multiple switches
-
         formatted_output = ""
-        for k,v in self.active_connetions:
+        for k,v in self.active_connetions.iteritems():
             k_name, k_switch = k
             v_name, v_switch = v
-            formatted_output += "{:20} : {:20} {:5} {:20} {:20}\n".format(
+            formatted_output += "{:15} : {:15} {:5} {:15} {:15}\n".format(
             k_name,
             '{}[{}]'.format(*k_switch),
             "--->",
@@ -75,7 +73,8 @@ class SwitchHandler(object):
         ingress = pair_in[1]
         egress  = pair_out[1]
 
-        sdebug('connecting {}[{} - {}]'.format(switch_in, gress, egress))
+        sdebug('connecting {}[{}] - {}[{}]'.format(pair_in[0], ingress, pair_out[0], egress))
+        sdebug('under swicth: {}'.format(self._p[pair_in[0]]))
 
         self._p[pair_in[0]].quick_connect(ingress, egress)
 

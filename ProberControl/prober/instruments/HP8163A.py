@@ -20,7 +20,7 @@ class HP8163A(object):
         '''
         self.active = False
         self.gpib = res_manager.open_resource(address)
-        if '.' in channel:
+        if '.' in str(channel):
 			self.__channel = int(channel.split('.')[0])
 			self.__port = int(channel.split('.')[1])
         else:

@@ -84,7 +84,7 @@ class ScriptController(object):
                         self._storeBinningResult(old_chip, binningResult)
 
                         self._storeChip(old_chip,binningResult)
-                        self._loadChip(entry['chip'])
+                        self._loadChip(entry['chip'])               ### TODO MAYBE ADD ERROR HANDLING
 
                         old_chip = entry['chip']
 
@@ -101,7 +101,7 @@ class ScriptController(object):
                         old_wafer = entry['wafer']
 
                 # If it is a procedure
-                elif 'structure' in entry.keys() and 'procedure' in entry.keys():
+                if 'structure' in entry.keys() and 'procedure' in entry.keys():
                     if not self._structureProcedure(entry, out.getOutFile(entry)):
                         break
 
@@ -209,7 +209,7 @@ class ScriptController(object):
                         return True
                     else:
                         return self._promptForErrorHandling('Prober responded with an error when storing chip')
-                else:
+                else:   ## No Container Case - TODO THINK ABOUT THIS CASE
                     if 'ready' == self.stages['MProber'].store_chip():
                         return True
                     else:
@@ -248,7 +248,7 @@ class ScriptController(object):
 
             powerMeter = self.stages.get('MProberPower')
             multiMeter = self.stages.get('MProberMulti')
-            power_out, multi_out = self.stages['MProber'].get_structure_needs(entry['structure'])
+            power_out, multi_out = self.stages['MProber'].get_structure_needs(entry['structure']) # TODO - probably just gets string from Coordinate.file that needs to be handled
             # connect the according fibers to power/multi-meter
             if powerMeter is not None and power_out is not None:
                 power_fiber = self.gh.choose_fiber_out(power_out)
@@ -269,7 +269,7 @@ class ScriptController(object):
                     else:
                         return False
 
-            args = self._prepArguments(entry)
+            args = self._prepArguments(entry)  ### TODO Use DataIO.parameter_prep()
 
             data = None
             try:
@@ -295,7 +295,7 @@ class ScriptController(object):
                 DataIO.writeData(file, "Error Connecting {}.".format(entry['structure']))
                 return True
             else:
-                args = self._prepArguments(entry)
+                args = self._prepArguments(entry) # TODO: Use DataIO.pre_arguments
 
                 data = None
                 try:
@@ -310,7 +310,7 @@ class ScriptController(object):
 
     def _procedure(self, entry, file):
         '''executes experiments that use multiple tools or generalized algorythms'''
-        args = self._prepArguments(entry)
+        args = self._prepArguments(entry) # TODO: Use DataIO.prep_arguments
 
         data = None
         try:
@@ -322,7 +322,7 @@ class ScriptController(object):
             # Write the results of the experiment to file
             DataIO.writeData(file, data, entry['measurement'])
 
-    def _prepArguments(self, entry):
+    def _prepArguments(self, entry):   # TODO: DELETE use DataIO instead
         '''
             Prepares the arguments for the function to be executed.
             1) Interpretes lists
@@ -569,9 +569,9 @@ class ScriptController(object):
         '''
 
         def __init__(self,group_designators,resultsPath='', name_convention='.csv', outputMode=None):
-            self.group_designators = group_designators
+            self.group_designators = group_designators # List of possible output groups [Wafer, Chip Group etc...]
             self.FileMap = {}
-            self.outputMode = outputMode
+            self.outputMode = outputMode # Actually choosen output hierarchicall level [wafer, chip, group etc...]
             self.name_convention = name_convention
             self.resultsPath = resultsPath
 

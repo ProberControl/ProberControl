@@ -2,6 +2,12 @@
 import datetime
 from time import sleep
 
+# DEBUG flag
+debug = 0
+def sdebug(msg):
+    if debug > 0:
+        print 'Polatis:: {}'.format(msg)
+
 class Polatis(object):
     '''
     This class models the Polatis 16x16 optical switch. Dependencies: PyVisa, datetime, time.
@@ -66,6 +72,10 @@ class Polatis(object):
         sleep(.1)
         self._switch.write('*RST;')
 
+    def close(self):
+        '''instrument cleanup'''
+        self.reset()
+
     def quick_connect(self, ingress=0, egress=0):
         '''
 
@@ -77,10 +87,13 @@ class Polatis(object):
         :type egress: integer
         '''
 
+        ingress = int(ingress)
+        egress = int(egress)
+        
         if ingress > egress:
-        	buffer = egress
+        	buff = egress
         	egress = ingress
-        	ingress = buffer
+        	ingress = buff
 
         ingress = self.__formatConventional(str(ingress))
         egress = self.__formatConventional(str(egress))
@@ -88,6 +101,7 @@ class Polatis(object):
         ports = ingress+','+egress
 
         sleep(.1)
+        sdebug('sending command to switch >> {}'.format(':oxc:swit:conn:add'+' '+ports+';'))
         self._switch.write(':oxc:swit:conn:add'+' '+ports+';')
 
     def make_connections(self, ingress, egress, explicit='only'):
