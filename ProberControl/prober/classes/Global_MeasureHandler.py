@@ -192,11 +192,30 @@ class Global_MeasureHandler(object):
                 # self._connect_fiber(found, owner_id, fiber_id, isFiberIn)
             return found
 
+    def _choose_fiber_w(self, fiber_id, isFiberIn, timeout=0.0):
+        '''
+        blocking version of _choose_fiber
+        timeout :: timeout in seconds; 0 for no timeout
+        '''
+        curr_t = time.time()
+        while timeout == 0.0 or curr_t + timeout >= time.time():
+            found = self._choose_fiber(fiber_id, isFiberIn)
+            if found is not None:
+                return found
+            time.sleep(SLEEP_TIME)
+        return None
+
     def choose_fiber_in(self, fiber_id):
         return self._choose_fiber(fiber_id, True)
 
     def choose_fiber_out(self, fiber_id):
         return self._choose_fiber(fiber_id, False)
+
+    def choose_fiber_in_w(self, fiber_id, timeout=0.0):
+        return self._choose_fiber_w(fiber_id, True, timeout)
+
+    def choose_fiber_out_w(self, fiber_id, timeout=0.0):
+        return self._choose_fiber_w(fiber_id, False, timeout)
 
     def get_instrument_w(self, specifiedDevice, additional=False, timeout=0.0):
         '''

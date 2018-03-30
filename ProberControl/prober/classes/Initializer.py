@@ -40,7 +40,11 @@ class Initializer(object):
     '''
 
     def __init__(self):
-        self.rm = visa.ResourceManager()
+        try:
+            self.rm = visa.ResourceManager()
+        except:
+            print "Warning: Visa Resource Manager unavailable"
+            self.rm = None
         self.brokenInstruments = [] # collection for instruments not able to be instantiated
         self.stageCollection = {} # collection for instantiated stages
         self.configCollection = [] # collection for all configurations from config file

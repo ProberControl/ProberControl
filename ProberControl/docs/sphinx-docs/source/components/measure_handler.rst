@@ -48,12 +48,19 @@ The measure handler is the entity that controls and distributes access of the me
         Connects two instruments together (through the SwitchHandler)
 
 
-    The functions of the family get_instrument... listed above all return **None** if the instrument is not found or is already in use by a different user. In a multi-threaded environment, however, it makes sense for to wait for the instrument to become available before returning to the user. As such, the following blocking alternatives exist (denoted by the **_w** for "wait"):
+    The functions of the family get_instrument... and choose_fiber... listed above all return **None** if the instrument is not found or is already in use by a different user. In a multi-threaded environment, however, it makes sense for to wait for the instrument to become available before returning to the user. As such, the following blocking alternatives exist (denoted by the **_w** for "wait"):
 
-``get_instrument_w(specifiedDevice, additional=False, timeout=0.0)``
-``get_instrument_triggered_by_w(triggerSource, specifiedDevice, additional=False, timeout=0.0)``
-``get_instrument_triggering_w(triggerTarget, specifiedDevice, additional=False, timeout=0.0)``
-``get_instrument_by_name_w(instrumentName)``
+| ``get_instrument_w(specifiedDevice, additional=False, timeout=0.0)``
+|
+| ``get_instrument_triggered_by_w(triggerSource, specifiedDevice, additional=False, timeout=0.0)``
+|
+| ``get_instrument_triggering_w(triggerTarget, specifiedDevice, additional=False, timeout=0.0)``
+|
+| ``get_instrument_by_name_w(self, instrumentName, timeout=0.0)``
+|
+| ``choose_fiber_in_w(self, fiber_id, timeout=0.0)``
+|
+| ``choose_fiber_out_w(self, fiber_id, timeout=0.0)``
 
     The functions above take the exact arguments as the respective non-blocking ones, plus an optional parameter ``timeout`` which determines how long to wait if the instrument is not available. A timeout of 0 means wait until it becomes available.
 
@@ -68,12 +75,12 @@ The measure handler is the entity that controls and distributes access of the me
         # wait for laser
         laser = gh.get_instrument_w('Laser')
         # choose input fiber
-        fiber_in = gh.choose_fiber_in(1)
+        fiber_in = gh.choose_fiber_in_w(1)
         # connect laser to fiber
         gh.connect_instruments(laser, fiber_in)
 
         # choose output fiber
-        fiber_out = gh.choose_fiber_out(3)
+        fiber_out = gh.choose_fiber_out_w(3)
         # wait for a powermeter
         p_meter = gh.get_instrument_triggered_by_w(laser, 'PowerMeter')
         # connect fiber to powermeter
@@ -86,6 +93,6 @@ The measure handler is the entity that controls and distributes access of the me
         print power
 
 .
-    Here we use the blocking version of get_instrument which means that if all lasers and all power-meters are in use, we will wait until some are available. We also demonstrate the use of the trigger-conscious functions. The powermeter selected will by triggerable by the laser.
+    Here we use the blocking version of get_instrument and choose_fiber which means that if all lasers, power-meters and the specified fibers are in use, we will wait until some are available. We also demonstrate the use of the trigger-conscious functions. The powermeter selected will by triggerable by the laser.
 
     We can see how in 6 lines of code with Global_MeasureHandler we have acquired and connected together all the instruments we need to make an optical power measurement!
