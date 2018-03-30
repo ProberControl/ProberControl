@@ -95,13 +95,22 @@
 <dt><code class="docutils literal"><span class="pre">connect_instruments(self,</span> <span class="pre">transmitting_instrument,</span> <span class="pre">receiving_instrument)</span></code></dt>
 <dd><blockquote class="first">
 <div>Connects two instruments together (through the SwitchHandler)</div></blockquote>
-<p class="last">The functions of the family get_instrument… listed above all return <strong>None</strong> if the instrument is not found or is already in use by a different user. In a multi-threaded environment, however, it makes sense for to wait for the instrument to become available before returning to the user. As such, the following blocking alternatives exist (denoted by the <strong>_w</strong> for “wait”):</p>
+<p class="last">The functions of the family get_instrument… and choose_fiber… listed above all return <strong>None</strong> if the instrument is not found or is already in use by a different user. In a multi-threaded environment, however, it makes sense for to wait for the instrument to become available before returning to the user. As such, the following blocking alternatives exist (denoted by the <strong>_w</strong> for “wait”):</p>
 </dd>
 </dl>
-<p><code class="docutils literal"><span class="pre">get_instrument_w(specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code>
-<code class="docutils literal"><span class="pre">get_instrument_triggered_by_w(triggerSource,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code>
-<code class="docutils literal"><span class="pre">get_instrument_triggering_w(triggerTarget,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code>
-<code class="docutils literal"><span class="pre">get_instrument_by_name_w(instrumentName)</span></code></p>
+<div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">get_instrument_w(specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code></div>
+<div class="line"><br /></div>
+<div class="line"><code class="docutils literal"><span class="pre">get_instrument_triggered_by_w(triggerSource,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code></div>
+<div class="line"><br /></div>
+<div class="line"><code class="docutils literal"><span class="pre">get_instrument_triggering_w(triggerTarget,</span> <span class="pre">specifiedDevice,</span> <span class="pre">additional=False,</span> <span class="pre">timeout=0.0)</span></code></div>
+<div class="line"><br /></div>
+<div class="line"><code class="docutils literal"><span class="pre">get_instrument_by_name_w(self,</span> <span class="pre">instrumentName,</span> <span class="pre">timeout=0.0)</span></code></div>
+<div class="line"><br /></div>
+<div class="line"><code class="docutils literal"><span class="pre">choose_fiber_in_w(self,</span> <span class="pre">fiber_id,</span> <span class="pre">timeout=0.0)</span></code></div>
+<div class="line"><br /></div>
+<div class="line"><code class="docutils literal"><span class="pre">choose_fiber_out_w(self,</span> <span class="pre">fiber_id,</span> <span class="pre">timeout=0.0)</span></code></div>
+</div>
 <blockquote>
 <div>The functions above take the exact arguments as the respective non-blocking ones, plus an optional parameter <code class="docutils literal"><span class="pre">timeout</span></code> which determines how long to wait if the instrument is not available. A timeout of 0 means wait until it becomes available.</div></blockquote>
 <dl class="docutils">
@@ -114,12 +123,12 @@
     <span class="c1"># wait for laser</span>
     <span class="n">laser</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">get_instrument_w</span><span class="p">(</span><span class="s1">&#39;Laser&#39;</span><span class="p">)</span>
     <span class="c1"># choose input fiber</span>
-    <span class="n">fiber_in</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">choose_fiber_in</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">fiber_in</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">choose_fiber_in_w</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="c1"># connect laser to fiber</span>
     <span class="n">gh</span><span class="o">.</span><span class="n">connect_instruments</span><span class="p">(</span><span class="n">laser</span><span class="p">,</span> <span class="n">fiber_in</span><span class="p">)</span>
 
     <span class="c1"># choose output fiber</span>
-    <span class="n">fiber_out</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">choose_fiber_out</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">fiber_out</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">choose_fiber_out_w</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
     <span class="c1"># wait for a powermeter</span>
     <span class="n">p_meter</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">get_instrument_triggered_by_w</span><span class="p">(</span><span class="n">laser</span><span class="p">,</span> <span class="s1">&#39;PowerMeter&#39;</span><span class="p">)</span>
     <span class="c1"># connect fiber to powermeter</span>
@@ -134,7 +143,7 @@
 </div>
 <dl class="docutils">
 <dt>.</dt>
-<dd><p class="first">Here we use the blocking version of get_instrument which means that if all lasers and all power-meters are in use, we will wait until some are available. We also demonstrate the use of the trigger-conscious functions. The powermeter selected will by triggerable by the laser.</p>
+<dd><p class="first">Here we use the blocking version of get_instrument and choose_fiber which means that if all lasers, power-meters and the specified fibers are in use, we will wait until some are available. We also demonstrate the use of the trigger-conscious functions. The powermeter selected will by triggerable by the laser.</p>
 <p class="last">We can see how in 6 lines of code with Global_MeasureHandler we have acquired and connected together all the instruments we need to make an optical power measurement!</p>
 </dd>
 </dl>
