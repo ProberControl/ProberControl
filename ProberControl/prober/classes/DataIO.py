@@ -11,7 +11,11 @@ class DataIO():
     '''
     @staticmethod
     def writeData(openFile, data, Data_Name=''):
-        '''Takes data in form of nested lists or singular value and a experiment name, and writes it to a results file. The parmater is tested to be either a file handler (in which case its considered open) or a str in which case its considered to be a path to a file to which the data will be appended.
+        '''Takes data in form of nested lists or singular value and a experiment
+        name, and writes it to a results file. The parmater is tested to be
+        either a file handler (in which case its considered open) or a str in
+        which case its considered to be a path to a file to which the data will
+        be appended.
         '''
 
         # check whether call was local or generated from ethernet_interface
@@ -71,9 +75,8 @@ class DataIO():
                 openFile.write("\n")
 
         elif dim == 1:
-            for elem in sublist:
-                openFile.write("{}\t".format(elem))
-            openFile.write("\n")
+            for elem in data:
+                openFile.write("{}\n".format(elem))
 
         elif dim == 0:
             openFile.write("\n")

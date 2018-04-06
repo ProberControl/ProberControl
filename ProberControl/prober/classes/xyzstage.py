@@ -129,9 +129,9 @@ class XYZ_Stage(object):
                 act_z += z_extra
 
             # threading approach
-            t_x = threading.Thread(target=StepMotor.abs_transl, args=(self.x_axis, act_x))
-            t_y = threading.Thread(target=StepMotor.abs_transl, args=(self.y_axis, act_y))
-            t_z = threading.Thread(target=StepMotor.abs_transl, args=(self.z_axis, act_z))
+            t_x = threading.Thread(target=self.x_axis.abs_transl, args=(act_x,))
+            t_y = threading.Thread(target=self.y_axis.abs_transl, args=(act_y,))
+            t_z = threading.Thread(target=self.z_axis.abs_transl, args=(act_z,))
 
             if z_extra > 0:
                 t_x.start(), t_y.start()

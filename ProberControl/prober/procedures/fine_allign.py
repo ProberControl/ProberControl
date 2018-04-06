@@ -33,14 +33,14 @@ def set_signal_source(stages, source_string=''):
         feedbackfunc = getattr(stages[source_string], "get_feedback", None)
         if callable(feedbackfunc):
             _set_meas_fun(stages[source_string].get_feedback)
-            return 1
+            return True
         else:
             _report(str(source_string)+" does not supply get_feedback function")
-            return -1;
+            return False;
 
     else:
         _report(str(source_string)+" is not a member of the Stages Dictionary")
-        return -1;
+        return False;
 
 
 def _get_signal(stages):
