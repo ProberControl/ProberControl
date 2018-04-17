@@ -211,6 +211,13 @@
         <span class="nb">print</span> <span class="s1">&#39;Reading Data from File failed&#39;</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
+<div class="viewcode-block" id="DataIO.usage_prep"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO.usage_prep">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">usage_prep</span><span class="p">(</span><span class="n">usage_list</span><span class="p">):</span>
+        <span class="n">usage_text</span> <span class="o">=</span> <span class="s1">&#39;USAGE:</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">for</span> <span class="n">tool_info</span> <span class="ow">in</span> <span class="n">usage_list</span><span class="p">:</span>
+            <span class="n">usage_text</span> <span class="o">+=</span> <span class="n">tool_info</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">usage_text</span></div>
+
 <div class="viewcode-block" id="DataIO.parameter_prep"><a class="viewcode-back" href="../../source/components/classes.html#classes.DataIO.DataIO.parameter_prep">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parameter_prep</span><span class="p">(</span><span class="n">Stages</span><span class="p">,</span> <span class="n">Maitre</span><span class="p">,</span> <span class="n">arg_string</span><span class="p">,</span><span class="n">func_parameter_list</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
