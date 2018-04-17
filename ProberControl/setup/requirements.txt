@@ -17,6 +17,8 @@ entrypoints==0.2.2
 enum34==1.1.6
 functools32==3.2.3.post2
 gdsCAD==0.4.5
+ibm-db==2.0.8
+ibm-db-sa==0.3.3
 idna==2.5
 imagesize==0.7.1
 lesscpy==0.12.0
@@ -48,6 +50,7 @@ snowballstemmer==1.2.1
 Sphinx==1.6.2
 sphinx-rtd-theme==0.2.4
 sphinxcontrib-websupport==1.0.1
+SQLAlchemy==1.2.6
 testpath==0.3.1
 tornado==4.5.1
 traitlets==4.3.2

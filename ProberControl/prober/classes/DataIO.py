@@ -168,6 +168,13 @@ class DataIO():
         return False
 
     @staticmethod
+    def usage_prep(usage_list):
+        usage_text = 'USAGE:\n'
+        for tool_info in usage_list:
+            usage_text += tool_info + '\n'
+        return usage_text
+
+    @staticmethod
     def parameter_prep(Stages, Maitre, arg_string,func_parameter_list):
         '''
             The function interpretes Input strings and prepares input paramters for functions.

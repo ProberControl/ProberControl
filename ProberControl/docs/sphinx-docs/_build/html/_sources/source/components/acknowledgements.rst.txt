@@ -5,10 +5,10 @@ The main authors of this project are:
 
 - Robert Polster
     - rpp2130@columbia.edu
-- Graham Philip Patterson
-    - gpp2109@columbia.edu
 - Michail Oikonomou
     - mo2617@columbia.edu
+- Graham Philip Patterson (Summer 2017)
+    - gpp2109@columbia.edu
 
 We would also like to thank AIM Photonics.
 

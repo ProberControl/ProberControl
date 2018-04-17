@@ -46,7 +46,9 @@ class Global_MeasureHandler(object):
         self.Stages = {}
         self.__locked = {}
         self.__chainSets = {}
+        self.__usage = {}
         self.__access_lock = threading.Lock()
+        self.__usage_lock = threading.Lock()
         self.switchHandler = None
 
     def update_stages(self, stages):
@@ -92,14 +94,57 @@ class Global_MeasureHandler(object):
         device = self.get_instrument(instrument)
         device.active = False
 
-    def _get_owner(self):
+    def _get_owner(self, function=False):
         # REMEBER to update this if the way the get_instruments calls occur
         # through additional code paths
         functions = ['_structureProcedure','__executeCommand','_procedure', 'execute_script', 'ProcButton']
         for entry in inspect.stack(context=0):
             if entry[3] in functions:
+                if function:
+                    # return id of "caught" function
+                    return id(entry[0])
                 return id(entry[0].f_locals['self'])
-        raise LookupError('Global_MeasureHandler not called within {}. The stack tracing was inconclusive on the instrument owner.'.format(functions))
+        raise LookupError('Global_MeasureHandler not called within {}. The stack tracing was inconclusive on the owner.'.format(functions))
+
+    def record_instrument_usage(self):
+        '''
+        Trigger the tracking of which instruments are being used by the caller
+        and its children
+        '''
+        caller = self._get_owner(function=True)
+        with self.__usage_lock:
+            self.__usage[caller] = []
+
+    def clear_instrument_usage(self):
+        caller = self._get_owner(function=True)
+        with self.__usage_lock:
+            try:
+                self.__usage.pop(caller)
+            except KeyError:
+                raise RuntimeError('G_Mh: invalid call to clear_instrument_usage()')
+
+    def _write_usage_record(self, instrument):
+        # construct record
+        typ = instrument.__class__.__name__
+        name = self._get_name_from_instrument(instrument)
+        record = '{}: {}'.format(name, typ)
+        # write record
+        caller = self._get_owner(function=True)
+        with self.__usage_lock:
+            if self.__usage.has_key(caller):
+                try:
+                    self.__usage[caller].append(record)
+                except:
+                    _print_mh('G_Mh: usage record not initialized: skipping record <{}>'.format(record))
+
+    def get_usage_record(self):
+        caller = self._get_owner(function=True)
+        with self.__usage_lock:
+            try:
+                return self.__usage[caller]
+            except:
+                RuntimeError('G_Mh: Invlaid action. Cannot retrieve usage record.')
+
 
     def _lock_instrument(self, instr, owner_id):
         # Requires the lock __access_lock to be acqured first
@@ -269,6 +314,7 @@ class Global_MeasureHandler(object):
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)
+                self._write_usage_record(found)
             return found
 
     def _get_instrument_triggerX(self, triggerObject, specifiedDevice, returnTriggerable, fiber_id, additional=False):
@@ -318,6 +364,7 @@ class Global_MeasureHandler(object):
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)
+                self._write_usage_record(found)
             return found
 
     def _get_instrument_triggerX_w(self, triggerObject, specifiedDevice, returnTriggerable, fiber_id, additional=False, timeout=0.0):
@@ -392,6 +439,7 @@ class Global_MeasureHandler(object):
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)
+                self._write_usage_record(found)
             return found
 
     def get_instrument_by_name_w(self, instrumentName, timeout=0.0):

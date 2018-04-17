@@ -273,13 +273,24 @@ class ScriptController(object):
 
             data = None
             try:
+                # setup instrument usage recording
+                self.gh.record_instrument_usage()
                 # Execute the function using maitre
                 data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
+                # TODO incorporate usage in data
+                usage = self.gh.get_usage_record()
+                self.gh.clear_instrument_usage()
             except Exception as e:
                 data = str(e)
+                usage = None
+                print >> sys.stderr, 'ERROR:: while executing {}:\n{}'.format(entry['function'], e)
             finally:
                 # Write the results of the experiment to file
                 DataIO.writeData(file, data, entry['measurement'])
+                # append tools usage info; we don't need measurement name since its just a strings
+                if usage:
+                    usage_stub = DataIO.usage_prep(usage)
+                    DataIO.writeData(file, usage_stub, None)
             return True
 
 
@@ -299,13 +310,24 @@ class ScriptController(object):
 
                 data = None
                 try:
+                    # setup instrument usage recording
+                    self.gh.record_instrument_usage()
                     # Execute the function using maitre
                     data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
+                    # TODO incorporate usage in data
+                    usage = self.gh.get_usage_record()
+                    self.gh.clear_instrument_usage()
                 except Exception as e:
                     data = str(e)
+                    usage = None
+                    print >> sys.stderr, 'ERROR:: while executing {}:\n{}'.format(entry['function'], e)
                 finally:
                     # Write the results of the experiment to file
                     DataIO.writeData(file, data, entry['measurement'])
+                    # append tools usage info; we don't need measurement name since its just a strings
+                    if usage:
+                        usage_stub = DataIO.usage_prep(usage)
+                        DataIO.writeData(file, usage_stub, None)
                 return True
 
     def _procedure(self, entry, file):
@@ -314,13 +336,24 @@ class ScriptController(object):
 
         data = None
         try:
+            # setup instrument usage recording
+            self.gh.record_instrument_usage()
             # Execute the function using maitre
             data = self.maitre.execute_func_name(entry['procedure'],entry['function'],args)
+            # TODO incorporate usage in data
+            usage = self.gh.get_usage_record()
+            self.gh.clear_instrument_usage()
         except Exception as e:
             data = str(e)
+            usage = None
+            print >> sys.stderr, 'ERROR:: while executing {}:\n{}'.format(entry['function'], e)
         finally:
             # Write the results of the experiment to file
             DataIO.writeData(file, data, entry['measurement'])
+            # append tools usage info; we don't need measurement name since its just a strings
+            if usage:
+                usage_stub = DataIO.usage_prep(usage)
+                DataIO.writeData(file, usage_stub, None)
 
     def _prepArguments(self, entry):   # TODO: DELETE use DataIO instead
         '''
