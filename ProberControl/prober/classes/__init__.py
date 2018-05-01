@@ -1,10 +1,12 @@
 __all__ = [
     'apt_util',
     'chip_stage',
+    'DatabaseWriter',
     'DataViewer',
     'DMesStage',
     'E_Stage',
     'Fiber',
+    'FileWriter',
     'Global_MeasureHandler',
     'GUI',
     'maitre',

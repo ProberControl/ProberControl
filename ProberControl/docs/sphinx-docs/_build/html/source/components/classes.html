@@ -165,6 +165,28 @@ be appended.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-classes.DatabaseWriter">
+<span id="classes-databasewriter-module"></span><h2>classes.DatabaseWriter module<a class="headerlink" href="#module-classes.DatabaseWriter" title="Permalink to this headline">¶</a></h2>
+<p>[DatabaseWriter]
+This module handles output of test results to a remote database.
+Implements the ProberControl’s OutputStream implicit interface.</p>
+<dl class="class">
+<dt id="classes.DatabaseWriter.DatabaseWriter">
+<em class="property">class </em><code class="descclassname">classes.DatabaseWriter.</code><code class="descname">DatabaseWriter</code><a class="reference internal" href="../../_modules/classes/DatabaseWriter.html#DatabaseWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DatabaseWriter.DatabaseWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="classes.DatabaseWriter.DatabaseWriter.getOutTargets">
+<code class="descname">getOutTargets</code><span class="sig-paren">(</span><em>entry</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DatabaseWriter.html#DatabaseWriter.getOutTargets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DatabaseWriter.DatabaseWriter.getOutTargets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.DatabaseWriter.DatabaseWriter.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>openFile</em>, <em>data</em>, <em>Data_Name=”</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/DatabaseWriter.html#DatabaseWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DatabaseWriter.DatabaseWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-classes.Dialogs">
 <span id="classes-dialogs-module"></span><h2>classes.Dialogs module<a class="headerlink" href="#module-classes.Dialogs" title="Permalink to this headline">¶</a></h2>
 <p>Module Contains Dialogs for User Interaction</p>
@@ -272,6 +294,39 @@ providing a handle for the Measure functions</p>
 <dt id="classes.Fiber.Fiber.whoAmI">
 <code class="descname">whoAmI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/Fiber.html#Fiber.whoAmI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Fiber.Fiber.whoAmI" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-classes.FileWriter">
+<span id="classes-filewriter-module"></span><h2>classes.FileWriter module<a class="headerlink" href="#module-classes.FileWriter" title="Permalink to this headline">¶</a></h2>
+<p>[FileWriter]
+This module handles output of test results to files in local storage.
+Implements the ProberControl’s OutputStream implicit interface.</p>
+<dl class="class">
+<dt id="classes.FileWriter.FileWriter">
+<em class="property">class </em><code class="descclassname">classes.FileWriter.</code><code class="descname">FileWriter</code><span class="sig-paren">(</span><em>group_designators</em>, <em>resultsPath=”</em>, <em>name_convention=’.csv’</em>, <em>outputMode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/FileWriter.html#FileWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.FileWriter.FileWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="classes.FileWriter.FileWriter.getOutTargets">
+<code class="descname">getOutTargets</code><span class="sig-paren">(</span><em>entry</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/FileWriter.html#FileWriter.getOutTargets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.FileWriter.FileWriter.getOutTargets" title="Permalink to this definition">¶</a></dt>
+<dd><p>get an open file handle from measurement entry struct</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="classes.FileWriter.FileWriter.getRelatedFiles">
+<code class="descname">getRelatedFiles</code><span class="sig-paren">(</span><em>script</em>, <em>key</em>, <em>entry</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/FileWriter.html#FileWriter.getRelatedFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.FileWriter.FileWriter.getRelatedFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="classes.FileWriter.FileWriter.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>openFile</em>, <em>data</em>, <em>Data_Name=”</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/classes/FileWriter.html#FileWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.FileWriter.FileWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes data in form of nested lists or singular value and a experiment
+name, and writes it to a results file. The parmater is tested to be
+either a file handler (in which case its considered open) or a str in
+which case its considered to be a path to a file to which the data will
+be appended.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -688,10 +743,12 @@ ang_y (float): anfle in y-axis</p>
 <li><a class="reference internal" href="#module-classes.DMesStage">classes.DMesStage module</a></li>
 <li><a class="reference internal" href="#module-classes.DataIO">classes.DataIO module</a></li>
 <li><a class="reference internal" href="#module-classes.DataViewer">classes.DataViewer module</a></li>
+<li><a class="reference internal" href="#module-classes.DatabaseWriter">classes.DatabaseWriter module</a></li>
 <li><a class="reference internal" href="#module-classes.Dialogs">classes.Dialogs module</a></li>
 <li><a class="reference internal" href="#module-classes.E_Stage">classes.E_Stage module</a></li>
 <li><a class="reference internal" href="#classes-ethernetinterface-module">classes.EthernetInterface module</a></li>
 <li><a class="reference internal" href="#module-classes.Fiber">classes.Fiber module</a></li>
+<li><a class="reference internal" href="#module-classes.FileWriter">classes.FileWriter module</a></li>
 <li><a class="reference internal" href="#classes-gui-module">classes.GUI module</a></li>
 <li><a class="reference internal" href="#classes-global-measurehandler-module">classes.Global_MeasureHandler module</a></li>
 <li><a class="reference internal" href="#classes-initializer-module">classes.Initializer module</a></li>

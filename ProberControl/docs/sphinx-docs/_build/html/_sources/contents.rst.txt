@@ -1,3 +1,11 @@
+`GitHub Project <https://github.com/ProberControl/ProberControl>`_
+--------------
+
+.. toctree::
+    :maxdepth: 1
+
+    repository link <https://github.com/ProberControl/ProberControl>
+
 Getting Started with ProberControl
 ----------------------------------
 
