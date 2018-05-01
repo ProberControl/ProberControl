@@ -28,6 +28,14 @@ classes\.DataViewer module
     :undoc-members:
     :show-inheritance:
 
+classes\.DatabaseWriter module
+------------------------------
+
+.. automodule:: classes.DatabaseWriter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 classes\.Dialogs module
 -----------------------
 
@@ -56,6 +64,14 @@ classes\.Fiber module
 ---------------------
 
 .. automodule:: classes.Fiber
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+classes\.FileWriter module
+--------------------------
+
+.. automodule:: classes.FileWriter
     :members:
     :undoc-members:
     :show-inheritance:
