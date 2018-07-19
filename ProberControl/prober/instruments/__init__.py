@@ -18,7 +18,6 @@ __all__ = [
     'HP6624A',
     'AnritsuMS2667C',
     'AndoAQ4321',
-    'AndoAQ6317',
 	'AragonBOSA400',
     'DSensor_ILD1420',
     'ELL8',
