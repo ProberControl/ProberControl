@@ -37,7 +37,8 @@ __all__ = [
     'TL2500MultiDummy',
     'AgilentE3643A',
     'TektronixCSA8000',
-    'PIXe_1084'
+    'PIXe_4140',
+    'PIXe_4322'
 ]
 
 pipe_instrument_groups = {

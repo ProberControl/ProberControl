@@ -1,4 +1,4 @@
-""" Driver for NI PIXe-1084
+""" Driver for NI PIXe_4322 8 channel Power Supply
 
     Allows for user interfacing directly, as well as ProberControl API
 
@@ -23,7 +23,7 @@ def parse_args(args=sys.argv[1:]):
     g = parser.add_argument_group("driver settings")
     g.add_argument("address", metavar="gpib_address",
                    type=str,
-                   help="The GPIB address of the device to be controlled")
+                   help="The address of the device to be controlled")
     g.add_argument("channel", metavar="device_channel",
                    type=str,
                    help="The channel to be controlled for the device")
@@ -37,7 +37,7 @@ def parse_args(args=sys.argv[1:]):
 
     return parser.parse_args(args)
 
-class PIXe_1084(object):
+class PIXe_4322(object):
     def __init__(self, rm, address='PXI1Slot2', channel='ao0', **kwargs):
         self.address = address
         self.channel = channel
