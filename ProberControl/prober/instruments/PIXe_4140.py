@@ -162,8 +162,8 @@ class PIXe_4140(object):
             session.initiate()
 
 def main(options, stdout):
-    device = PIXe_1084(options.address,options.channel)
-    if hasattr(PIXe_1084, options.function):
+    device = PIXe_4140(options.address,options.channel)
+    if hasattr(PIXe_4140, options.function):
         if isempty(options.value):
             value = getattr(device, options.function)
         else:

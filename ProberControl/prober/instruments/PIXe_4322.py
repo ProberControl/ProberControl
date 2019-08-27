@@ -59,8 +59,8 @@ class PIXe_4322(object):
         return 'PowerSupply'
 
 def main(options, stdout):
-    device = PIXe_1084(options.address,options.channel)
-    if hasattr(PIXe_1084, options.function):
+    device = PIXe_4322(options.address,options.channel)
+    if hasattr(PIXe_4322, options.function):
         if isempty(options.value):
             value = getattr(device, options.function)
         else:
