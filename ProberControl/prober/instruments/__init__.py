@@ -38,7 +38,8 @@ __all__ = [
     'AgilentE3643A',
     'TektronixCSA8000',
     'PIXe_4140',
-    'PIXe_4322'
+    'PIXe_4322',
+    'PSY_201'
 ]
 
 pipe_instrument_groups = {
