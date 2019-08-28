@@ -3,7 +3,7 @@ import visa
 
 class Keysight8164B_Laser(object):
     '''
-    This class models the AndoAQ4321 laser.
+    This class models the Keysight8164B laser.
 
     .. note:: When using any laser command, remember to send shut-off-laser command at the end of each sweep command set.
         For Trigger Sweep, send shut-off-laser command after sweep ends (sweep end condition noted in TriggerSweepSetup function)
