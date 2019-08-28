@@ -39,7 +39,10 @@ __all__ = [
     'TektronixCSA8000',
     'PIXe_4140',
     'PIXe_4322',
-    'PSY_201'
+    'PSY_201',
+    'GenPhotPCD104',
+    'Keysight8164B_PowerMeter',
+    'Keysight8164B_Laser'
 ]
 
 pipe_instrument_groups = {

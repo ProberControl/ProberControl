@@ -10,6 +10,20 @@ from ..classes.Global_MeasureHandler import Global_MeasureHandler as g
 # Getting Global_MeasureHandler (singleton)instance; Do not change this!
 gh = g()
 
+
+def testPM(maitre):
+
+    laser = gh.get_instrument('Laser')
+    print "laser "+str(laser)
+    #pm = gh.get_instrument_triggered_by(laser, 'PowerMeter')
+    pm = gh.get_instrument('PowerMeter')
+    print "PM "+str(pm)
+    gh.connect_instruments(laser, pm)
+    data = pm.get_power(float(1550))
+    print data
+
+
+
 def test(maitre,data):
     pl = NBPlot()
     data = [data,data,data]
@@ -49,16 +63,18 @@ def get_o_spectrum_OSA(maitre,start, stop, step, result_path = 0):
 
     return DataList
 
-def get_o_spectrum_PowerMeter(maitre,start, stop, step, channels, result_path = 0):
+def get_o_spectrum_triggered_PowerMeter(maitre,start, stop, step, channels = 1, result_path = 0):
 
     start = float(start)
     stop = float(stop)
     step = float(step)
-
+	
+    laser = gh.get_instrument('Laser')
+    laser.sweepWavelengthsContinuousTriggerOut(start, stop, step, speed = 5)
+	
     channels = int(channels)
 
-    sweepWidth = stop-start
-    sampleNumber = sweepWidth/(step) + 1
+    sampleNumber = laser.numberOfTriggers()
 
     pms = []
     for i in xrange(channels):
@@ -67,15 +83,19 @@ def get_o_spectrum_PowerMeter(maitre,start, stop, step, channels, result_path = 
     	pm.prep_measure_on_trigger(sampleNumber)
         pms.append(pm)
 
+    #t0 = time.time()
+    #osa = gh.get_instrument('OSA')
+    #OSAData = osa.get_o_spectrum(start, stop, step)
 
+	laser.startSweep()
 
-    t0 = time.time()
-    osa = gh.get_instrument('OSA')
-    OSAData = osa.get_o_spectrum(start, stop, step)
-
-    time.sleep(3)
-
-    AllDataList = [OSAData]
+    while laser.checkSweepStatus() == False:
+    	pass
+	
+    laser.reset()
+    #AllDataList = [OSAData]
+    AllDataList = []
+	
     for i in xrange(channels):
     	PowerList = pms[i].get_result_from_log(sampleNumber)
 
@@ -95,10 +115,12 @@ def get_o_spectrum_PowerMeter(maitre,start, stop, step, channels, result_path = 
     	AllDataList.append(DataList)
 
     #pl.plot(OSAData,'Optical Spectrum for OSA', 'Wavelength [nm]','Measured Power [dBm]')
+	
+	
 
     if result_path != 0:
 
-    	_write_data(OSAData,str(result_path)+'_OSA.txt')
+    	#_write_data(OSAData,str(result_path)+'_OSA.txt')
     	for i in range(len(AllDataList)):
     		_write_data(AllDataList[i],str(result_path)+'_PM'+str(i)+'.txt')
 
@@ -110,24 +132,32 @@ def get_current(maitre):
     data = dc.get_current()
     return data
 
-def get_o_spectrum(maitre,start,stop,step,result_path=0):
+def get_o_spectrum_manual_PowerMeter(maitre,start,stop,step,result_path=0):
 
     laser = gh.get_instrument('Laser')
-    pm = gh.get_instrument_triggered_by(laser, 'PowerMeter')
+    print "laser "+str(laser)
+    #pm = gh.get_instrument_triggered_by(laser, 'PowerMeter')
+    pm = gh.get_instrument('PowerMeter')
+    print "PM "+str(pm)
+    gh.connect_instruments(laser, pm)
 
     init_wavelength = float(laser.getwavelength())
 
-    laser.sweepWavelengthsTriggerSetup(float(start),float(stop),float(step))
+    laser.sweepWavelengthsManual(float(start),float(stop),float(step))
 
     DataList = []
+	
 
+    print ("Sweeping"),
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
-        laser.trigger()
-        DataList.append([x,pm.get_o_power(x,True)])
+        print ("."),
+        laser.step()
+        DataList.append([x, pm.get_power(x)])
+    print ("Sweeping Complete")
 
 
     laser.setwavelength(init_wavelength)
-    pm.get_power(init_wavelength,channel)
+    pm.get_power(init_wavelength)
 
     pl =  NBPlot()
     pl.plot(
