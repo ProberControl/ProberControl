@@ -90,7 +90,7 @@ class Keysight8164B_PowerMeter(object):
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop') #switch stab with logg depending
 			self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp sme') #Set up trigger
 			print self.gpib.query('trig'+str(int(self.__channel))+':inp?')
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100ms')
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100us')
 			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?')
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,start')
 
@@ -110,7 +110,7 @@ class Keysight8164B_PowerMeter(object):
 
         samples = int(samples)
 
-        print data
+        #print data
 
         NofDigits = int(data[1])
 
@@ -121,11 +121,11 @@ class Keysight8164B_PowerMeter(object):
         for x in range(0, samples*4-1,4):
             dat = HexData[x:x+4]
             val = struct.unpack('<f', struct.pack('4c', *dat))[0]
-            print val
+            #print val
             FloData.append(val)
 
         self.gpib.write('trig'+str(int(self.__channel))+':inp:rearm on')
-        print FloData
+        #print FloData
         return FloData[1:]
 		
     def reset(self):

@@ -110,7 +110,7 @@ def get_o_spectrum_triggered_PowerMeter(maitre,start, stop, step, channels = 1, 
     			DataList.append([start+j*step, power])
     		#DataList.append([start+j*step, PowerList[j]])
     	pl = NBPlot()
-    	pl.plot(DataList,'Optical Spectrum for Channel ' + str(i),'Wavelength [nm]','Measured Power [dBm]')
+    	pl.plot(DataList,'Optical Spectrum for Channel ' + str(i+1),'Wavelength [nm]','Measured Power [dBm]')
 
     	AllDataList.append(DataList)
 

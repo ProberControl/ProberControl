@@ -293,7 +293,7 @@ class Keysight8164B_Laser(object):
             print ('Specified Wavelengths Out of Range, or Step Too Low')
 
         else:
-            self.gpib.write('SOURCE0:CHAN1:WAV:SWE:MODE:Manual')
+            self.gpib.write('SOURCE0:CHAN1:WAV:SWE:MODE MAN')
             self.gpib.write('SOURCE0:CHAN1:WAV:SWE:STAR ' + str(start) + 'NM')
             self.gpib.write('SOURCE0:CHAN1:WAV:SWE:STOP ' + str(end) + 'NM')
             self.gpib.write('SOURCE0:CHAN1:WAV:SWE:STEP ' + str(step) + 'NM')
