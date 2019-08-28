@@ -79,7 +79,7 @@ def get_o_spectrum_triggered_PowerMeter(maitre,start, stop, step, channels = 1, 
     pms = []
     for i in xrange(channels):
         pm = gh.get_instrument('PowerMeter', additional=True)
-    	pm.config_meter(-30)
+    	pm.config_meter(10)
     	pm.prep_measure_on_trigger(sampleNumber)
         pms.append(pm)
 
@@ -117,13 +117,13 @@ def get_o_spectrum_triggered_PowerMeter(maitre,start, stop, step, channels = 1, 
     #pl.plot(OSAData,'Optical Spectrum for OSA', 'Wavelength [nm]','Measured Power [dBm]')
 	
 	
-
+    pm.reset()
+	
     if result_path != 0:
 
     	#_write_data(OSAData,str(result_path)+'_OSA.txt')
-    	for i in range(len(AllDataList)):
-    		_write_data(AllDataList[i],str(result_path)+'_PM'+str(i)+'.txt')
-
+    	for i in range(len(AllDataList)):    		
+    		DataIO.writeData(result_path,AllDataList,'get_o_spectrum')
 
     return AllDataList
 

@@ -90,7 +90,7 @@ class Keysight8164B_PowerMeter(object):
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop') #switch stab with logg depending
 			self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp sme') #Set up trigger
 			print self.gpib.query('trig'+str(int(self.__channel))+':inp?')
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100us')
+			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100ms')
 			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?')
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,start')
 
@@ -127,6 +127,15 @@ class Keysight8164B_PowerMeter(object):
         self.gpib.write('trig'+str(int(self.__channel))+':inp:rearm on')
         print FloData
         return FloData[1:]
+		
+    def reset(self):
+        self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop')
+        self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat stab,stop')
+        self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit 0')
+        self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:range:auto 1')
+        self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp ign') #Set up trigger
+        return "Power Meter Reset"
+
 
 
 '''

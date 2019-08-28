@@ -3,7 +3,7 @@ import visa
 
 class Keysight8164B_Laser(object):
     '''
-    This class models the Keysight8164B laser.
+    This class models the AndoAQ4321 laser.
 
     .. note:: When using any laser command, remember to send shut-off-laser command at the end of each sweep command set.
         For Trigger Sweep, send shut-off-laser command after sweep ends (sweep end condition noted in TriggerSweepSetup function)
@@ -87,7 +87,7 @@ class Keysight8164B_Laser(object):
         self.outputOFF()
 
         if wavelength < 1450 or wavelength > 1650:
-            print ('Specified Wavelength Out of Range')
+            print ('Specified Wavelength Out of Range: ' +str(wavelength))
         else :
         # Execute setting of wavelength
             self.gpib.write('SOURCE0:CHAN1:WAV ' + str(wavelength)+ "nm")
