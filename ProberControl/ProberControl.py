@@ -28,26 +28,40 @@ try:
 
         pl = plotter.NBPlot()
 
-        from prober.classes import Initializer, GUI, ScriptController, maitre, ScriptBuilderGUI
+        from prober.classes import Initializer, ScriptController, GUI, maitre, ScriptBuilderGUI
         import ScriptBuilder
-
+        '''
+        import imp
+        import time
+        
+        GUI = imp.load_source("GUI", "./prober/classes/GUI.py")
+        '''
         # SYSTEM INITIALIZATION
         init = Initializer.Initializer()
         init.read_config()
         # STAGE GENERATION
         stages = init.generate_stages()
         try:
-            ### Create Instance of Window
-            app = GUI.Application(stages = stages)
-            ### Set Focus on windows to catch key strokes
-            app.focus_set()
+           # ASK ABOUT GUI INITIALIZATION __> where is maitre passerd in? why work for scriptbuilder gui but not normal gui?
+            while True:
+                #ScriptBuilderGUI = imp.load_source("ScriptBuilderGUI", "./prober/classes/ScriptBuilderGUI.py")
+                #GUI = imp.load_source("GUI", "./prober/classes/GUI.py")
+                app = GUI.Application(stages = stages)
+                app.focus_set()
+            
+                import time
             ### Start Looping and wating for events
-            app.mainloop()
-
+                app.mainloop()
+                #app.restartGUI(stages = stages)
+                time.sleep(3)
+            
         # stages clean-up
         finally:
             cleanUp(stages)
-
+        
+        
+        
+        
 except:
     traceback.print_exc()
     raw_input("Press Enter to close") # Python 2

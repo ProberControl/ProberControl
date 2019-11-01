@@ -245,9 +245,19 @@ def destroy_window():
     top_level = None
 
 if __name__ == '__main__':
-    import prober.classes.ScriptBuilderGUI as ScriptBuilderGUI
+    #import prober.classes.ScriptBuilderGUI as ScriptBuilderGUI
     import prober.classes.maitre as maitre
 
     Maitre = maitre.Maitre()
 
-    ScriptBuilderGUI.vp_start_gui(Maitre)
+    #ScriptBuilderGUI.vp_start_gui(Maitre)
+    
+    import time
+    import imp
+    
+    while True:
+        ScriptBuilderGUI = imp.load_source("ScriptBuilderGUI", "./prober/classes/ScriptBuilderGUI.py")
+        ScriptBuilderGUI.vp_start_gui(Maitre)
+        time.sleep(3)
+    
+    

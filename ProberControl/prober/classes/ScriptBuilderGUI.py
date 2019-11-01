@@ -51,7 +51,7 @@ class ScriptBuilderGUI:
 
         self.Maitre = Maitre
 
-        _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
+        _bgcolor = '#ff0000'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
         _ana1color = '#d9d9d9' # X11 color: 'gray85'
@@ -66,8 +66,8 @@ class ScriptBuilderGUI:
             [('selected', _compcolor), ('active',_ana2color)])
 
         top.geometry("1176x859+459+11")
-        top.title("ScriptBuilder")
-        top.configure(background="#d9d9d9")
+        top.title("Script Builder")
+        top.configure(background="#ff0000")
 
 
 

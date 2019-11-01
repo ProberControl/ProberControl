@@ -58,7 +58,7 @@ class AEDFA_IL_23_B_FA(object):
         :returns: String, current mode.
         '''
 
-        self.ser.write(":MODE:SW:CH1? \n")
+        self.ser.write(":MODE:SW:CH1? \n") #specific string to interact w/ api of insrument
         return self._read2cr()
 
     def mode_options(self):
