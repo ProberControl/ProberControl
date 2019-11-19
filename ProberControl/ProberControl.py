@@ -43,17 +43,17 @@ try:
         stages = init.generate_stages()
         try:
            # ASK ABOUT GUI INITIALIZATION __> where is maitre passerd in? why work for scriptbuilder gui but not normal gui?
-            while True:
+            #while True:
                 #ScriptBuilderGUI = imp.load_source("ScriptBuilderGUI", "./prober/classes/ScriptBuilderGUI.py")
                 #GUI = imp.load_source("GUI", "./prober/classes/GUI.py")
-                app = GUI.Application(stages = stages)
-                app.focus_set()
-            
-                import time
-            ### Start Looping and wating for events
-                app.mainloop()
+            app = GUI.Application(stages = stages)
+            app.focus_set()
+        
+            import time
+        ### Start Looping and wating for events
+            app.mainloop()
                 #app.restartGUI(stages = stages)
-                time.sleep(3)
+                #time.sleep(3)
             
         # stages clean-up
         finally:

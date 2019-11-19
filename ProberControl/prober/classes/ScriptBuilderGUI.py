@@ -51,7 +51,7 @@ class ScriptBuilderGUI:
 
         self.Maitre = Maitre
 
-        _bgcolor = '#ff0000'  # X11 color: 'gray85'
+        _bgcolor = '#000000'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
         _ana1color = '#d9d9d9' # X11 color: 'gray85'
@@ -69,8 +69,7 @@ class ScriptBuilderGUI:
         top.title("Script Builder")
         top.configure(background="#ff0000")
 
-
-
+        #TEXTBOX
         self.Scrolledtext1 = ScrolledText(top)
         self.Scrolledtext1.place(relx=0.55, rely=0.03, relheight=0.93
                 , relwidth=0.43)
@@ -166,7 +165,7 @@ class ScriptBuilderGUI:
 
         self.ProcLabel = Label(self.AddMeasFrame)
         self.ProcLabel.place(relx=0.02, rely=0.36, height=20, width=81)
-        self.ProcLabel.configure(background="#d9d9d9")
+        self.ProcLabel.configure(background="#d9d9d9")#d9d9d9
         self.ProcLabel.configure(disabledforeground="#a3a3a3")
         self.ProcLabel.configure(foreground="#000000")
         self.ProcLabel.configure(text='''Procedure File''')
@@ -215,7 +214,7 @@ class ScriptBuilderGUI:
         self.ArgShowEntry.configure(state=DISABLED)
         self.ArgShowEntry.configure(textvariable=ScriptBuilder.ArgShowEntryVar)
         self.ArgShowEntry.configure(width=424)
-
+        
         self.AddMeasButton = Button(self.AddMeasFrame)
         self.AddMeasButton.place(relx=0.02, rely=0.87, height=24, width=147)
         self.AddMeasButton.configure(activebackground="#d9d9d9")
@@ -418,7 +417,7 @@ class ScriptBuilderGUI:
         self.GlobalUpdateButton.configure(text='''Update''')
         self.GlobalUpdateButton.configure(width=137)
         self.GlobalUpdateButton.configure(command=ScriptBuilder.GlobalsUpdate)
-
+        
 
 
 

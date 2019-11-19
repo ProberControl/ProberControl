@@ -19,12 +19,21 @@ from EthernetInterface import Eth_Server
 from EthernetInterface import Eth_GUI
 from DataIO import DataIO
 
+import sys
+import StringIO
+old_stdout = sys.stdout # Memorize the default stdout stream
+sys.stdout = buffer = StringIO.StringIO()
+sys.stderr = buffer2 = StringIO.StringIO()
+main_output = StringIO.StringIO()
+
+
 
 ####### Define Window
 # Widgets define Buttons etc
 # binding spawn events, now reacting on arrow keys
 
 class Application(tk.Frame):
+
     
     def restartGUI(self, Maitre, stages = {}):
         self.__init__(Maitre, stages)
@@ -87,15 +96,15 @@ class Application(tk.Frame):
         self.bind('<KeyRelease-Down>', self.backwardKey)
         self.bind('<Shift-KeyRelease-Up>',self.upKey)
         self.bind('<Shift-KeyRelease-Down>',self.downKey)
+        self.bind('<Return>', self.hitEnter)
+
 
         self.q = Queue()
 
         # Start Queue Listening event
         self.qLoop()
         
-    def function(self):
-        print(' test')
-
+    
     def eth_loop(self):
         '''
         Calls repeatedly Eth interface update function. To check for new connections or commands.
@@ -115,7 +124,9 @@ class Application(tk.Frame):
                 if qr: qr.put(r)
         except:
             pass
-
+        #controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
+            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
+        
         self.after(100, self.qLoop)
 
     # Setup Element on GUI
@@ -144,40 +155,16 @@ class Application(tk.Frame):
         DataMenu.add_checkbutton(label='Sticky Data in Plotter',onvalue = 1, offvalue = 0, variable=self.stickyPlotter,command = self.ToggleStickyPlotter)
         MenuBar.add_cascade(label='Data',menu = DataMenu)
 
-        '''
         # Create Script Cascade
-        ScriptMenu = tk.Menu(MenuBar, tearoff=False)
-        ScriptMenu.add_command(label='ScriptBuilder',command = self.startScriptBuilder)
-        MenuBar.add_cascade(label='Scripts',menu = ScriptMenu)
-        '''
+        DebugMenu = tk.Menu(MenuBar, tearoff=False)
+        DebugMenu.add_command(label='Debug',command = self.new_winF)
+        MenuBar.add_cascade(label='Debug',menu = DebugMenu)
+
         # Create Network Cascade
         NetworkMenu = tk.Menu(MenuBar, tearoff=False)
         NetworkMenu.add_command(label='Network Config',command = self.startEthernetGUI)
         MenuBar.add_cascade(label='Network',menu = NetworkMenu)
-
-
-        # Procedure OptionMenu for Procedure selection
-        ##Label
-        self.CommandLabel = tk.Label(self,text='Procedure Function to Exec')
-        self.CommandLabel.grid(column=0,row=20,columnspan = 2)
-        ##Module
-        self.ModBox = tk.OptionMenu(self,self.ProcMod,*self.Maitre.get_all_modules(),command=self.ModBoxChange)
-        self.ModBox.config(width = 20)
-        self.ModBox.grid(column=2,row=20,columnspan = 1)
-        ##Function
-        self.FuncBox = tk.OptionMenu(self,self.ProcFunc,*self.Maitre.get_func_name(0),command=self.FuncBoxChange)
-        self.FuncBox.config(width = 20)
-        self.FuncBox.grid(column=3,row=20,columnspan = 1)
-        ## Argument Display Field
-        self.CommandDisplay = tk.Entry(self,textvariable=self.ArgDispText, width = 60,state = 'disabled')
-        self.CommandDisplay.grid(column=4,row=19,columnspan = 2)
-        ## Argument Entry Field
-        self.CommandEntry = tk.Entry(self,textvariable=self.ArgText, width = 60)
-        self.CommandEntry.grid(column=4,row=20,columnspan = 2)
-        ## Execute Button
-        self.ProcButton = tk.Button(self, text='Execute',command=self.ProcButton)
-        self.ProcButton.grid(column=6,row=20)
-        # Stages OptionMenu for Function selection
+       
         if self.Stages != {}:
             ##Label
             self.StageCommandLabel = tk.Label(self,text='Stage Function to Exec')
@@ -199,15 +186,7 @@ class Application(tk.Frame):
             ## Execute Button
             self.StageProcButton = tk.Button(self, text='Execute',command=self.StageClassButton)
             self.StageProcButton.grid(column=6,row=4)
-        '''
-        # Command Field
-        self.CommandLabel = tk.Label(self,text='Command to Exec')
-        self.CommandLabel.grid(column=0,row=5,columnspan = 2)
-        self.CommandEntry = tk.Entry(self,textvariable=self.CommandText,width = 55)
-        self.CommandEntry.grid(column=2,row=5,columnspan = 2)
-        self.CommandButton = tk.Button(self, text='Execute',command=self.CommandButton)
-        self.CommandButton.grid(column=4,row=5)
-        '''
+        
         # Scripting Field
         self.ScriptLabel = tk.Label(self,text='Script to Execute')
         self.ScriptLabel.grid(column=0,row=0,columnspan=2)
@@ -224,20 +203,11 @@ class Application(tk.Frame):
         self.BuildButton = tk.Button(self, text='Build Script',command=self.startScriptBuilder, height = 5, width = 20)
         self.BuildButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
         
-        #self.BuildButton = tk.Button(self, text='Console here',command=self.startScriptBuilder, height = 5, width = 20)
-        #self.BuildButton.grid(column=2,row=3,columnspan=2, rowspan = 4, padx=5, pady=5)
+        from Tkinter import *
+        self.ConsoleText.set(main_output.getvalue() +" \n" + buffer.getvalue())
+        self.Consolelabel = tk.Label(self,textvariable=self.ConsoleText, height = 18, width = 45, bg="white", wraplength=300, justify=LEFT)
+        self.Consolelabel.grid(column=2,row=2,columnspan = 2, rowspan = 12)
         
-        # TODO: move this in the future
-        #self.ConsoleDisplay = tk.Entry(self,textvariable=self.ConsoleText, width = 60)
-        #self.ConsoleDisplay.grid(column=2,row=3,columnspan = 2)
-        
-        self.Consolelabel = tk.Label(self,textvariable=self.ConsoleText, height = 20, width = 50, bg="white", wraplength=350)
-        self.Consolelabel.grid(column=2,row=4,columnspan = 2, rowspan = 12)
-        #T = tk.Text(self, height=10, width=30)
-        #T.pack()
-        #T.insert(tk.END, "Just a text Widget\nin two lines\n")
-       
-       
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
         self.StageButtons = {}
@@ -279,6 +249,68 @@ class Application(tk.Frame):
             pl = NBPlot()
             pl.set_clear(1)
 
+    def new_winF(self): # new window definition
+        newwin = tk.Toplevel(self)
+        #display = Label(newwin, text="Humm, see a new window !")
+        #display.pack()
+        #COMMAND TO EXEC
+        newwin.CommandLabel = tk.Label(newwin,text='Command to Exec')
+        newwin.CommandLabel.grid(column=0,row=5,columnspan = 2)
+        newwin.CommandEntry = tk.Entry(newwin,textvariable=self.CommandText,width = 55)
+        newwin.CommandEntry.grid(column=2,row=5,columnspan = 2)
+        newwin.CommandButton = tk.Button(newwin, text='Execute',command=self.CommandButton)
+        newwin.CommandButton.grid(column=4,row=5)
+
+        # Procedure OptionMenu for Procedure selection
+        ##Label
+        newwin.CommandLabel = tk.Label(newwin,text='Procedure Function to Exec')
+        newwin.CommandLabel.grid(column=0,row=20,columnspan = 2)
+        ##Module
+        newwin.ModBox = tk.OptionMenu(newwin,self.ProcMod,*self.Maitre.get_all_modules(),command=self.ModBoxChange)
+        newwin.ModBox.config(width = 20)
+        newwin.ModBox.grid(column=2,row=20,columnspan = 1)
+        ##Function
+        newwin.FuncBox = tk.OptionMenu(newwin,self.ProcFunc,*self.Maitre.get_func_name(0),command=self.FuncBoxChange)
+        newwin.FuncBox.config(width = 20)
+        newwin.FuncBox.grid(column=3,row=20,columnspan = 1)
+        ## Argument Display Field
+        newwin.CommandDisplay = tk.Entry(newwin,textvariable=self.ArgDispText, width = 60,state = 'disabled')
+        newwin.CommandDisplay.grid(column=4,row=19,columnspan = 2)
+        ## Argument Entry Field
+        newwin.CommandEntry = tk.Entry(newwin,textvariable=self.ArgText, width = 60)
+        newwin.CommandEntry.grid(column=4,row=20,columnspan = 2)
+        ## Execute Button
+        newwin.ProcButton = tk.Button(newwin, text='Execute',command=self.ProcButton)
+        newwin.ProcButton.grid(column=6,row=20)
+        # Stages OptionMenu for Function selection
+        
+
+        #STAGE FUNC TO EXEC
+
+        if self.Stages != {}:
+            ##Label
+            newwin.StageCommandLabel = tk.Label(newwin,text='Stage Function to Exec')
+            newwin.StageCommandLabel.grid(column=0,row=4,columnspan = 2)
+            ##Stage-Class
+            newwin.StageModBox = tk.OptionMenu(newwin,self.StageMod,*list(self.Stages.keys()),command=self.StageClassChange)
+            newwin.StageModBox.config(width = 20)
+            newwin.StageModBox.grid(column=2,row=4,columnspan = 1)
+            ##Function
+            newwin.StageFuncBox = tk.OptionMenu(newwin,self.StageFunc,[],command=self.StageFuncChange)
+            newwin.StageFuncBox.config(width = 20)
+            newwin.StageFuncBox.grid(column=3,row=4,columnspan = 1)
+            ## Argument Display Field
+            newwin.StageCommandEntry = tk.Entry(newwin,textvariable=self.StageArgDispText, width = 60,state = 'disabled')
+            newwin.StageCommandEntry.grid(column=4,row=3,columnspan = 2)
+            ## Argument Entry Field
+            newwin.StageCommandEntry = tk.Entry(newwin,textvariable=self.StageArgText, width = 60)
+            newwin.StageCommandEntry.grid(column=4,row=4,columnspan = 2)
+            ## Execute Button
+            newwin.StageProcButton = tk.Button(newwin, text='Execute',command=self.StageClassButton)
+            newwin.StageProcButton.grid(column=6,row=4)
+
+        
+    
     def FileBrowse(self):
         try:
             inputFiles = tkFileDialog.askopenfilenames()
@@ -289,18 +321,42 @@ class Application(tk.Frame):
             print("Error: {}".format(e))
             self.ConsoleText.set(self.ConsoleText.get() + " \n Error: {}".format(e))
             
+    def hitEnter(self, event):
+        self.ScriptRun()      
+
+    def updateConsole(self, controller):
+        self.ConsoleText.set("GUI: " + buffer.getvalue() + buffer2.getvalue() + "\n ScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue()) 
+        
+
 
     def ScriptRun(self):
         path = self.FileText.get()
 
         try:
-            print("Running script {}".format(path))
-            self.ConsoleText.set(self.ConsoleText.get() + "\n Running script {}".format(path))
+            print(">>Running script {}".format(path))
+            
+            #self.ConsoleText.set(self.ConsoleText.get() + "\n >>Running script {}".format(path))
             
             name = path.split('/')[-1:][0]
 
             # Start a thread for the script to run with
             controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
+            self.updateConsole(controller)
+            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
+            #outputs = list()
+            #outputs.append(controller.getBuffer())
+            #outputs.append(buffer)
+
+            #main_output.write(controller.getBuffer().getvalue())
+            #main_output.write(buffer.getvalue().getvalue())
+            #main_output.write(''.join([i.getvalue() for i in outputs]))
+
+
+            #self.ConsoleText.set(main_output.getvalue())
+            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
+            #buffer2 = controller.getBuffer().getvalue())
+            #self.ConsoleText.set(controller.getBuffer().getvalue())
+
             scriptThread = threading.Thread(target=controller.read_execute)
             scriptThread.start()
 
@@ -388,6 +444,7 @@ class Application(tk.Frame):
         self.ActiveFunc = self.Maitre.get_func_name(self.ActiveMod).index(choice)
         self.ProcFunc.set(choice)
         argslist = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc)
+        
 
         shortlist = []
         for x in argslist:
@@ -453,7 +510,7 @@ if __name__=='__main__':
     ### Set Focus on windows to catch key strokes
     app.focus_set()
     ### Start Looping and wating for events
-    
+   
     #while True:
         #if userpushbutton call reload() function
         #reload() will reinitialize components of gui   
