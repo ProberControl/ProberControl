@@ -2,8 +2,11 @@
 Contains info and convenience functions to determine the order
 of the connected chain of instruments needed for each test
 '''
+import sys
+sys.path.insert(0, "C:\\Users\\asus\\Desktop\\Prober\\2to3\\python3Prober\\ProberControl\\prober")
 
-from ..instruments import pipe_instrument_groups
+
+from instruments import pipe_instrument_groups
 
 order_in = ['Laser', 'BoostAmp', 'Modulator', 'Polarization', 'DUT']
 order_out = ['DUT', 'PreAmp', 'SignalSink']
@@ -18,7 +21,7 @@ class ChainList(object):
 
     def _getOrderNumber(self, instrument):
         found = None
-        for chain_element, group in pipe_instrument_groups.iteritems():
+        for chain_element, group in pipe_instrument_groups.items():
             if instrument.whoAmI() in group:
                 found = chain_element
                 break

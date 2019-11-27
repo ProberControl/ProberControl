@@ -5,7 +5,7 @@ import re
 debug = 0
 def sdebug(msg):
     if debug > 0:
-        print 'SwitchHandler:: {}'.format(msg)
+        print('SwitchHandler:: {}'.format(msg))
 
 def _debug_setup(filename):
     class flushFile(object):
@@ -45,7 +45,7 @@ class SwitchHandler(object):
         :returns: String of all connections between devices
         '''
         formatted_output = ""
-        for k,v in self.active_connetions.iteritems():
+        for k,v in self.active_connetions.items():
             k_name, k_switch = k
             v_name, v_switch = v
             formatted_output += "{:15} : {:15} {:5} {:15} {:15}\n".format(
@@ -89,10 +89,10 @@ class SwitchHandler(object):
         bug.writef('stages: {}'.format(stages))
 
         for entry in configFile:
-            if entry['O'] != 'Polatis' and 'P' in entry.keys(): #skip the Polatis
+            if entry['O'] != 'Polatis' and 'P' in list(entry.keys()): #skip the Polatis
                 bug.writef('\nentry: ' + str(entry))
                 # continue parsing
-                ports = list(map(lambda x: x.strip(), entry['P'].split('>')))
+                ports = list([x.strip() for x in entry['P'].split('>')])
                 if len(ports) == 1 or len(entry['P'].strip()) == 1:
                     # User didn't specify '>' or just declared '>'
                     raise AttributeError('Invalid switch port decalration in Config File. Hint: {}'.format(entry))
@@ -102,23 +102,23 @@ class SwitchHandler(object):
                 if len(ports[0].strip()) == 0:
                     # we only have output ports
                     bug.writef('we only have output ports')
-                    egress = list(map(lambda x: self._parseSwitchPair(x), ports[1].split(',')))
+                    egress = list([self._parseSwitchPair(x) for x in ports[1].split(',')])
                     ingress = [None] * len(egress)
                 elif len(ports[1].strip()) == 0:
                     # we only have input ports
                     bug.writef('we only have input ports')
-                    ingress = list(map(lambda x: self._parseSwitchPair(x), ports[0].split(',')))
+                    ingress = list([self._parseSwitchPair(x) for x in ports[0].split(',')])
                     egress = [None] * len(ingress)
                 else:
                     # both input and output ports have been specified
                     bug.writef('both input and output ports have been specified')
-                    ingress = list(map(lambda x: self._parseSwitchPair(x), ports[0].split(',')))
-                    egress = list(map(lambda x: self._parseSwitchPair(x), ports[1].split(',')))
+                    ingress = list([self._parseSwitchPair(x) for x in ports[0].split(',')])
+                    egress = list([self._parseSwitchPair(x) for x in ports[1].split(',')])
 
                 ports = list(zip(ingress, egress))
                 bug.writef('ports: ' + str(ports))
 
-                for actualObject in zip(stages.keys(), stages.values()):
+                for actualObject in zip(list(stages.keys()), list(stages.values())):
                     if entry['OBJ'] == actualObject[1]:
                         stage_name = actualObject[0]
 
@@ -142,8 +142,8 @@ class SwitchHandler(object):
     ## NOTE Thinking about getting rid of this
     def _integrateStages(self, stages):
         '''Integrates the stages dictionary after boot'''
-        for actualObject in zip(stages.keys(), stages.values()):
-            for k,entry in self.switch_book.items():
+        for actualObject in zip(list(stages.keys()), list(stages.values())):
+            for k,entry in list(self.switch_book.items()):
                 if entry['device'] == str(actualObject[1]):
                     entry['ref'] = actualObject[0]
 

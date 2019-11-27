@@ -1,4 +1,4 @@
-from xyzstage import XYZ_Stage
+from .xyzstage import XYZ_Stage
 
 class OptStage(XYZ_Stage):
     '''

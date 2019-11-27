@@ -80,7 +80,7 @@ class Santec_TSL_210H(object):
             while(info != wavelength):
                 time.sleep(0.1)
                 info = float(self.gpib.read())
-            print ('Wavelength Sent: %s' % self.gpib.read())
+            print(('Wavelength Sent: %s' % self.gpib.read()))
 
     def sweepWavelengthsTriggerSetup (self, start, end, step):
         '''

@@ -20,7 +20,7 @@ class NewportPM500(object):
             self.rm = visa.ResourceManager()
             self.dev = self.rm.open_resource(gpib_addr)
             self.velocity = 0
-            print 'PM500 Controler started on adress: {}'.format(gpib_addr)
+            print('PM500 Controler started on adress: {}'.format(gpib_addr))
 
     def set_velocity(self, vel):
         '''
@@ -37,17 +37,17 @@ class NewportPM500(object):
         '''
 
         if self.velocity == 0:
-            print 'PM500: invalid move, have to set velocity first.'
+            print('PM500: invalid move, have to set velocity first.')
             return
 
         if self.dev.write('YS {}'.format(self.velocity))[1] != 0:
-            print 'PM500: problem occured while sending command'
+            print('PM500: problem occured while sending command')
             return
 
         while self.dev.query('YSTAT') != 'YL':
             time.sleep(0.01)
 
-        print 'PM500: move complete -> UP'
+        print('PM500: move complete -> UP')
 
     def move_down(self):
         '''
@@ -55,17 +55,17 @@ class NewportPM500(object):
         '''
 
         if self.velocity == 0:
-            print 'PM500: invalid move, have to set velocity first.'
+            print('PM500: invalid move, have to set velocity first.')
             return
 
         if self.dev.write('YS -{}'.format(self.velocity))[1] != 0:
-            print 'PM500: problem occured while sending command'
+            print('PM500: problem occured while sending command')
             return
 
         while self.dev.query('YSTAT') != 'YL':
             time.sleep(0.01)
 
-        print 'PM500: move complete -> DOWN'
+        print('PM500: move complete -> DOWN')
 
     def close(self):
         ''' release resources '''

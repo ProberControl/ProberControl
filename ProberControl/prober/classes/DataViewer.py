@@ -1,13 +1,13 @@
 import numpy as np
 import math
-import Tkinter as tk
-import tkFileDialog
+import tkinter as tk
+import tkinter.filedialog
 import matplotlib
 matplotlib.use('TkAgg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
-from DataIO import DataIO
+from .DataIO import DataIO
 
 class DataViewer(tk.Frame):
     def __init__(self, master=None):
@@ -85,13 +85,13 @@ class DataViewer(tk.Frame):
     # GUI triggered functions
     def FileBrowse(self):
         try:
-            inputFiles = tkFileDialog.askopenfilenames()
+            inputFiles = tkinter.filedialog.askopenfilenames()
             self.FileText.set(self.master.tk.splitlist(inputFiles)[0])
             self.FileLoad()
         except IndexError:
             pass # No file selected, no reason to report error
         except Exception as e:
-            print("Error: {}".format(e.stack))
+            print(("Error: {}".format(e.stack)))
 
     def ClearCanvas(self):
         self.f.clf()
@@ -154,7 +154,7 @@ class DataViewer(tk.Frame):
             self.f.canvas.draw()
 
         except IndexError:
-            print("Dataset '{}' only has 1 dimension, not able to plot.".format(test_name))
+            print(("Dataset '{}' only has 1 dimension, not able to plot.".format(test_name)))
             self.f.clf()
 
 

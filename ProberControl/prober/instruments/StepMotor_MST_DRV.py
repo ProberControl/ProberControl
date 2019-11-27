@@ -2,7 +2,7 @@
 #    - wraps around Motor
 
 
-from Motor_MST_DRV import Motor_MST_DRV as Motor, hexString, int2hexStr, send_short_dst_src, send_long_dst_src,send_chan_ident,prep_short_src_dst,prep_long_src_dst
+from .Motor_MST_DRV import Motor_MST_DRV as Motor, hexString, int2hexStr, send_short_dst_src, send_long_dst_src,send_chan_ident,prep_short_src_dst,prep_long_src_dst
 
 #import serial
 import logging
@@ -266,7 +266,7 @@ class StepMotor_MST_DRV(Motor):
         if self.ser.lock:
 			self.ser.lock.release()
 
-        print response
+        print(response)
 
     def _set_backlash(self, backlash_distance):
         '''

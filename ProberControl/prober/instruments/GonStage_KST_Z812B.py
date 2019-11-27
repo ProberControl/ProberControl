@@ -5,7 +5,7 @@
 # TODO: - find the specific step to degree coeff.
 #        - design a precise mechanism to detect when the stage has reached a limit
 
-from Motor_KST_ZST import Motor_KST_ZST as Motor, hexString
+from .Motor_KST_ZST import Motor_KST_ZST as Motor, hexString
 #import serial
 import logging
 

@@ -1,7 +1,11 @@
 import glob
 import importlib as im
 import inspect
-from .. import procedures as pr
+
+import sys
+sys.path.insert(0, "C:\\Users\\asus\\Desktop\\Prober\\2to3\\python3Prober\\ProberControl\\prober")
+
+import procedures as pr
 
 
 ### Make all Modules and Functions from Procedures-Folder Available in GUI.
@@ -74,7 +78,7 @@ class Maitre():
 
         self.__init__(reloading=True)
 
-        print "Maitre: All Procedures Reloaded"
+        print("Maitre: All Procedures Reloaded")
 
 
 

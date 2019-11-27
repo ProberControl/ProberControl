@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import time
-import connecting
+from . import connecting
 from ..classes.plotter import NBPlot
 from ..classes.DataIO import DataIO
 
@@ -23,15 +23,15 @@ def test(maitre,data):
 
 def get_o_power(maitre,wavelength=1550,sweeping=False,result_path=0):
     laser = gh.get_instrument('Laser', additional=False)
-    print "laser "+str(laser)
+    print("laser "+str(laser))
     if laser is not None:
         wavelength = laser.getwavelength()
 
     pm = gh.get_instrument('PowerMeter')
-    print "PM "+str(pm)
+    print("PM "+str(pm))
     gh.connect_instruments(laser, pm)
     data = pm.get_power(float(wavelength))
-    print data
+    print(data)
 
     if result_path != 0:
         DataIO.writeData(result_path,data,'get_o_power')
@@ -61,10 +61,10 @@ def get_o_spectrum_PowerMeter(maitre,start, stop, step, channels, result_path = 
     sampleNumber = sweepWidth/(step) + 1
 
     pms = []
-    for i in xrange(channels):
+    for i in range(channels):
         pm = gh.get_instrument('PowerMeter', additional=True)
-    	pm.config_meter(-30)
-    	pm.prep_measure_on_trigger(sampleNumber)
+        pm.config_meter(-30)
+        pm.prep_measure_on_trigger(sampleNumber)
         pms.append(pm)
 
 
@@ -76,7 +76,7 @@ def get_o_spectrum_PowerMeter(maitre,start, stop, step, channels, result_path = 
     time.sleep(3)
 
     AllDataList = [OSAData]
-    for i in xrange(channels):
+    for i in range(channels):
     	PowerList = pms[i].get_result_from_log(sampleNumber)
 
     	DataList =[]
@@ -172,14 +172,14 @@ def get_e_spectrum(maitre,start=1,stop=1000,step=10,power=0.1,result_path=0):
     for x in np.arange(float(start),float(stop)+float(step),float(step)):
         rfval  = rf_meter.getPeak(x,5)[1]
         optval = get_o_power()
-        print(x,rfval,optval)
+        print((x,rfval,optval))
         DataList.append([x,rfval-optval])
         rf.trigger()
 
     rfval  = rf_meter.getPeak(x,5)[1]
     optval = get_o_power()
 
-    print(x,rfval,optval)
+    print((x,rfval,optval))
 
     DataList.append([x,rfval-optval])
 
@@ -286,7 +286,7 @@ def find_depl_MZI_bias(maitre,channel=0,max_volt=5):
 
      # Add plotting of data
 
-     trans=zip(*dc_data)
+     trans=list(zip(*dc_data))
 
      max_o = max(trans[1])
      min_o = min(trans[1])
@@ -335,9 +335,9 @@ def simpleConnectFiberTest():
     gh = g()
 
     laser = gh.get_instrument('Laser')
-    print 'laser, ' + str(laser)
+    print('laser, ' + str(laser))
     fiber_in = gh.choose_fiber_in(1)
-    print 'fiber ' + str(fiber_in)
+    print('fiber ' + str(fiber_in))
     gh.connect_instruments(laser, fiber_in)
 
     fiber_out = gh.choose_fiber_out(3)
@@ -347,7 +347,7 @@ def simpleConnectFiberTest():
     wavelength = 1550
     laser.setwavelength(wavelength)
     power = p_meter.get_power(wavelength)
-    print power
+    print(power)
 
     return power
 
@@ -380,21 +380,21 @@ def testConnectDebug():
     las = gh.get_instrument('Laser')
     fib = gh.get_instrument('OSA')
     # fib = gh.choose_fiber_in(1)
-    print 'laser: {}\nfiber: {}\n'.format(las, fib)
+    print('laser: {}\nfiber: {}\n'.format(las, fib))
 
     gh.connect_instruments(las, fib)
     return 23.0
 
 def testBlockingCalls():
-    print 'entering blocking instance'
+    print('entering blocking instance')
     gh = g()
     osa = gh.get_instrument_w('OSA', additional=True)
     osa.getSpectrum(1550, 1551, 0.1, 0)
-    for i in xrange(10):
-        print 'sleeping ...{}'.format(i + 1)
+    for i in range(10):
+        print('sleeping ...{}'.format(i + 1))
         time.sleep(1)
     osa.getSpectrum(1552, 1553, 0.1, 0)
-    print 'blocking instance done.'
+    print('blocking instance done.')
 
     return 'Test complete.'
 

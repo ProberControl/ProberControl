@@ -1,8 +1,9 @@
 ''' Set of functions for fine-allignment of fibers over grating couplers. '''
 
 #from Classes.xyzstage import XYZ_Stage
-import raster
+from . import raster
 import matplotlib
+import collections
 matplotlib.use('TkAgg')
 
 import matplotlib.pyplot as plt
@@ -21,7 +22,7 @@ STD_TOOL = "MPowerMeter"
 
 def _report(msg):
     prt_msg = 'fine-allign: ' + msg
-    print prt_msg
+    print(prt_msg)
 
 def _set_meas_fun(fn):
     global __selected_function
@@ -29,9 +30,9 @@ def _set_meas_fun(fn):
 
 def set_signal_source(stages, source_string=''):
 
-    if source_string in stages.keys():
+    if source_string in list(stages.keys()):
         feedbackfunc = getattr(stages[source_string], "get_feedback", None)
-        if callable(feedbackfunc):
+        if isinstance(feedbackfunc, collections.Callable):
             _set_meas_fun(stages[source_string].get_feedback)
             return True
         else:
@@ -57,7 +58,7 @@ def fast_align(stages, target,thresh=-60):
     # If power reading is below threshold search by raster
     if _get_signal(stages) < thresh:
         if not _raster_thresh(stages, target,thresh):
-            print 'Cannot get first light - abort alignment'
+            print('Cannot get first light - abort alignment')
             return False
 
     # Perform Gradient Ascent to move quickly to higher powers
@@ -70,15 +71,15 @@ def fast_align(stages, target,thresh=-60):
 def _raster_thresh(stages, target,thresh=-55, size=(15,15),step=0.001):
     # place the current point at the center
     cur_pos = stages[target].get_coordinates()
-    print size
+    print(size)
     new_pos = (cur_pos[0] - size[0]/2.0*step, cur_pos[1] - size[1]/2.0*step, cur_pos[2])
     stages[target].set_coordinates(new_pos)
     # keep track of the power for each point in case of failiure
     pow_tbl = []
     # start scaning...
-    for i in xrange(size[0]):    # width / x-axis
+    for i in range(size[0]):    # width / x-axis
             pow_ln = []
-            for j in xrange(size[1]):     # length / y-axis
+            for j in range(size[1]):     # length / y-axis
                 # get the power reading and compare to threshold if larger than exit
                 reading = float(_get_signal(stages))
                 pow_ln.append(reading)
@@ -147,7 +148,7 @@ def smooth_align(stages, target, dim=0):
     max_val = -9999
     max_pos = -9999
 
-    print data_list
+    print(data_list)
 
     for point in data_list:
         if max_val < point[1]:
@@ -156,7 +157,7 @@ def smooth_align(stages, target, dim=0):
 
     coordinates = list(stages[target].get_coor_2d())[:]
     coordinates[int(dim)] = max_pos
-    print coordinates
+    print(coordinates)
     stages[target].set_coor_2d(coordinates)
 
 def smooth_rot(stages, target):
@@ -198,7 +199,7 @@ def smooth_rot(stages, target):
     max_val = -9999
     max_pos = -9999
 
-    print data_list
+    print(data_list)
 
     for point in data_list:
         if max_val < point[1]:
@@ -206,7 +207,7 @@ def smooth_rot(stages, target):
             max_pos = point[0]
 
     coordinates = max_pos
-    print coordinates
+    print(coordinates)
     stages[target].set_rot(coordinates)
 
 def _get_meas(stages,target,dim):
@@ -334,7 +335,7 @@ def gradient_ascent(stages, target, plot=False, stepsize=0.001,beta_p=0.001,max_
             stages[target].set_coor_2d(coordinates_a)
             if plot:
                 _print_path(coord_list,power_list)
-            print time.clock() - start_time, "seconds"
+            print(time.clock() - start_time, "seconds")
             return
 
         # compute and set new coordinates
@@ -347,7 +348,7 @@ def gradient_ascent(stages, target, plot=False, stepsize=0.001,beta_p=0.001,max_
     if plot:
         _print_path(coord_list,power_list)
     _report('Stopped without hitting the break condition')
-    print time.clock() - start_time, "seconds"
+    print(time.clock() - start_time, "seconds")
 
 def gradient_ascent_m(stages, target, plot=False, stepsize=0.001,beta_p=0.001,p_p = 0.001, max_steps=100,min_d=1):
     '''
@@ -408,7 +409,7 @@ def gradient_ascent_m(stages, target, plot=False, stepsize=0.001,beta_p=0.001,p_
             stages[target].set_coor_2d(coordinates_a)
             if plot:
                 _print_path(coord_list,power_list)
-            print time.clock() - start_time, "seconds"
+            print(time.clock() - start_time, "seconds")
             return
 
         # compute and set new coordinates
@@ -421,7 +422,7 @@ def gradient_ascent_m(stages, target, plot=False, stepsize=0.001,beta_p=0.001,p_
     if plot:
         _print_path(coord_list,power_list)
     _report('Stopped without hitting the break condition')
-    print time.clock() - start_time, "seconds"
+    print(time.clock() - start_time, "seconds")
 
 def gradient_ascent_miniBatch(stages, target, plot=False):
     '''
@@ -518,7 +519,7 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
             stages[target].set_coor_2d(coordinates_a)
             if plot:
                 _print_path(coord_list,power_list)
-            print time.clock() - start_time, "seconds"
+            print(time.clock() - start_time, "seconds")
             return
 
         # compute and set new coordinates
@@ -531,7 +532,7 @@ def gradient_ascent_miniBatch(stages, target, plot=False):
     if plot:
         _print_path(coord_list,power_list)
     _report('Stopped without hitting the break condition')
-    print time.clock() - start_time, "seconds"
+    print(time.clock() - start_time, "seconds")
 
 
 def _print_path(coord_list, powers):

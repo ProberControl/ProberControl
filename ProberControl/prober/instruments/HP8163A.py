@@ -86,23 +86,23 @@ class HP8163A(object):
 			# self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat stab,stop') #switch stab with logg depending
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop') #switch stab with logg depending
 			self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp sme') #Set up trigger
-			print self.gpib.query('trig'+str(int(self.__channel))+':inp?')
+			print(self.gpib.query('trig'+str(int(self.__channel))+':inp?'))
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100us')
-			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?')
+			print(self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?'))
 			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,start')
 
-			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
-			print self.gpib.query('syst:err?')
+			print(self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?'))
+			print(self.gpib.query('syst:err?'))
 
 
     def get_result_from_log(self,samples=64):
 
         if self.__port != 2:
-			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
+			print(self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?'))
 
         self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:res?')
         data = self.gpib.read_raw()
-        print self.gpib.query('syst:err?')
+        print(self.gpib.query('syst:err?'))
 
 
         samples = int(samples)

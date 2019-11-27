@@ -6,12 +6,12 @@ import sys
 import math
 
 try:
-    from Tkinter import *
+    from tkinter import *
 except ImportError:
     from tkinter import *
 
 try:
-    import ttk
+    import tkinter.ttk
     py3 = 0
 except ImportError:
     import tkinter.ttk as ttk
@@ -34,7 +34,7 @@ class Search_and_Replace(Toplevel):
             _compcolor = '#d9d9d9' # X11 color: 'gray85'
             _ana1color = '#d9d9d9' # X11 color: 'gray85'
             _ana2color = '#d9d9d9' # X11 color: 'gray85'
-            self.style = ttk.Style()
+            self.style = tkinter.ttk.Style()
             if sys.platform == "win32":
                 self.style.theme_use('winnative')
             self.style.configure('.',background=_bgcolor)
@@ -53,11 +53,11 @@ class Search_and_Replace(Toplevel):
             self.style.configure('TNotebook.Tab', foreground=_fgcolor)
             self.style.map('TNotebook.Tab', background=
                 [('selected', _compcolor), ('active',_ana2color)])
-            self.RiderTab = ttk.Notebook(self)
+            self.RiderTab = tkinter.ttk.Notebook(self)
             self.RiderTab.place(relx=0.02, rely=0.05, relheight=0.88, relwidth=0.94)
             self.RiderTab.configure(width=454)
             self.RiderTab.configure(takefocus="")
-            self.RiderTab_t1 = ttk.Frame(self.RiderTab)
+            self.RiderTab_t1 = tkinter.ttk.Frame(self.RiderTab)
             self.RiderTab.add(self.RiderTab_t1, padding=3)
             self.RiderTab.tab(0, text="Replace",underline="-1",)
 

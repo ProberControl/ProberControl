@@ -31,7 +31,7 @@ class MultiSerial(Serial):
 		:type tail_bytes: integer
 		'''
 		response = Serial.read(self, 1)
-		while map(hex,unpack('B'*len(response),response)) != []:
+		while list(map(hex,unpack('B'*len(response),response))) != []:
 				self.buffer = self.buffer + response
 				response = Serial.read(self,1)
 
@@ -54,8 +54,8 @@ class MultiSerial(Serial):
 		Prints the current buffer. The buffer is printed is interpreted as hex numbers and send to print
 		'''
 
-		print 'Ascii-fied Hex Representation of Buffer:'
-		print map(hex,unpack('B'*len(self.buffer),self.buffer))
+		print('Ascii-fied Hex Representation of Buffer:')
+		print(list(map(hex,unpack('B'*len(self.buffer),self.buffer))))
 
 	def clear_buffer(self):
 		'''

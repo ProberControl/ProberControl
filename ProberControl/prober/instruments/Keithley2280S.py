@@ -19,7 +19,7 @@ class Keithley2280S(object):
 
             self.sock.connect((address, 5025))
             self.sock.sendall('*IDN?\n')
-            print self.sock.recv(1024)
+            print(self.sock.recv(1024))
             self.sock.sendall(':DATA:CLE:AUTO 1\n')
             self.sock.sendall(':TRAC:FEED:CONT ALW\n')
             self.sock.sendall(':TRAC:POIN 2\n')

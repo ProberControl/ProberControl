@@ -19,7 +19,7 @@ class Keithley2400(object):
         self.active = False
 
         self.gpib = res_manager.open_resource(address) #call visa
-        print(self.gpib.query('*IDN?'))
+        print((self.gpib.query('*IDN?')))
         self.gpib.write('*RST')
         self.gpib.write('*CLS')
 

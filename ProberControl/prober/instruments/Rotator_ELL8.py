@@ -1,7 +1,7 @@
 # the rotating stage class for the ELL8/M motor
 # 	- wraps around Rot_Motor
 
-from ELL8 import ELL8
+from .ELL8 import ELL8
 
 DEG_PER_CNT = 0.00137329
 

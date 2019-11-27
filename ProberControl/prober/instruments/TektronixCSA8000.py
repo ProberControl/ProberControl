@@ -60,7 +60,7 @@ class TektronixCSA8000(object):
         envelope = bool(envelope)
 
         if(int(sample)+int(average)+int(envelope)!=1):
-            print "Exactly one paramter needs to be set to True"
+            print("Exactly one paramter needs to be set to True")
             return
 
         if sample:
@@ -124,7 +124,7 @@ class TektronixCSA8000(object):
     def setMaskHitRatioTarget(self, ratio):
 
         if not(1e-8 < float(ratio) < 0.1):
-            print "Ratio must be within 1E-8 and 0.1"
+            print("Ratio must be within 1E-8 and 0.1")
             return
 
         self.gpib.write('MASK:AUTOSEEk:HITRatio '+str(float(ratio)))
@@ -193,7 +193,7 @@ class TektronixCSA8000(object):
         VERtical   = bool(VERtical)
 
         if int(VERtical) + int(HORizontal) != 1:
-            print "Exactly one paramter needs to be set to True"
+            print("Exactly one paramter needs to be set to True")
             return
 
         if HORizontal:
@@ -223,7 +223,7 @@ class TektronixCSA8000(object):
         log   = bool(log)
 
         if int(log) + int(linear) != 1:
-            print "Exactly one paramter needs to be set to True"
+            print("Exactly one paramter needs to be set to True")
             return
 
         if linear:
@@ -241,7 +241,7 @@ class TektronixCSA8000(object):
         '''
 
         if not(0 < int(num) < 9):
-            print "num must be between 1 and 8"
+            print("num must be between 1 and 8")
             return
 
             self.gpib.write('SELect:MATH'+str(int(num))+' ON')

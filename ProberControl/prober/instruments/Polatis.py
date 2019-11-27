@@ -6,7 +6,7 @@ from time import sleep
 debug = 0
 def sdebug(msg):
     if debug > 0:
-        print 'Polatis:: {}'.format(msg)
+        print('Polatis:: {}'.format(msg))
 
 class Polatis(object):
     '''
@@ -24,7 +24,7 @@ class Polatis(object):
 
         try:
             switch = rm.open_resource(address) # instantiate our resource object
-            print('Resource Initialized: %s' % str(switch.query('*IDN?')))
+            print(('Resource Initialized: %s' % str(switch.query('*IDN?'))))
             return switch
         except Exception as e:
             raise Exception(e)
@@ -49,7 +49,7 @@ class Polatis(object):
         try:
             connections = str(self._switch.query(':oxc:swit:conn:stat?'))
         except Exception as e:
-            print('Error:' + e)
+            print(('Error:' + e))
             print('Querying again.')
             connections = str(self._switch.query(':oxc:swit:conn:stat?'))
         return connections[:-2]
@@ -259,7 +259,7 @@ class Polatis(object):
                 else:
                     return pattern
         except Exception as e:
-            print('Error: ', e)
+            print(('Error: ', e))
 
     def __bootRead(self, pattern):
         '''
@@ -282,15 +282,15 @@ class Polatis(object):
 
         row1 = []
         for elem in connections[0]:
-			print elem
+			print(elem)
 			row1.append(int(elem))
 
         row2 = []
         for elem in connections[1]:
-			print elem
+			print(elem)
 			row2.append(int(elem))
 
-        return zip(row1, row2)
+        return list(zip(row1, row2))
 
 
 '''

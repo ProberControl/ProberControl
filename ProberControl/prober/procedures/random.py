@@ -1,5 +1,5 @@
 #from Classes.xyzstage import XYZ_Stage
-import raster
+from . import raster
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt

@@ -34,10 +34,10 @@ class DataIO():
                 # Try to open file
                 openFile = open(openFile,'a')
             except:
-                print "Cannot open file for writing"
+                print("Cannot open file for writing")
                 return
         else:
-            print "Wrong argument type for openFile"
+            print("Wrong argument type for openFile")
             return
 
 
@@ -54,7 +54,7 @@ class DataIO():
             openFile.write(data)
             openFile.flush()
         else:
-            print "Could not write data to file: Error in Data Format"
+            print("Could not write data to file: Error in Data Format")
 
 
         # Seperate the experiments by one extra new lines
@@ -116,7 +116,7 @@ class DataIO():
         try:
             with open(path,'r') as MeasFile:
                 if MeasFile is None:
-                    print 'Problem reading Measurement file.'
+                    print('Problem reading Measurement file.')
                     exit()
 
                 for num, line in enumerate(MeasFile, 1):
@@ -125,7 +125,7 @@ class DataIO():
         except IOError:
             pass # No file was selected, no reason to report an error
         except Exception as e:
-            print("Error: {}".format(e))
+            print(("Error: {}".format(e)))
 
         if NameList==[]:
             return ['NoName']
@@ -139,7 +139,7 @@ class DataIO():
 
         with open(path, 'r') as MeasFile:
             if MeasFile is None:
-                print 'Problem reading Measurement file.'
+                print('Problem reading Measurement file.')
                 exit()
 
             in_block = False
@@ -164,7 +164,7 @@ class DataIO():
         if in_block == True:
             return Data
 
-        print 'Reading Data from File failed'
+        print('Reading Data from File failed')
         return False
 
     @staticmethod
@@ -190,7 +190,7 @@ class DataIO():
         for elem in PreArgList:
             if '[' in elem:
                 SubList=elem.replace('[','').replace(']','').split(',')
-                elem=map(float,SubList)
+                elem=list(map(float,SubList))
             if 'Stages' in elem:
                 elem = Stages
             if 'Maitre' in elem:
@@ -234,8 +234,8 @@ if __name__ == "__main__" :
     openFile = open(openFile,'a')
     data = [[1,2,3],[2,3,4],[3,4,5]]
     Data_Name = 'Exp1'
-    print type(data)
-    print DataIO._test_dim(data)
+    print(type(data))
+    print(DataIO._test_dim(data))
     DataIO.writeData(openFile, data, Data_Name)
 
 

@@ -151,7 +151,7 @@ class ChipStage(object):
             t_r.start(), t_t.start(), t_b.start()
             t_r.join(), t_t.join(), t_b.join()
         else:
-            print 'chip_stage::error: Attempted move out of bounds (abs_pos:{},{},{})'.format(act_r, act_t, act_b)
+            print('chip_stage::error: Attempted move out of bounds (abs_pos:{},{},{})'.format(act_r, act_t, act_b))
 
     def set_rot(self, target_pos):
         '''

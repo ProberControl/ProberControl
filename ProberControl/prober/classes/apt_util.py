@@ -1,6 +1,6 @@
 # APT controllers generic helper functions
 try:
-    import multi_serial
+    from . import multi_serial
     import serial
 except:
     pass
@@ -11,7 +11,7 @@ def c2r(COM_port, rate=115200):
         temp = multi_serial.MultiSerial(COM_port, rate, timeout=None, parity=serial.PARITY_NONE)
         return temp
     except Exception as e:
-        print e
+        print(e)
 
 '''
 Copyright (C) 2017  Robert Polster

@@ -30,7 +30,7 @@ def main(argv):
 
  	#print res_list
  	
- 	for i in xrange(0, len(ring_res)):
+ 	for i in range(0, len(ring_res)):
  		_write_data(ring_res[i], 'ring_' + str(i) +'.txt')
 	
 	#_write_data(res_list, 'res.txt')
@@ -52,14 +52,14 @@ def Find_Resonance(stages, maitre, file, low, high, step_size, baseline = '0'):
 
 def	split(data):
 
-	values = map(lambda x: data[x][1], xrange(0, len(data)))
-	prefix = map(lambda x: data[x][0], xrange(0, len(data)))
+	values = [data[x][1] for x in range(0, len(data))]
+	prefix = [data[x][0] for x in range(0, len(data))]
 
 	return prefix, values
 
 def combine(prefix, values):
 
-	combined = map(lambda x: [prefix[x], values[x]], xrange(0, len(values)))
+	combined = [[prefix[x], values[x]] for x in range(0, len(values))]
 
 	return combined
 
@@ -68,7 +68,7 @@ def normalize(data, baseline):
 	norm_data = []
 	baseline_tracker = 0
 
-	for i in xrange(0, len(data)):
+	for i in range(0, len(data)):
 		while (baseline[baseline_tracker][0] < data[i][0]):
 			baseline_tracker += 1
 		if baseline_tracker < len(baseline) and data[i][0] == baseline[i][0]:
@@ -94,7 +94,7 @@ def All_Ring_Res(data, dist_btwn_same_res = 0.75, steps_per_nm = 100):  #Takes a
 
 	ring_res = [new_ring]
 	
-	for i in xrange(1, len(data)):  #not efficient - Finds ER before comparing is not very good. Fix when have time
+	for i in range(1, len(data)):  #not efficient - Finds ER before comparing is not very good. Fix when have time
 		reference = new_ring
 		new_ring,_ = Find_Res(data[i])
 		new_ring = Find_ER_and_FWHM(new_ring, data[i], steps_per_nm) #Doesn't work for Drop Data
@@ -107,7 +107,7 @@ def Find_ER_and_FWHM(filtered_res_list, file, steps_per_nm):
 	wavelength, data = split(file)
 	list_with_ER = []
 
-	for i in xrange(0, len(filtered_res_list)):
+	for i in range(0, len(filtered_res_list)):
 
 		index = filtered_res_list[i][0]
 		largest = data[index]
@@ -155,7 +155,7 @@ def Comp_Res(new_data, ref_data, dist_btwn_same_res): #Find new res that belongs
 	j = 0
 	new_res = []
 
-	for i in xrange(0, len(new_data)):
+	for i in range(0, len(new_data)):
 
 		if (j == len(ref_data)):
 
@@ -192,7 +192,7 @@ def Find_Res(file, transmission = True, n = 100, confidence = 5, confidence_high
 	avg_list = []
 
 	#get rolling for a certain range, find point outside confidence level
-	for i in xrange(0, len(data_prime)):
+	for i in range(0, len(data_prime)):
 		if (i < n):
 			data_avg = np.average(data_prime[:2*n])   #sample size: 2*n points
 		elif (i >= len(data_prime)-(n+1)):
@@ -209,7 +209,7 @@ def Find_Res(file, transmission = True, n = 100, confidence = 5, confidence_high
 	res_list = []
 
 	single = True #removes single result
-	for i in xrange(0, len(prelim_res_list)):
+	for i in range(0, len(prelim_res_list)):
 
 		if(i == len(prelim_res_list)-1):
 			if (math.fabs(prelim_res_list[i][1] - prelim_res_list[i-1][1]) > dist_btwn_res and math.fabs(prelim_res_list[i][2]) < confidence_high):
@@ -227,7 +227,7 @@ def Find_Res(file, transmission = True, n = 100, confidence = 5, confidence_high
 	index_largest = 0
 	
 	#checks the prelimiary list of resonance, makes a rough guess about where each resonance lies 
-	for i in xrange(1, len(prelim_res_list)):
+	for i in range(1, len(prelim_res_list)):
 
 		if (prelim_res_list[i][1] - prelim_res_list[i-1][1] < dist_btwn_res):
 
@@ -253,7 +253,7 @@ def Find_Res(file, transmission = True, n = 100, confidence = 5, confidence_high
 	#works for both transmission style Lorentzians and Drop style Lorentians, based on whether Transsision is True or False
 	filtered_res_list = []
 	
-	for i in xrange(0, len(res_list)):
+	for i in range(0, len(res_list)):
 		
 		index = res_list[i][0]
 			#go right
@@ -282,7 +282,7 @@ def _read_data(path):
     MeasFile = open(path, 'r')
 
     if MeasFile is None:
-    	print 'Problem reading measurement file.'
+    	print('Problem reading measurement file.')
     	return 0
     
     MeasFile.close()

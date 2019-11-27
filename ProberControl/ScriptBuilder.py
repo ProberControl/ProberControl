@@ -6,16 +6,16 @@
 
 
 import sys
-import tkFileDialog
+import tkinter.filedialog
 import prober.classes.Dialogs as dialogs
 
 try:
-    from Tkinter import *
+    from tkinter import *
 except ImportError:
     from tkinter import *
 
 try:
-    import ttk
+    import tkinter.ttk
     py3 = 0
 except ImportError:
     import tkinter.ttk as ttk
@@ -84,14 +84,14 @@ def addBlock():
 
     if copyLastMeasBlock.get() == '1':
         blockStartIndex = scriptPreCursor.rfind(header)
-        print blockStartIndex
+        print(blockStartIndex)
         if blockStartIndex:
             splitScript = scriptPreCursor[blockStartIndex:].splitlines(1)
             old_block_name = splitScript[1].strip(' ').strip('\n')
 
-            print old_block_name
+            print(old_block_name)
 
-            print ''.join(splitScript[2:]).replace(old_block_name,BlockNameVar.get())
+            print(''.join(splitScript[2:]).replace(old_block_name,BlockNameVar.get()))
 
             new_block += ''.join(splitScript[2:]).replace(old_block_name,BlockNameVar.get())
 
@@ -213,7 +213,7 @@ def loadScript():
     '''
     global w, script
 
-    inputFile = open(tkFileDialog.askopenfilename(),'r')
+    inputFile = open(tkinter.filedialog.askopenfilename(),'r')
     script = inputFile.read()
     inputFile.close()
     w.Scrolledtext1.delete(1.0, END)
@@ -225,7 +225,7 @@ def saveScript():
     '''
     global w, script
 
-    outputFile = open(tkFileDialog.asksaveasfilename(),'w')
+    outputFile = open(tkinter.filedialog.asksaveasfilename(),'w')
     script = w.Scrolledtext1.get(1.0, END)
     outputFile.write(script)
     outputFile.close()
@@ -245,9 +245,19 @@ def destroy_window():
     top_level = None
 
 if __name__ == '__main__':
-    import prober.classes.ScriptBuilderGUI as ScriptBuilderGUI
+    #import prober.classes.ScriptBuilderGUI as ScriptBuilderGUI
     import prober.classes.maitre as maitre
 
     Maitre = maitre.Maitre()
 
-    ScriptBuilderGUI.vp_start_gui(Maitre)
+    #ScriptBuilderGUI.vp_start_gui(Maitre)
+    
+    import time
+    import imp
+    
+    while True:
+        ScriptBuilderGUI = imp.load_source("ScriptBuilderGUI", "./prober/classes/ScriptBuilderGUI.py")
+        ScriptBuilderGUI.vp_start_gui(Maitre)
+        time.sleep(3)
+    
+    
