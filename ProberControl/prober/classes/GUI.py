@@ -18,9 +18,12 @@ import ScriptBuilderGUI
 from EthernetInterface import Eth_Server
 from EthernetInterface import Eth_GUI
 from DataIO import DataIO
+from Tkinter import *
 
 import sys
 import StringIO
+
+# For memorizing stdout and stderr to display on the console Text widget in GUI
 old_stdout = sys.stdout # Memorize the default stdout stream
 sys.stdout = buffer = StringIO.StringIO()
 sys.stderr = buffer2 = StringIO.StringIO()
@@ -34,7 +37,6 @@ main_output = StringIO.StringIO()
 
 class Application(tk.Frame):
 
-    
     def restartGUI(self, Maitre, stages = {}):
         self.__init__(Maitre, stages)
     
@@ -98,7 +100,6 @@ class Application(tk.Frame):
         self.bind('<Shift-KeyRelease-Down>',self.downKey)
         self.bind('<Return>', self.hitEnter)
 
-
         self.q = Queue()
 
         # Start Queue Listening event
@@ -124,19 +125,12 @@ class Application(tk.Frame):
                 if qr: qr.put(r)
         except:
             pass
-        #controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
-            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
-        
         self.after(100, self.qLoop)
 
     # Setup Element on GUI
-    
-    
     # This is main part that u edit
     # TODO: run loop that continually refreshes/reinitializes all these features for debuggin purposes, remove that code before pushing.
-    
-    
-    
+  
     def createWidgets(self):
         # Create Menu
         MenuBar = tk.Menu(self.master)
@@ -155,7 +149,7 @@ class Application(tk.Frame):
         DataMenu.add_checkbutton(label='Sticky Data in Plotter',onvalue = 1, offvalue = 0, variable=self.stickyPlotter,command = self.ToggleStickyPlotter)
         MenuBar.add_cascade(label='Data',menu = DataMenu)
 
-        # Create Script Cascade
+        # Create Debug Cascade, with Func to Exec window
         DebugMenu = tk.Menu(MenuBar, tearoff=False)
         DebugMenu.add_command(label='Debug',command = self.new_winF)
         MenuBar.add_cascade(label='Debug',menu = DebugMenu)
@@ -165,6 +159,7 @@ class Application(tk.Frame):
         NetworkMenu.add_command(label='Network Config',command = self.startEthernetGUI)
         MenuBar.add_cascade(label='Network',menu = NetworkMenu)
        
+        # Hidden features on GUI
         if self.Stages != {}:
             ##Label
             self.StageCommandLabel = tk.Label(self,text='Stage Function to Exec')
@@ -187,7 +182,8 @@ class Application(tk.Frame):
             self.StageProcButton = tk.Button(self, text='Execute',command=self.StageClassButton)
             self.StageProcButton.grid(column=6,row=4)
         
-        # Scripting Field
+
+        # Parameters for adjusting main buttons on GUI (Browse, Execute, Build)
         self.ScriptLabel = tk.Label(self,text='Script to Execute')
         self.ScriptLabel.grid(column=0,row=0,columnspan=2)
 
@@ -203,10 +199,17 @@ class Application(tk.Frame):
         self.BuildButton = tk.Button(self, text='Build Script',command=self.startScriptBuilder, height = 5, width = 20)
         self.BuildButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
         
-        from Tkinter import *
+        '''
+        Obsolete Console implementation; now using the Text Widget right below this block of code
+
         self.ConsoleText.set(main_output.getvalue() +" \n" + buffer.getvalue())
         self.Consolelabel = tk.Label(self,textvariable=self.ConsoleText, height = 18, width = 45, bg="white", wraplength=300, justify=LEFT)
         self.Consolelabel.grid(column=2,row=2,columnspan = 2, rowspan = 12)
+        '''
+
+        #Console Text Widget
+        self.Console = tk.Text(self, height=18, width=55)
+        self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30)
         
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
@@ -239,21 +242,11 @@ class Application(tk.Frame):
             self.StepButton = tk.Button(self, text='Set Step',command=self.StepSetButton)
             self.StepButton.grid(column=4,row=8)
 
-    ### Functions Triggered by events
-    def ToggleStickyPlotter(self):
-
-        if self.stickyPlotter.get():
-            pl = NBPlot()
-            pl.set_clear(0)
-        else:
-            pl = NBPlot()
-            pl.set_clear(1)
-
-    def new_winF(self): # new window definition
+    # Function for creating Debug Window
+    def new_winF(self): 
         newwin = tk.Toplevel(self)
-        #display = Label(newwin, text="Humm, see a new window !")
-        #display.pack()
-        #COMMAND TO EXEC
+        
+        # COMMAND TO EXEC
         newwin.CommandLabel = tk.Label(newwin,text='Command to Exec')
         newwin.CommandLabel.grid(column=0,row=5,columnspan = 2)
         newwin.CommandEntry = tk.Entry(newwin,textvariable=self.CommandText,width = 55)
@@ -282,10 +275,8 @@ class Application(tk.Frame):
         ## Execute Button
         newwin.ProcButton = tk.Button(newwin, text='Execute',command=self.ProcButton)
         newwin.ProcButton.grid(column=6,row=20)
-        # Stages OptionMenu for Function selection
         
-
-        #STAGE FUNC TO EXEC
+        # STAGE FUNC TO EXEC
 
         if self.Stages != {}:
             ##Label
@@ -308,9 +299,29 @@ class Application(tk.Frame):
             ## Execute Button
             newwin.StageProcButton = tk.Button(newwin, text='Execute',command=self.StageClassButton)
             newwin.StageProcButton.grid(column=6,row=4)
-
-        
     
+    # function for enabling you to hit enter to run script instead of pressing execute      
+    def hitEnter(self, event):
+        self.ScriptRun()      
+
+    # function for updating console every time script is run; ideally would be placed in loop that updates even when no script is running
+    def updateConsole(self, controller):
+        # buffer holds output in stdout; buffer2 holds output in stderr; this function prints stdout and stderr for scriptcontroller and this gui class, but u can implement this for any number of classes
+        self.ConsoleText.set("GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue()) 
+        self.Console.delete(1.0, tk.END)
+        self.Console.insert(tk.END, "GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue())
+
+    ### Functions Triggered by events
+    def ToggleStickyPlotter(self):
+
+        if self.stickyPlotter.get():
+            pl = NBPlot()
+            pl.set_clear(0)
+        else:
+            pl = NBPlot()
+            pl.set_clear(1)
+    
+
     def FileBrowse(self):
         try:
             inputFiles = tkFileDialog.askopenfilenames()
@@ -320,13 +331,6 @@ class Application(tk.Frame):
         except Exception as e:
             print("Error: {}".format(e))
             self.ConsoleText.set(self.ConsoleText.get() + " \n Error: {}".format(e))
-            
-    def hitEnter(self, event):
-        self.ScriptRun()      
-
-    def updateConsole(self, controller):
-        self.ConsoleText.set("GUI: " + buffer.getvalue() + buffer2.getvalue() + "\n ScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue()) 
-        
 
 
     def ScriptRun(self):
@@ -335,23 +339,22 @@ class Application(tk.Frame):
         try:
             print(">>Running script {}".format(path))
             
-            #self.ConsoleText.set(self.ConsoleText.get() + "\n >>Running script {}".format(path))
             
             name = path.split('/')[-1:][0]
 
             # Start a thread for the script to run with
             controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
             self.updateConsole(controller)
+
+            # Obsolete code
+
             #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
             #outputs = list()
             #outputs.append(controller.getBuffer())
             #outputs.append(buffer)
-
             #main_output.write(controller.getBuffer().getvalue())
             #main_output.write(buffer.getvalue().getvalue())
             #main_output.write(''.join([i.getvalue() for i in outputs]))
-
-
             #self.ConsoleText.set(main_output.getvalue())
             #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
             #buffer2 = controller.getBuffer().getvalue())

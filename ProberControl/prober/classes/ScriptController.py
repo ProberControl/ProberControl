@@ -11,13 +11,17 @@ from DataIO import DataIO
 
 import sys
 import StringIO
+
+# Fields for holding stdout, stderr
 old_stdout = sys.stdout # Memorize the default stdout stream
 sys.stdout = buffer = StringIO.StringIO()
 sys.stderr = buffer2 = StringIO.StringIO()
 
 
 class ScriptController(object):
-    print 'hello'
+
+    # for testing the console in GUI.py
+    print 'Testing Stdout From ScriptController'
    
     '''
     The purpose of this class is to read-in a measurement script, then
@@ -58,6 +62,7 @@ class ScriptController(object):
           self.upQueue.put((tkMessageBox.askquestion,('Prober Error', 'Could the Error be manually resolved ? \n Details: \n'+text),{},self.downQueue))
           return 'yes' == self.downQueue.get()
 
+    # for returning stdout and stderr to GUI.py
     def getBuffer(self):
         return buffer
 
