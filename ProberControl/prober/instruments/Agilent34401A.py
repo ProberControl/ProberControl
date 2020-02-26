@@ -19,7 +19,7 @@ class Agilent34401A(object):
         self.active = False
 
         self.gpib = res_manager.open_resource(address)
-        print(self.gpib.query('*IDN?'))
+        print((self.gpib.query('*IDN?')))
         self.gpib.write('*RST')
         self.gpib.write('*CLS')
         self.scalingfactor = 1

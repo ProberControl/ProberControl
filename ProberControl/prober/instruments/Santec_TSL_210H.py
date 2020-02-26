@@ -69,7 +69,7 @@ class Santec_TSL_210H(object):
             wavelength < self.min_wavelength or
             wavelength > self.max_wavelength
             ):
-                print ('Specified Wavelength Out of Range')
+            print ('Specified Wavelength Out of Range')
 
         else :
             wavelength = float(str(numpy.round(wavelength, 3)))
@@ -80,7 +80,7 @@ class Santec_TSL_210H(object):
             while(info != wavelength):
                 time.sleep(0.1)
                 info = float(self.gpib.read())
-            print ('Wavelength Sent: %s' % self.gpib.read())
+            print(('Wavelength Sent: %s' % self.gpib.read()))
 
     def sweepWavelengthsTriggerSetup (self, start, end, step):
         '''
@@ -105,7 +105,7 @@ class Santec_TSL_210H(object):
             end > self.max_wavelength or
             step < 0.001
             ):
-                print ('Specified Wavelengths Out of Range, or Step Too Low')
+            print ('Specified Wavelengths Out of Range, or Step Too Low')
 
         else:
             self.sweepstart = float(start)

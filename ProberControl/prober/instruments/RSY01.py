@@ -100,7 +100,7 @@ class RSY01(object):
             end > self.max_freq or
             step < 0.001
             ):
-                print ('Specified Frequence Out of Range, or Step Too Low')
+            print ('Specified Frequence Out of Range, or Step Too Low')
 
         else:
             self.startfreq = float(start)

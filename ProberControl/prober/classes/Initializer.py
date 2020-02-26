@@ -1,12 +1,12 @@
 try:
-    import serial
+    import serial #TODO Check if the try statment is necessary
 except:
-    print "Serial package was not loaded"
+    print("Serial package was not loaded")
 
 try:
-    import visa
+    import visa #TODO Check if the try statment is necessary
 except:
-    print "Visa package was not loaded"
+    print("Visa package was not loaded")
 import time
 import sys, os
 from ..instruments import *
@@ -15,10 +15,11 @@ from ..classes import *
 import threading
 import traceback
 
-SWITCH_ID_X = '_hidden_id_param_'
+SWITCH_ID_X = '_hidden_id_param_' #TODO wtf do you do
 
 def import_instrument(instrumentName):
-    for name, mod in sys.modules.iteritems():
+    """Finds instrument class for a given input instrument name"""
+    for name, mod in list(sys.modules.items()):
         suffix = name[name.rfind('.') + 1 :]
         if instrumentName == suffix:
             return mod
@@ -31,8 +32,7 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-class Initializer(object):
-    __metaclass__ = Singleton
+class Initializer(object, metaclass=Singleton):
     '''
     The purpose of this class is to assist in the setup for the program.
     The only usage of this class is during initial start-up.
@@ -43,7 +43,7 @@ class Initializer(object):
         try:
             self.rm = visa.ResourceManager()
         except:
-            print "Warning: Visa Resource Manager unavailable"
+            print("Warning: Visa Resource Manager unavailable")
             self.rm = None
         self.brokenInstruments = [] # collection for instruments not able to be instantiated
         self.stageCollection = {} # collection for instantiated stages
@@ -54,9 +54,9 @@ class Initializer(object):
         Method for printing all devices connected to the GPIB Bus
         '''
         try:
-            print self.rm.list_resources()
+            print((self.rm.list_resources()))
         except:
-            print "Error: Could not read from Visa Resource Manager"
+            print("Error: Could not read from Visa Resource Manager")
 
     def read_config(self):
         '''
@@ -98,7 +98,7 @@ class Initializer(object):
                         stage_config[paraIndex]=line[0:-1] # add to collection
 
         except Exception as e:
-            print 'Problem with config file:\n' + str(e)
+            print(('Problem with config file:\n' + str(e)))
             # traceback.print_exc()
 
         # flatten the list, multi-dimensional because of multi-channel devices
@@ -147,32 +147,32 @@ class Initializer(object):
 
     def _makeMoreChannels(self, stage_config):
         '''Produces more entries of lasers for every channel designated by the config file'''
-		# Format channel N input
+                # Format channel N input
         n = stage_config['N']
         sys, dev = self._format(n)
-		# Split P input at ;'s
+                # Split P input at ;'s
         if 'P' in stage_config:
-        	m = stage_config['P']
-        	ports = self._pFormat(m)
+            m = stage_config['P']
+            ports = self._pFormat(m)
         toReturn = []
         for i in range(0,len(sys)):
             new_entry = stage_config.copy()
             new_entry['SysChan'] = sys[i]
             new_entry['DevChan'] = dev[i]
             if 'P' in stage_config:
-				new_entry['P'] = ports[i]
+                new_entry['P'] = ports[i]
 
             toReturn.append(new_entry)
 
         return toReturn
 
     def _pFormat(self,n):
-            channel_strs = [i for i in n.split(';')]
-            channel_list = []
-            for elem in channel_strs:
-                channel_list.append(elem.split(':')[1])
+        channel_strs = [i for i in n.split(';')]
+        channel_list = []
+        for elem in channel_strs:
+            channel_list.append(elem.split(':')[1])
 
-            return channel_list
+        return channel_list
 
     def _format(self, n):
         '''Helper function for _makeMoreChannels()'''
@@ -182,11 +182,11 @@ class Initializer(object):
         dev=[]
         for elem in n:
             if ':' in elem:
-        		sys.append(elem.split(':')[0])
-        		dev.append(elem.split(':')[1])
+                sys.append(elem.split(':')[0])
+                dev.append(elem.split(':')[1])
             else:
-        		sys.append(elem)
-        		dev.append('None')
+                sys.append(elem)
+                dev.append('None')
 
         return sys,dev
 
@@ -207,7 +207,7 @@ class Initializer(object):
 
         # Clear the brokenInstruments collection
         self.brokenInstruments = []
-        instruments_instantiated = [str(i) for i in self.stageCollection.values()]
+        instruments_instantiated = [str(i) for i in list(self.stageCollection.values())]
 
         gm_handler = Global_MeasureHandler.Global_MeasureHandler()
 
@@ -240,13 +240,13 @@ class Initializer(object):
 
                     # construct the key for GlobalMeasurement_Handler and stages dictionary
                     if 'SysChan' in stage_config:
-						key = stage_type+newStage.whoAmI()+str(stage_config['SysChan'])
+                        key = stage_type+newStage.whoAmI()+str(stage_config['SysChan'])
                     else:
-						key = stage_type+newStage.whoAmI()
+                        key = stage_type+newStage.whoAmI()
 
                     # add the instance of the class to the stages dictionary
-                    if key in  self.stageCollection.keys():
-                        print "ERROR: "+key+"was initialized twice check numbering of devices and channels"
+                    if key in  list(self.stageCollection.keys()):
+                        print(("ERROR: "+key+"was initialized twice check numbering of devices and channels"))
                         self.stageCollection[key] = newStage
                     else:
                         self.stageCollection[key] = newStage
@@ -258,8 +258,8 @@ class Initializer(object):
                     gm_handler.insert_instr(key, triggerNetwork)
 
                 except Exception as e:
-                    print '\nError Instantiating: ' + stage_config['O']
-                    print 'Exception Raised: ' + str(e) + '\n'
+                    print(('\nError Instantiating: ' + stage_config['O']))
+                    print(('Exception Raised: ' + str(e) + '\n'))
                     self.brokenInstruments.append(stage_config)
                     traceback.print_exc()
 
@@ -309,16 +309,16 @@ class Initializer(object):
 
                 # construct the key for GlobalMeasurement_Handler and stages dictionary
                 if 'SysChan' in stage_config:
-						key = stage_type+newStage.whoAmI()+str(stage_config['SysChan'])
+                    key = stage_type+newStage.whoAmI()+str(stage_config['SysChan'])
                 else:
-						key = stage_type+newStage.whoAmI()
+                    key = stage_type+newStage.whoAmI()
 
                 # add the instance of the class to the stages dictionary
-                if key in  self.stageCollection.keys():
-                        print "ERROR: "+key+"was initialized twice check numbering of devices and channels"
-                        self.stageCollection[key] = newStage
+                if key in  list(self.stageCollection.keys()):
+                    print(("ERROR: "+key+"was initialized twice check numbering of devices and channels"))
+                    self.stageCollection[key] = newStage
                 else:
-                        self.stageCollection[key] = newStage
+                    self.stageCollection[key] = newStage
                 # store a referene to the object itself for identification
                 stage_config['OBJ'] = newStage
 
@@ -327,8 +327,8 @@ class Initializer(object):
                 gm_handler.insert_instr(key, triggerNetwork)
 
             except Exception as e:
-                print '\nError Instantiating: ' + stage_config['O']
-                print 'Exception Raised: ' + str(e) + '\n'
+                print(('\nError Instantiating: ' + stage_config['O']))
+                print(('Exception Raised: ' + str(e) + '\n'))
                 self.brokenInstruments.append(stage_config)
 
         self.stageCollection = self._genHandlers(self.configCollection, self.stageCollection)
@@ -355,7 +355,7 @@ class Initializer(object):
         mtr_list = [mtr_x[0], mtr_y[0], mtr_z[0]]
 
         if 'S' in stage_config:
-            space =  map(float,stage_config['S'].split(' '))
+            space =  list(map(float,stage_config['S'].split(' ')))
 
         if 'A' in stage_config:
             off_angle = float(stage_config['A'])
@@ -409,7 +409,7 @@ class Initializer(object):
         triggerIn = stage_config.get('R', '')
         triggerOut = stage_config.get('T', '')
         triggerList = [triggerIn, triggerOut]
-        triggerList = map(lambda a: a if a != '' else None, triggerList)
+        triggerList = [a if a != '' else None for a in triggerList]
 
         # Special case for distance measurement setup
         if instrumentName == 'Distance':
@@ -417,12 +417,12 @@ class Initializer(object):
 
         # Importing a multi-channel device
         elif 'N' in stage_config:
-			if stage_config['DevChan'] != 'None':
-				instrumentPort = import_instrument(instrumentName)
-				instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address, stage_config['DevChan'])
-			else:
-				instrumentPort = import_instrument(instrumentName)
-				instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address)
+            if stage_config['DevChan'] != 'None':
+                instrumentPort = import_instrument(instrumentName)
+                instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address, stage_config['DevChan'])
+            else:
+                instrumentPort = import_instrument(instrumentName)
+                instrumentActual = getattr(instrumentPort, instrumentName)(self.rm, address)
 
         #Normal case
         else:
@@ -447,7 +447,7 @@ class Initializer(object):
         # a Fiber is always a multi-channel device
         if 'N' not in stage_config:
             raise AttributeError('GenerateFiber: #N parameter not specified for fiber. Hint: {}'.format(stage_config))
-    	fiber = Fiber.Fiber(stage_config['SysChan'])
+        fiber = Fiber.Fiber(stage_config['SysChan'])
         return fiber
 
     def _distanceSetup(self, stage_config):
@@ -481,21 +481,21 @@ class Initializer(object):
             handlerActual = getattr(handlerPort, 'SwitchHandler')(stage_config,stages,switches)
             stages['SwitchHandler'] = handlerActual
         else:
-            print 'Initializer:: [WARNING] continuing without a SwitchHandler...'
+            print('Initializer:: [WARNING] continuing without a SwitchHandler...')
 
         return stages
 
     def _checkInstruments(self):
         '''reports broken instruments to the user'''
         if (self.brokenInstruments):
-            print 'The following instruments were not initialized:'
+            print('The following instruments were not initialized:')
             for entry in self.brokenInstruments:
-                print '{}'.format(entry['O'])
+                print(('{}'.format(entry['O'])))
 
         else:
-            print 'The following tools were initialized as:'
-            for k,v in self.stageCollection.items():
-                print "Stages Key: " + k + " Model: " + v.__class__.__name__
+            print('The following tools were initialized as:')
+            for k,v in list(self.stageCollection.items()):
+                print(("Stages Key: " + k + " Model: " + v.__class__.__name__))
 
     def _genUniqueAddressHandle(self, address):
         if address in self.stp_mSerials:
@@ -511,7 +511,7 @@ class Initializer(object):
 
     def _genMtr(self, infoLine, threaded=False, empty_collector=[]):
         ''' parses the motor info to generate motors '''
-        args = map(lambda s: s.strip(), infoLine.split(';'))
+        args = [s.strip() for s in infoLine.split(';')]
 
         if len(args) < 2:
             raise ValueError('generate_stages: at least 2 arguments expected; got {}'.format(len(args)))
@@ -519,7 +519,7 @@ class Initializer(object):
         address_handle = self._genUniqueAddressHandle(args[1])
         ctor_args = [address_handle]
         # convert all other arguments to integers
-        ctor_args[1:] = map(lambda x: int(x), args[2:])
+        ctor_args[1:] = [int(x) for x in args[2:]]
 
         instrumentPort = import_instrument(instrumentName)
         if not threaded:

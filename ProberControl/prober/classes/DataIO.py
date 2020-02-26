@@ -34,10 +34,10 @@ class DataIO():
                 # Try to open file
                 openFile = open(openFile,'a')
             except:
-                print "Cannot open file for writing"
+                print("Cannot open file for writing")
                 return
         else:
-            print "Wrong argument type for openFile"
+            print("Wrong argument type for openFile")
             return
 
 
@@ -54,7 +54,7 @@ class DataIO():
             openFile.write(data)
             openFile.flush()
         else:
-            print "Could not write data to file: Error in Data Format"
+            print("Could not write data to file: Error in Data Format")
 
 
         # Seperate the experiments by one extra new lines
@@ -90,23 +90,23 @@ class DataIO():
 
     @staticmethod
     def _test_dim(testlist, dim=0):
-       """tests if testlist is a list and how many dimensions it has.
-       Returns -1 if testlist is a number
-       returns -2 if it is no list or number, 0 if list is empty
-       and otherwise the dimensions of it"""
-       if isinstance(testlist, list):
-          if testlist == []:
-              return dim
-          dim = dim + 1
-          dim = DataIO._test_dim(testlist[0], dim)
-          return dim
-       elif isinstance(testlist, numbers.Number) and dim == 0:
-           return -1
-       else:
-          if dim == 0:
-              return -2
-          else:
-              return dim
+        """tests if testlist is a list and how many dimensions it has.
+        Returns -1 if testlist is a number
+        returns -2 if it is no list or number, 0 if list is empty
+        and otherwise the dimensions of it"""
+        if isinstance(testlist, list):
+            if testlist == []:
+                return dim
+            dim = dim + 1
+            dim = DataIO._test_dim(testlist[0], dim)
+            return dim
+        elif isinstance(testlist, numbers.Number) and dim == 0:
+            return -1
+        else:
+            if dim == 0:
+                return -2
+            else:
+                return dim
 
     @staticmethod
     def get_test_names(path):
@@ -116,7 +116,7 @@ class DataIO():
         try:
             with open(path,'r') as MeasFile:
                 if MeasFile is None:
-                    print 'Problem reading Measurement file.'
+                    print('Problem reading Measurement file.')
                     exit()
 
                 for num, line in enumerate(MeasFile, 1):
@@ -125,7 +125,7 @@ class DataIO():
         except IOError:
             pass # No file was selected, no reason to report an error
         except Exception as e:
-            print("Error: {}".format(e))
+            print(("Error: {}".format(e)))
 
         if NameList==[]:
             return ['NoName']
@@ -139,7 +139,7 @@ class DataIO():
 
         with open(path, 'r') as MeasFile:
             if MeasFile is None:
-                print 'Problem reading Measurement file.'
+                print('Problem reading Measurement file.')
                 exit()
 
             in_block = False
@@ -164,7 +164,7 @@ class DataIO():
         if in_block == True:
             return Data
 
-        print 'Reading Data from File failed'
+        print('Reading Data from File failed')
         return False
 
     @staticmethod
@@ -190,7 +190,7 @@ class DataIO():
         for elem in PreArgList:
             if '[' in elem:
                 SubList=elem.replace('[','').replace(']','').split(',')
-                elem=map(float,SubList)
+                elem=list(map(float,SubList))
             if 'Stages' in elem:
                 elem = Stages
             if 'Maitre' in elem:
@@ -234,8 +234,8 @@ if __name__ == "__main__" :
     openFile = open(openFile,'a')
     data = [[1,2,3],[2,3,4],[3,4,5]]
     Data_Name = 'Exp1'
-    print type(data)
-    print DataIO._test_dim(data)
+    print((type(data)))
+    print((DataIO._test_dim(data)))
     DataIO.writeData(openFile, data, Data_Name)
 
 

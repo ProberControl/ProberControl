@@ -6,7 +6,7 @@ import threading
 import datetime
 import inspect
 from time import sleep
-from DataIO import DataIO
+from .DataIO import DataIO
 
 
 # Getting an instance of the Global_MeasureHandler singleton object
@@ -37,12 +37,12 @@ class Eth_Server():
         self.server_socket.listen(5)
         self.read_list = [self.server_socket]
         self.running = True
-        print "Listening on port "+str(self.port)
+        print(("Listening on port "+str(self.port)))
 
     def stop_server(self):
         self.server_socket.close()
         self.running = False
-        print "Stopped Server"
+        print("Stopped Server")
 
     def get_running(self):
         return self.running
@@ -57,7 +57,7 @@ class Eth_Server():
                 if s is self.server_socket:
                     client_socket, address = self.server_socket.accept()
                     self.read_list.append(client_socket)
-                    print "Connection from", address
+                    print(("Connection from", address))
 
                 else:
                     data = s.recv(1024)
@@ -100,7 +100,7 @@ class Eth_Server():
 
     def send_Stages(self,s,data):
         stage_book = {}
-        for k,v in self.Stages.iteritems():
+        for k,v in list(self.Stages.items()):
             func_names = []
             for func in inspect.getmembers(self.Stages[k],inspect.ismethod):
                 if func[0][0] != '_':
@@ -170,12 +170,12 @@ class Eth_Server():
         return (stage,func_name,arg_string)
 
 try:
-    from Tkinter import *
+    from tkinter import *
 except ImportError:
     from tkinter import *
 
 try:
-    import ttk
+    import tkinter.ttk
     py3 = 0
 except ImportError:
     import tkinter.ttk as ttk
@@ -199,7 +199,7 @@ class Eth_GUI():
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
         _ana1color = '#d9d9d9' # X11 color: 'gray85'
         _ana2color = '#d9d9d9' # X11 color: 'gray85'
-        self.style = ttk.Style()
+        self.style = tkinter.ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
         self.style.configure('.',background=_bgcolor)
@@ -218,11 +218,11 @@ class Eth_GUI():
         self.style.configure('TNotebook.Tab', background=_bgcolor)
         self.style.configure('TNotebook.Tab', foreground=_fgcolor)
         self.style.map('TNotebook.Tab', background=[('selected', _compcolor), ('active',_ana2color)])
-        self.RiderTab = ttk.Notebook(top)
+        self.RiderTab = tkinter.ttk.Notebook(top)
         self.RiderTab.place(relx=0.02, rely=0.05, relheight=0.78, relwidth=0.94)
         self.RiderTab.configure(width=454)
         self.RiderTab.configure(takefocus="")
-        self.RiderTab_t1 = ttk.Frame(self.RiderTab)
+        self.RiderTab_t1 = tkinter.ttk.Frame(self.RiderTab)
         self.RiderTab.add(self.RiderTab_t1, padding=3)
         self.RiderTab.tab(0, text="Server",underline="-1",)
 

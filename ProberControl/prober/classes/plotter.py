@@ -31,42 +31,42 @@ class ProcessPlotter(object):
 
 
     def update_fig(self):
-            import matplotlib.pyplot as plt
-            while 1:
-                if not self.pipe.poll():
-                    break
+        import matplotlib.pyplot as plt
+        while 1:
+            if not self.pipe.poll():
+                break
 
-                command = self.pipe.recv()
+            command = self.pipe.recv()
 
-                if command is None:
-                    self.terminate()
-                    return False
+            if command is None:
+                self.terminate()
+                return False
 
-                else:
+            else:
 
-                    self.DataList=command[0][:]
+                self.DataList=command[0][:]
 
-                    self.title  = command[1]
-                    self.xlabel = command[2]
-                    self.ylabel = command[3]
-                    self.clear  = command[4]
+                self.title  = command[1]
+                self.xlabel = command[2]
+                self.ylabel = command[3]
+                self.clear  = command[4]
 
-                    if self.clear:
-                        self.fig.clear()
-                        self.ax = self.fig.add_subplot(111)
+                if self.clear:
+                    self.fig.clear()
+                    self.ax = self.fig.add_subplot(111)
 
-                    plt.title(self.title)
-                    plt.xlabel(self.xlabel)
-                    plt.ylabel(self.ylabel)
+                plt.title(self.title)
+                plt.xlabel(self.xlabel)
+                plt.ylabel(self.ylabel)
 
-                    self.ax.plot(zip(*self.DataList)[0], zip(*self.DataList)[1], 'b')
+                self.ax.plot(list(zip(*self.DataList))[0], list(zip(*self.DataList))[1], 'b')
 
-            self.fig.canvas.draw()
-            try:
-                self.sh[1] = self.fig.canvas.manager.window.after(1000,self.update_fig)
-            except Exception as e:
-                print(e)
-            return True
+        self.fig.canvas.draw()
+        try:
+            self.sh[1] = self.fig.canvas.manager.window.after(1000,self.update_fig)
+        except Exception as e:
+            print(e)
+        return True
 
 
 

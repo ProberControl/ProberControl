@@ -1,23 +1,23 @@
 #!/usr/bin/env python
-import Tkinter as tk
+import tkinter as tk
 import threading
-from Queue import Queue
+from queue import Queue
 import inspect
 import operator
 import logging
 from time import sleep
 from functools import partial
-from maitre import Maitre
-from DataViewer import DataViewer
-import Initializer as i
-import tkFileDialog
-import ScriptController
-from plotter import NBPlot
-from Global_MeasureHandler import Global_MeasureHandler as g
-import ScriptBuilderGUI
-from EthernetInterface import Eth_Server
-from EthernetInterface import Eth_GUI
-from DataIO import DataIO
+from .maitre import Maitre
+from .DataViewer import DataViewer
+from . import Initializer as i
+import tkinter.filedialog
+from . import ScriptController
+from .plotter import NBPlot
+from .Global_MeasureHandler import Global_MeasureHandler as g
+from . import ScriptBuilderGUI
+from .EthernetInterface import Eth_Server
+from .EthernetInterface import Eth_GUI
+from .DataIO import DataIO
 
 
 ####### Define Window
@@ -209,7 +209,7 @@ class Application(tk.Frame):
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
         self.StageButtons = {}
-        for k,v in self.Stages.items():
+        for k,v in list(self.Stages.items()):
             if 'O' == k[0]:
                 self.StageButtons[k]=tk.Button(self, text=k ,command= partial(self.SetActiveStage,k))
                 self.StageButtons[k].grid(column=self.StageButtonI,row=7)
@@ -249,18 +249,18 @@ class Application(tk.Frame):
 
     def FileBrowse(self):
         try:
-            inputFiles = tkFileDialog.askopenfilenames()
+            inputFiles = tkinter.filedialog.askopenfilenames()
             self.FileText.set(self.master.tk.splitlist(inputFiles)[0])
         except IndexError:
             pass # No file selected, no reason to report error
         except Exception as e:
-            print("Error: {}".format(e))
+            print(("Error: {}".format(e)))
 
     def ScriptRun(self):
         path = self.FileText.get()
 
         try:
-            print("Running script {}".format(path))
+            print(("Running script {}".format(path)))
             name = path.split('/')[-1:][0]
 
             # Start a thread for the script to run with
@@ -269,13 +269,13 @@ class Application(tk.Frame):
             scriptThread.start()
 
         except IndexError as e:
-            print("Command line error: {}".format(e))
+            print(("Command line error: {}".format(e)))
         except IOError as e:
-            print("IO Error: {}".format(e))
+            print(("IO Error: {}".format(e)))
         except KeyError as e:
-            print("Error within the configuration file: {}".format(e))
+            print(("Error within the configuration file: {}".format(e)))
         except Exception as e:
-            print("Error: {}".format(e))
+            print(("Error: {}".format(e)))
 
     def startEthernetGUI(self):
         BuilderWindow=tk.Toplevel(self)
@@ -300,9 +300,9 @@ class Application(tk.Frame):
         # check if instrument has been locked
         bounded_method = self.ActiveStageFuncList[self.ActiveStageFunc]
         if g().is_locked(bounded_method.__self__):
-            print 'Cannot execute method {} : instrument locked by running script.'.format(bounded_method)
+            print(('Cannot execute method {} : instrument locked by running script.'.format(bounded_method)))
         else:
-            print bounded_method(*ArgList)
+            print((bounded_method(*ArgList)))
 
     def StageFuncChange(self,choice):
         self.ActiveStageFunc = self.ActiveStageFuncNames.index(choice)
@@ -336,7 +336,7 @@ class Application(tk.Frame):
 
         ArgList = DataIO.parameter_prep(Stages = self.Stages, Maitre = self.Maitre,arg_string = self.ArgText.get(),func_parameter_list = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc))
 
-        print self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList)
+        print((self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList)))
         self.gh.release_current_user_instruments()
 
 
@@ -360,7 +360,7 @@ class Application(tk.Frame):
 
 
     def SetActiveStage(self,Stage):
-        print Stage
+        print(Stage)
         self.ActiveStage = Stage
         self.StepText.set(self.Stages[self.ActiveStage].stepsize)
         if 'O' in self.ActiveStage or 'E' in self.ActiveStage:
@@ -371,7 +371,7 @@ class Application(tk.Frame):
     def CommandButton(self):
         # Strg in Command Field:
         command = self.CommandText.get()
-        print command
+        print(command)
         exec(command)
         self.focus_set()
 

@@ -6,8 +6,6 @@ except:
 
 
 
-__name__ = "instruments"
-
 __all__ = [
     'Polatis',
     'WT68145B',
@@ -18,7 +16,7 @@ __all__ = [
     'HP6624A',
     'AnritsuMS2667C',
     'AndoAQ4321',
-	'AragonBOSA400',
+        'AragonBOSA400',
     'DSensor_ILD1420',
     'ELL8',
     'GonStage_KST_Z812B',

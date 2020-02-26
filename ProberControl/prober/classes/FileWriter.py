@@ -4,7 +4,7 @@ This module handles output of test results to files in local storage.
 Implements the ProberControl's OutputStream implicit interface.
 '''
 
-import DataIO
+from . import DataIO
 
 class FileWriter(object):
 
@@ -56,7 +56,7 @@ class FileWriter(object):
 
     def __exit__(self, type, value, traceback):
         '''implementing "with" semantics'''
-        for file in self.FileMap.values():
+        for file in list(self.FileMap.values()):
             file.close()
 
     def write(openFile, data, Data_Name=''):
@@ -83,10 +83,10 @@ class FileWriter(object):
                 # Try to open file
                 openFile = open(openFile,'a')
             except:
-                print "Cannot open file for writing"
+                print("Cannot open file for writing")
                 return
         else:
-            print "Wrong argument type for openFile"
+            print("Wrong argument type for openFile")
             return
 
 
@@ -103,7 +103,7 @@ class FileWriter(object):
             openFile.write(data)
             openFile.flush()
         else:
-            print "Could not write data to file: Error in Data Format"
+            print("Could not write data to file: Error in Data Format")
 
 
         # Seperate the experiments by one extra new lines

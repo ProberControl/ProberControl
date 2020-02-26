@@ -16,12 +16,12 @@ try:
 
     def cleanUp(stages):
         '''Release instrument resources'''
-        for stage in stages.values():
+        for stage in list(stages.values()):
             if getattr(stage, 'close', None) is not None:
                 # NOTE only call close on instruments that have it
                 # implemented
                 stage.close()
-        print 'Instrument clean-up complete.'
+        print('Instrument clean-up complete.')
 
     if __name__ == '__main__':
         from prober.classes import plotter
@@ -50,7 +50,7 @@ try:
 
 except:
     traceback.print_exc()
-    raw_input("Press Enter to close") # Python 2
+    eval(input("Press Enter to close")) # Python 2
 
 '''
 Copyright (C) 2017  Robert Polster

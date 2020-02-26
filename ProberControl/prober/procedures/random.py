@@ -1,5 +1,5 @@
 #from Classes.xyzstage import XYZ_Stage
-import raster
+from . import raster
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -88,7 +88,7 @@ def getSearchNoise(stages, target):
     f.close()
 
 def alignGrating(stages, target):
-	optimalAngle = -2
-	offset = getAngleOffset()
-	delta = optimalAngle - offset
-	stages[target].gon_T.delta_rot(delta)
+    optimalAngle = -2
+    offset = getAngleOffset()
+    delta = optimalAngle - offset
+    stages[target].gon_T.delta_rot(delta)

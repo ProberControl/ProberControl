@@ -1,7 +1,7 @@
 # Step Motor Class
 #    - wraps around Motor
 
-from Motor_KST_ZST import Motor_KST_ZST as Motor, hexString, int2hexStr
+from .Motor_KST_ZST import Motor_KST_ZST as Motor, hexString, int2hexStr
 #import serial
 import logging
 import time
@@ -94,7 +94,7 @@ class StepMotor_KST_ZST(Motor):
         # MGMSG_HW_REQ_INFO
         self.ser.write(hexString('05 00 00 00 50 01'))
         response = self.ser.read(90)
-        print response
+        print(response)
 
     def _set_backlash(self, backlash_distance):
         '''

@@ -1,7 +1,7 @@
 # the rotating stage class
 #     - wraps around Motor
 
-from Motor_KST_ZST import Motor_KST_ZST as Motor
+from .Motor_KST_ZST import Motor_KST_ZST as Motor
 
 DEG_PER_CNT = 0.00061035
 

@@ -1,7 +1,7 @@
 # Electronic Probe Stage Class
 # The E Stage is just a wrapper of the XYZ Stage for uniformity with the fibre stages
 
-from xyzstage import XYZ_Stage
+from .xyzstage import XYZ_Stage
 import math
 
 class E_Stage(XYZ_Stage):

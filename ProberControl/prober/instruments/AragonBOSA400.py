@@ -161,7 +161,7 @@ class AragonBOSA400(object):
         command = 'sens:wav:stat?'
         response = self.osa.ask(command)
         check_response(command, response)
-        print response  # TODO finalize how to parse and return a nmber
+        print(response)  # TODO finalize how to parse and return a nmber
 
     def getpower(self):
         '''
@@ -276,11 +276,11 @@ class AragonBOSA400(object):
         # take only enough points accoridng to step
         # NOTE: BOSA does't change its sampling rate; it only changes it on the display
         original_size = numpy.size(n_trace_data, 0)
-        print 'orig: ', original_size
+        print(('orig: ', original_size))
         target_size = int((end - start + 1) / float(step) + 1)
-        print 'targ: ', target_size
+        print(('targ: ', target_size))
         skip_step = original_size / target_size
-        print 'skip: ', skip_step
+        print(('skip: ', skip_step))
         return_data = n_trace_data[::skip_step]
 
         return return_data.astype(float).tolist()
@@ -366,7 +366,7 @@ class BOSA:
                 log.exception("Could read response from device")
                 print(e)
                 raise e
-            print("IDN= " + response)
+            print(("IDN= " + response))
 
         if(Reset):
             try:
@@ -476,9 +476,9 @@ if __name__ == '__main__':
     bosa = AragonBOSA400(visa.ResourceManager(), '128.59.87.222')
 
     spec = bosa.getSpectrum(1540.5, 1560, 0.01, 0)
-    print len(spec)
+    print((len(spec)))
 
-    plt.scatter(*zip(*spec))
+    plt.scatter(*list(zip(*spec)))
     plt.show()
 
     print('done.')

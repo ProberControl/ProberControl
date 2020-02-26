@@ -19,7 +19,7 @@ class Keithley2280S(object):
 
             self.sock.connect((address, 5025))
             self.sock.sendall('*IDN?\n')
-            print self.sock.recv(1024)
+            print((self.sock.recv(1024)))
             self.sock.sendall(':DATA:CLE:AUTO 1\n')
             self.sock.sendall(':TRAC:FEED:CONT ALW\n')
             self.sock.sendall(':TRAC:POIN 2\n')
@@ -69,8 +69,8 @@ class Keithley2280S(object):
         self.sock.sendall(':SOUR' + str(channel) + ':CURR:PROT ' + str(value) + '\n')
 
     def setOCSwitch(self, value = 0, channel = 1):
-       # self.sock.sendall('OCP '+str(channel)+','+str(value))
-       return 1
+        # self.sock.sendall('OCP '+str(channel)+','+str(value))
+        return 1
 
     def setOutputSwitch(self, value = 0, channel = 'CH1'):
         self.sock.sendall('OUTP '+str(value)+','+str(channel) + '\n')
@@ -98,10 +98,10 @@ class Keithley2280S(object):
         return self.sock.recv(1024)
 
     def save_state(self, mem=1):
-         self.sock.sendall('*SAV '+str(mem) + '\n')
+        self.sock.sendall('*SAV '+str(mem) + '\n')
 
     def recall_state(self, mem=1):
-         self.sock.sendall('*RCL '+str(mem) + '\n')
+        self.sock.sendall('*RCL '+str(mem) + '\n')
 
     def close_connection(self):
         self.sock.close()

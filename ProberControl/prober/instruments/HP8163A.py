@@ -21,11 +21,11 @@ class HP8163A(object):
         self.active = False
         self.gpib = res_manager.open_resource(address)
         if '.' in str(channel):
-			self.__channel = int(channel.split('.')[0])
-			self.__port = int(channel.split('.')[1])
+            self.__channel = int(channel.split('.')[0])
+            self.__port = int(channel.split('.')[1])
         else:
-			self.__channel = channel
-			self.__port = 1
+            self.__channel = channel
+            self.__port = 1
 
         # Set Power Unit to dbm
         self.gpib.write('sens1:pow:unit 0')
@@ -71,38 +71,38 @@ class HP8163A(object):
 
     def config_meter(self, range):
         if self.__port != 2:
-			range = int(range)
+            range = int(range)
 
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit 0')
-			#print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit?')
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:range:auto 0')
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:rang '+str(range)+'DBM')
+            self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit 0')
+            #print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:unit?')
+            self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:range:auto 0')
+            self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':pow:rang '+str(range)+'DBM')
 
     def prep_measure_on_trigger(self, samples = 64):
-		if self.__port != 2:
-			self.gpib.write('*CLS')
-			samples = int(samples)
+        if self.__port != 2:
+            self.gpib.write('*CLS')
+            samples = int(samples)
 
-			# self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat stab,stop') #switch stab with logg depending
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop') #switch stab with logg depending
-			self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp sme') #Set up trigger
-			print self.gpib.query('trig'+str(int(self.__channel))+':inp?')
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100us')
-			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?')
-			self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,start')
+            # self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat stab,stop') #switch stab with logg depending
+            self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,stop') #switch stab with logg depending
+            self.gpib.write('trig'+str(int(self.__channel))+':chan'+str(int(self.__port))+':inp sme') #Set up trigger
+            print((self.gpib.query('trig'+str(int(self.__channel))+':inp?')))
+            self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg '+str(samples)+',100us')
+            print((self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:par:logg?')))
+            self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat logg,start')
 
-			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
-			print self.gpib.query('syst:err?')
+            print((self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')))
+            print((self.gpib.query('syst:err?')))
 
 
     def get_result_from_log(self,samples=64):
 
         if self.__port != 2:
-			print self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')
+            print((self.gpib.query('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:stat?')))
 
         self.gpib.write('sens'+str(int(self.__channel))+':chan'+str(int(self.__port))+':func:res?')
         data = self.gpib.read_raw()
-        print self.gpib.query('syst:err?')
+        print((self.gpib.query('syst:err?')))
 
 
         samples = int(samples)

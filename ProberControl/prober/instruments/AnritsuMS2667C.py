@@ -24,7 +24,7 @@ class AnritsuMS2667C(object):
         self.gpib.write ('*IDN?')
         info = self.gpib.read()
         info = info.strip()
-        print ('Connections Successful: %s' %info)
+        print(('Connections Successful: %s' %info))
 
         self.gpib.write('RL 30DBM') #reference level is 30 dBm, corresponds to 10Vpp
 

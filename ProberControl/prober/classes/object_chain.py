@@ -18,7 +18,7 @@ class ChainList(object):
 
     def _getOrderNumber(self, instrument):
         found = None
-        for chain_element, group in pipe_instrument_groups.iteritems():
+        for chain_element, group in list(pipe_instrument_groups.items()):
             if instrument.whoAmI() in group:
                 found = chain_element
                 break

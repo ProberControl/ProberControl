@@ -6,12 +6,12 @@
 import sys
 
 try:
-    from Tkinter import *
+    from tkinter import *
 except ImportError:
     from tkinter import *
 
 try:
-    import ttk
+    import tkinter.ttk
     py3 = 0
 except ImportError:
     import tkinter.ttk as ttk
@@ -56,7 +56,7 @@ class ScriptBuilderGUI:
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
         _ana1color = '#d9d9d9' # X11 color: 'gray85'
         _ana2color = '#d9d9d9' # X11 color: 'gray85'
-        self.style = ttk.Style()
+        self.style = tkinter.ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
         self.style.configure('.',background=_bgcolor)
@@ -432,10 +432,10 @@ class AutoScroll(object):
         #  could be used for scrolled entry widget for which vertical
         #  scrolling is not supported. 5/7/14.
         try:
-            vsb = ttk.Scrollbar(master, orient='vertical', command=self.yview)
+            vsb = tkinter.ttk.Scrollbar(master, orient='vertical', command=self.yview)
         except:
             pass
-        hsb = ttk.Scrollbar(master, orient='horizontal', command=self.xview)
+        hsb = tkinter.ttk.Scrollbar(master, orient='horizontal', command=self.xview)
 
         #self.configure(yscrollcommand=_autoscroll(vsb),
         #    xscrollcommand=_autoscroll(hsb))
@@ -457,11 +457,11 @@ class AutoScroll(object):
 
         # Copy geometry methods of master  (taken from ScrolledText.py)
         if py3:
-            methods = Pack.__dict__.keys() | Grid.__dict__.keys() \
-                  | Place.__dict__.keys()
+            methods = list(Pack.__dict__.keys()) | list(Grid.__dict__.keys()) \
+                  | list(Place.__dict__.keys())
         else:
-            methods = Pack.__dict__.keys() + Grid.__dict__.keys() \
-                  + Place.__dict__.keys()
+            methods = list(Pack.__dict__.keys()) + list(Grid.__dict__.keys()) \
+                  + list(Place.__dict__.keys())
 
         for meth in methods:
             if meth[0] != '_' and meth not in ('config', 'configure'):
@@ -486,7 +486,7 @@ def _create_container(func):
     '''Creates a ttk Frame with a given master, and use this new frame to
     place the scrollbars and the widget.'''
     def wrapped(cls, master, **kw):
-        container = ttk.Frame(master)
+        container = tkinter.ttk.Frame(master)
         return func(cls, container, **kw)
     return wrapped
 

@@ -19,49 +19,49 @@ def t_sub(tuple1, tuple2):
 class ChipStage(object):
 
     def __init__(self, mtr_list):
-            '''
-            :param mtr_list: a list containing the following objects
-                [
-                rotation_stage,
-                gonio_stage_T,
-                gonio_stage_B
-                ]
-            '''
-            self.name = ''
+        '''
+        :param mtr_list: a list containing the following objects
+            [
+            rotation_stage,
+            gonio_stage_T,
+            gonio_stage_B
+            ]
+        '''
+        self.name = ''
 
-            self.stepsize = 1
+        self.stepsize = 1
 
-            # To bring the dist_measurement to valid start point
-            # can be left at zero with wide enough chip holders
-            self.width_off = 0 #3.5    # 2.5
-            self.length_off = 4 #1.0    # 1.5
+        # To bring the dist_measurement to valid start point
+        # can be left at zero with wide enough chip holders
+        self.width_off = 0 #3.5    # 2.5
+        self.length_off = 4 #1.0    # 1.5
 
-            #Calibration for Chip Leveling for X-Axis
-            self.x_coordX = 0
-            self.y_coordX = 3.5
+        #Calibration for Chip Leveling for X-Axis
+        self.x_coordX = 0
+        self.y_coordX = 3.5
 
-            #Calibration for Chip Leveling for Y-Axis
-            self.x_coordY = 8.5
-            self.y_coordY = 1
+        #Calibration for Chip Leveling for Y-Axis
+        self.x_coordY = 8.5
+        self.y_coordY = 1
 
-            self.r, self.t, self.b = (0, 0, 0)
-            self.zeros = (0, 0, 0)
+        self.r, self.t, self.b = (0, 0, 0)
+        self.zeros = (0, 0, 0)
 
-            # def r_init():
-            #     self.rot = Rotator(ser_list[0])
-            # def gT_init():
-            #     self.gon_T = GonStage(ser_list[1], 'GNL10')
-            # def gB_init():
-            #     self.gon_B = GonStage(ser_list[2], 'GNL18')
-            #
-            # t_r = threading.Thread(target=r_init)
-            # t_gT = threading.Thread(target=gT_init)
-            # t_gB = threading.Thread(target=gB_init)
-            #
-            # t_r.start(), t_gB.start(), t_gT.start()
-            # t_r.join(), t_gB.join(), t_gT.join()
+        # def r_init():
+        #     self.rot = Rotator(ser_list[0])
+        # def gT_init():
+        #     self.gon_T = GonStage(ser_list[1], 'GNL10')
+        # def gB_init():
+        #     self.gon_B = GonStage(ser_list[2], 'GNL18')
+        #
+        # t_r = threading.Thread(target=r_init)
+        # t_gT = threading.Thread(target=gT_init)
+        # t_gB = threading.Thread(target=gB_init)
+        #
+        # t_r.start(), t_gB.start(), t_gT.start()
+        # t_r.join(), t_gB.join(), t_gT.join()
 
-            self.rot, self.gon_T, self.gon_B = mtr_list
+        self.rot, self.gon_T, self.gon_B = mtr_list
 
     def set_stepsize(self,stepsize):
         '''
@@ -151,7 +151,7 @@ class ChipStage(object):
             t_r.start(), t_t.start(), t_b.start()
             t_r.join(), t_t.join(), t_b.join()
         else:
-            print 'chip_stage::error: Attempted move out of bounds (abs_pos:{},{},{})'.format(act_r, act_t, act_b)
+            print(('chip_stage::error: Attempted move out of bounds (abs_pos:{},{},{})'.format(act_r, act_t, act_b)))
 
     def set_rot(self, target_pos):
         '''
@@ -173,7 +173,7 @@ class ChipStage(object):
 
     def whoAmI(self):
         return self.name
-        
+
 
 '''
 Copyright (C) 2017  Robert Polster

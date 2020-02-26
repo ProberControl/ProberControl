@@ -2,6 +2,7 @@ import glob
 import importlib as im
 import inspect
 from .. import procedures as pr
+import importlib
 
 
 ### Make all Modules and Functions from Procedures-Folder Available in GUI.
@@ -63,10 +64,10 @@ class Maitre():
         '''
         # reload old modules
         for mod in self.mod_list:
-            reload(mod)
+            importlib.reload(mod)
 
         # check to see if there are any new modules to import
-        reload(pr)
+        importlib.reload(pr)
         for mod_name in pr.__all__:
             if mod_name not in self.mod_name_list:
                 self.mod_list.append(im.import_module(__import__(mod_name)))
@@ -74,7 +75,7 @@ class Maitre():
 
         self.__init__(reloading=True)
 
-        print "Maitre: All Procedures Reloaded"
+        print("Maitre: All Procedures Reloaded")
 
 
 

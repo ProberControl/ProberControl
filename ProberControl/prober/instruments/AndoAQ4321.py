@@ -30,11 +30,11 @@ class AndoAQ4321(object):
         self.gpib.write('INIT')
         self.gpib.write ('IDN?')
         info = self.gpib.read()
-        print ('Connection Successful: %s' % info)
+        print(('Connection Successful: %s' % info))
 
         self.gpib.write ('LOCK?')
         info = self.gpib.read()
-        print('Locked: %s' %info)
+        print(('Locked: %s' %info))
 
         #Ensure Output is OFF
         self.gpib.write ('L0')
@@ -43,7 +43,7 @@ class AndoAQ4321(object):
         time.sleep(0.55)
         self.gpib.write ('L?')
         info = self.gpib.read()
-        print('Output: %s' %info)
+        print(('Output: %s' %info))
 
     def whoAmI(self):
         ''':returns: reference to device'''
@@ -89,7 +89,7 @@ class AndoAQ4321(object):
             time.sleep(0.55)
             self.gpib.write('TWL?')
             info = self.gpib.read()
-            print ('Wavelength Sent: %s' % info)
+            print(('Wavelength Sent: %s' % info))
 
             self.gpib.write('L1')
 
@@ -119,7 +119,7 @@ class AndoAQ4321(object):
             float(end) > 1580 or
             float(step) < 0.001
         ):
-            print ('Start '+str(float(start))+' End '+str(float(end)))
+            print(('Start '+str(float(start))+' End '+str(float(end))))
             print ('Specified Wavelengths Out of Range, or Step Too Low')
 
         else:
@@ -220,7 +220,7 @@ class AndoAQ4321(object):
         try:
             self.gpib.write('SRQ3?')
             status = int (self.gpib.read())
-            print('Status: %d' %status)
+            print(('Status: %d' %status))
             if status > 0:
                 return True
             else:
@@ -257,7 +257,7 @@ class AndoAQ4321(object):
         '''
 
         if step < 0.001:
-                print('Step size cannot be lower than 0.001')
+            print('Step size cannot be lower than 0.001')
         else:
             self.gpib.write('TSTEWL ' + str(step))
             self.gpib.write('TWLUP')

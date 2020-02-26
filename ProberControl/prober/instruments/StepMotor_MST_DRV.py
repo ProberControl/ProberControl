@@ -2,7 +2,7 @@
 #    - wraps around Motor
 
 
-from Motor_MST_DRV import Motor_MST_DRV as Motor, hexString, int2hexStr, send_short_dst_src, send_long_dst_src,send_chan_ident,prep_short_src_dst,prep_long_src_dst
+from .Motor_MST_DRV import Motor_MST_DRV as Motor, hexString, int2hexStr, send_short_dst_src, send_long_dst_src,send_chan_ident,prep_short_src_dst,prep_long_src_dst
 
 #import serial
 import logging
@@ -30,19 +30,19 @@ class StepMotor_MST_DRV(Motor):
 
          :param ser: (Serial) the Serial object that corresponds to the port
          the motor is connected to. If the serial was successfully locked ser.write() can be called.
-		 If the object waits for an answer from the serial object ser.in_buffer(pattern,trail_bytes) should be used.
-		 :type ser: multi_serial Object
+                 If the object waits for an answer from the serial object ser.in_buffer(pattern,trail_bytes) should be used.
+                 :type ser: multi_serial Object
 
-		 :param bay: the bay of the motor controller in main frame. For stand alone system bay should be 0.
-		 :type ser: integer
+                 :param bay: the bay of the motor controller in main frame. For stand alone system bay should be 0.
+                 :type ser: integer
 
-		 :param chan: channel of motor controller in corresponding bay
-		 :type chan: integer
+                 :param chan: channel of motor controller in corresponding bay
+                 :type chan: integer
 
-		 :param lock: if the step motor shares a serial connection with other motors (by being a part of a mainframe)
-		 the lock needs to be a threading.Lock() object shared with all objects making
-		 calls to the shared serial interface. Before each serial call lock.acquire() and after each call lock.realease() needs to be called
-		 :type lock: threading.Lock() object
+                 :param lock: if the step motor shares a serial connection with other motors (by being a part of a mainframe)
+                 the lock needs to be a threading.Lock() object shared with all objects making
+                 calls to the shared serial interface. Before each serial call lock.acquire() and after each call lock.realease() needs to be called
+                 :type lock: threading.Lock() object
         '''
         ###
         global Constructor_Counter
@@ -70,10 +70,10 @@ class StepMotor_MST_DRV(Motor):
     def home(self):
         '''
          Initializes all paremeters specific to the step motor and homes the motor.
-		 The homing and backlash position need to be set up in a way that homing the system
-		 brings the system into a safe position. The backlash correction needs to be performed
-		 in such away that the correction is performed in the direction away from the chip
-		 and the other probes.
+                 The homing and backlash position need to be set up in a way that homing the system
+                 brings the system into a safe position. The backlash correction needs to be performed
+                 in such away that the correction is performed in the direction away from the chip
+                 and the other probes.
         '''
         ###
         global Home_Counter
@@ -83,28 +83,28 @@ class StepMotor_MST_DRV(Motor):
         self.logger.debug('Homing...', extra=self.ext)
 
 
-		#Acquire Lock over Serial
+                #Acquire Lock over Serial
         if self.ser.lock:
-			self.ser.lock.acquire()
+            self.ser.lock.acquire()
 
-		#### SETTING UP MOTOR PARAMETERS ####
+                #### SETTING UP MOTOR PARAMETERS ####
 
         #MGMSG_MOT_SET_LIMSWITCHPARAMS
-        self.ser.write(hexString('23 04 10 00'))    	 # header
+        self.ser.write(hexString('23 04 10 00'))         # header
         send_long_dst_src(self.ser,self.bay)
         send_chan_ident(self.ser, self.chan)
         self.ser.write(hexString('03 00'))                # CW Hard Limit
         self.ser.write(hexString('01 00'))                # CCW Hard Limit
         self.ser.write(hexString('00 84 03 00'))          # CW SoftLimit
         self.ser.write(hexString('00 64 00 00'))          # CCW SoftLimit
-        self.ser.write(hexString('01 00'))          	  # SoftLimit Mode
+        self.ser.write(hexString('01 00'))                # SoftLimit Mode
 
-		# CHECKING FOR ERROR MESSAGES
+                # CHECKING FOR ERROR MESSAGES
         #response = self.ser.read(1)
         #print map(hex,unpack('B'*len(response),response))
         #while map(hex,unpack('B'*len(response),response)) != []:
         #        response = self.ser.read(1)
-        #    	 print map(hex,unpack('B'*len(response),response))
+        #        print map(hex,unpack('B'*len(response),response))
 
 
         # Check whether Parameters were written
@@ -138,7 +138,7 @@ class StepMotor_MST_DRV(Motor):
         self.ser.write(hexString('00 00 00 00'))          # Jog Min Vel
         self.ser.write(hexString('00 C8 00 00'))          # Jog Acceleration
         self.ser.write(hexString('00 64 00 00'))          # Max Velocity
-        self.ser.write(hexString('02 00'))          	  # Stop Mode
+        self.ser.write(hexString('02 00'))                # Stop Mode
 
         # Check whether Parameters were written
         # < MGMSG_MOT_REQ_JOGPARAMS >
@@ -152,7 +152,7 @@ class StepMotor_MST_DRV(Motor):
         send_long_dst_src(self.ser,self.bay)
         send_chan_ident(self.ser, self.chan)
         self.ser.write(hexString('14 00'))                # Rest Factor
-        self.ser.write(hexString('64 00'))          	  # Move Factor
+        self.ser.write(hexString('64 00'))                # Move Factor
 
         # Check whether Parameters were written
         # < MGMSG_MOT_REQ_POWERPARAMS >
@@ -207,7 +207,7 @@ class StepMotor_MST_DRV(Motor):
         #send_chan_ident(self.ser, self.chan)
         #self.ser.write(hexString('02 00'))                # Home Dir
         #self.ser.write(hexString('01 00'))                # Limit Switch
-        #self.ser.write('00 64 00 00')		               # Home Velocity
+        #self.ser.write('00 64 00 00')                         # Home Velocity
         #self.ser.write('00 32 00 00')                     # Offset Distance
 
         # Check whether Parameters were written
@@ -217,23 +217,23 @@ class StepMotor_MST_DRV(Motor):
         #home_response = self.ser.read(20)
         #print map(hex,unpack('B'*len(home_response),home_response))
 
-		# ACTUALLY STARTING THE HOMING
+                # ACTUALLY STARTING THE HOMING
 
         # MGMSG_MOT_MOVE_HOME
         self.ser.write(hexString('43 04 {:02d} 00'.format(self.chan)))
         send_short_dst_src(self.ser,self.bay)
 
-		# Relase Serial
+                # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
-		# Wait for Homing Completion
+                # Wait for Homing Completion
         counter = 0
         found = False
         while counter < 60 and found == False: # MGMSG_MOT_MOVE_HOMED
             time.sleep(1)
             if self.ser.lock:
-			    self.ser.lock.acquire()
+                self.ser.lock.acquire()
             # self.ser.print_buffer()
             found = self.ser.in_buffer(hexString('44 04 {:02d} 00 '.format(self.chan)+prep_short_src_dst(self.bay)))
             if self.ser.lock:
@@ -252,9 +252,9 @@ class StepMotor_MST_DRV(Motor):
          Get information back form the controller
          Used for debugging purposes
         '''
-		#Acquire Lock over Serial
+                #Acquire Lock over Serial
         if self.ser.lock:
-			self.ser.lock.acquire()
+            self.ser.lock.acquire()
 
         # MGMSG_HW_REQ_INFO
         self.ser.write(hexString('05 00 00 00'))
@@ -262,11 +262,11 @@ class StepMotor_MST_DRV(Motor):
         response = self.ser.read(90)
         self.ser.release()
 
-		# Relase Serial
+                # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
-        print response
+        print(response)
 
     def _set_backlash(self, backlash_distance):
         '''
@@ -275,9 +275,9 @@ class StepMotor_MST_DRV(Motor):
 
          backlash_distance (int): in encoder steps
         '''
-		#Acquire Lock over Serial
+                #Acquire Lock over Serial
         if self.ser.lock:
-			self.ser.lock.acquire()
+            self.ser.lock.acquire()
 
         # change backlash value
         self.ser.write(hexString('3A 04 06 00'))        # header
@@ -289,15 +289,15 @@ class StepMotor_MST_DRV(Motor):
         # request backlash data
         #self.ser.write(hexString('3B 04 01 00'))
         #send_short_dst_src(self.ser,self.bay)
-		# confirm backlash distance value
+                # confirm backlash distance value
         #res = self.ser.read(12)
         #back_dist_r = unpack('<l', res[8:12])[0]
         #if back_dist_r != backlash_distance:
         #    self.logger.error('Problem setting backlash distance [{}]'.format(backlash_distance), extra=self.ext)
 
-		# Relase Serial
+                # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
     def delta_transl(self, dist):    #, m_callback = None, params = ()):
         '''

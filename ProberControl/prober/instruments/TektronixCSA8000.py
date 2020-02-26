@@ -60,7 +60,7 @@ class TektronixCSA8000(object):
         envelope = bool(envelope)
 
         if(int(sample)+int(average)+int(envelope)!=1):
-            print "Exactly one paramter needs to be set to True"
+            print("Exactly one paramter needs to be set to True")
             return
 
         if sample:
@@ -124,7 +124,7 @@ class TektronixCSA8000(object):
     def setMaskHitRatioTarget(self, ratio):
 
         if not(1e-8 < float(ratio) < 0.1):
-            print "Ratio must be within 1E-8 and 0.1"
+            print("Ratio must be within 1E-8 and 0.1")
             return
 
         self.gpib.write('MASK:AUTOSEEk:HITRatio '+str(float(ratio)))
@@ -193,7 +193,7 @@ class TektronixCSA8000(object):
         VERtical   = bool(VERtical)
 
         if int(VERtical) + int(HORizontal) != 1:
-            print "Exactly one paramter needs to be set to True"
+            print("Exactly one paramter needs to be set to True")
             return
 
         if HORizontal:
@@ -223,7 +223,7 @@ class TektronixCSA8000(object):
         log   = bool(log)
 
         if int(log) + int(linear) != 1:
-            print "Exactly one paramter needs to be set to True"
+            print("Exactly one paramter needs to be set to True")
             return
 
         if linear:
@@ -241,7 +241,7 @@ class TektronixCSA8000(object):
         '''
 
         if not(0 < int(num) < 9):
-            print "num must be between 1 and 8"
+            print("num must be between 1 and 8")
             return
 
             self.gpib.write('SELect:MATH'+str(int(num))+' ON')
@@ -296,30 +296,30 @@ class TektronixCSA8000(object):
         return getMeasurementVal(self,'PK2Pk',measType,source='CH1',measSlot=1)
 
     def getMeasurementVal(self,measType,source='CH1',measSlot=1):
-            '''
-            This function specifiecs a measurement channel to collect a specific type of data
+        '''
+        This function specifiecs a measurement channel to collect a specific type of data
 
-            meaSlot is the measuement slot on the oscilloscope. Valid numbers and integers between 1-8
-            source is the source channel for the measurement. Valid numbers are integers between 1-8
+        meaSlot is the measuement slot on the oscilloscope. Valid numbers and integers between 1-8
+        source is the source channel for the measurement. Valid numbers are integers between 1-8
 
-            Options for Measurements are:
-            HIGH | LOW | AMPLitude | MEAN | MAXimum | MINImum | PK2Pk | MID | POVershoot |
-            NOVershoot | RMSNoise | PKPKNoise | AOPTPWRDBM | RMS |
-            ACRMs | CRMs | CMEan | SNRatio | AOPTPWR | GAIN | OMA |
-            RISe | FALL | PERIod | FREQuency | PCROss | NCROss | PWIdth
-            | NWIdth | PDUty | NDUty | BURst | RMSJitter | PKPKJitter
-            | DELay | PHAse | AREa | CARea | EXTINCTDB | EXTINCTPCT |
-            EXTINCTRATIO | EXTINCTCAL | EYEHeight | PCTCROss | LEVCROss
-            | QFACtor | EYEWIdth | DISTDUty | BITTime | BITRate |
-            TIMCROss | EYEOfactor | SUPRSDB | SUPRSPCT | SUPRSRATIO | PULSESym
-            '''
+        Options for Measurements are:
+        HIGH | LOW | AMPLitude | MEAN | MAXimum | MINImum | PK2Pk | MID | POVershoot |
+        NOVershoot | RMSNoise | PKPKNoise | AOPTPWRDBM | RMS |
+        ACRMs | CRMs | CMEan | SNRatio | AOPTPWR | GAIN | OMA |
+        RISe | FALL | PERIod | FREQuency | PCROss | NCROss | PWIdth
+        | NWIdth | PDUty | NDUty | BURst | RMSJitter | PKPKJitter
+        | DELay | PHAse | AREa | CARea | EXTINCTDB | EXTINCTPCT |
+        EXTINCTRATIO | EXTINCTCAL | EYEHeight | PCTCROss | LEVCROss
+        | QFACtor | EYEWIdth | DISTDUty | BITTime | BITRate |
+        TIMCROss | EYEOfactor | SUPRSDB | SUPRSPCT | SUPRSRATIO | PULSESym
+        '''
 
-            measSlot = int(measSlot)
+        measSlot = int(measSlot)
 
-            self.gpib.write('MEASUrement:STATIstics:ENABle ON')
-            self.gpib.write('MEASUrement:MEAS{}:SOUrce1:WFM {}'.format(measSlot, source))
-            self.gpib.write('MEASUrement:MEAS{}:TYPe {}'.format(measSlot, measType))
-            return self.gpib.query('MEASUrement:MEAS{}:MEAN?'.format(measSlot))
+        self.gpib.write('MEASUrement:STATIstics:ENABle ON')
+        self.gpib.write('MEASUrement:MEAS{}:SOUrce1:WFM {}'.format(measSlot, source))
+        self.gpib.write('MEASUrement:MEAS{}:TYPe {}'.format(measSlot, measType))
+        return self.gpib.query('MEASUrement:MEAS{}:MEAN?'.format(measSlot))
 
 ##### Misc
     def unlockFront(self):

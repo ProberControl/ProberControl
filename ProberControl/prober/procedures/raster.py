@@ -12,7 +12,7 @@ STD_TOOL = "MPowerMeter"
 
 def _report(msg):
     prt_msg = 'raster: ' + msg
-    print prt_msg
+    print(prt_msg)
 
 def _set_meas_fun(fn):
     global __selected_function
@@ -20,7 +20,7 @@ def _set_meas_fun(fn):
 
 def set_signal_source(stages, source_string=''):
 
-    if source_string in stages.keys():
+    if source_string in list(stages.keys()):
         feedbackfunc = getattr(stages[source_string], "get_feedback", None)
         if callable(feedbackfunc):
             _set_meas_fun(stages[source_string].get_feedback)
@@ -60,13 +60,13 @@ def _generate_map(xyz, size, step):
     # place the current point at the center
     cur_pos = xyz.get_coordinates()
     initial_pos = xyz.get_coordinates()
-    print size
+    print(size)
     new_pos = (cur_pos[0] - size[0]/70.0*50.0*step, cur_pos[1] - float(size[1])/2.0*step, cur_pos[2])
     xyz.set_coordinates(new_pos)
     # start scaning...
-    for i in xrange(size[0]):    # width / x-axis
+    for i in range(size[0]):    # width / x-axis
         line = []
-        for j in xrange(size[1]):     # length / y-axis
+        for j in range(size[1]):     # length / y-axis
             # get the voltage reading
             line.append(float(_get_signal(stages)))
             # move to the next place
@@ -103,7 +103,7 @@ def map_image(c_map, im_size, full_path=None, show=False):
     fx_c = im_size[0]/c_map.shape[0]
     fy_c = im_size[1]/c_map.shape[1]
 
-    print 'Max. Voltage: {} | Min. Voltage: {}'.format(maxi, mini)
+    print(('Max. Voltage: {} | Min. Voltage: {}'.format(maxi, mini)))
 
     # non-blurry scaling
     c_map = cv2.resize(c_map, None, fx=fx_c, fy=fy_c, interpolation=cv2.INTER_NEAREST)
@@ -129,7 +129,7 @@ def make_map(stages, fiber, size_x, size_y, step, filename):
         file.flush()
     file.close()
     map_image(map, (300, 300), filename)
-    print 'make_map done.'
+    print('make_map done.')
 
 def optimal_point(c_map):
     '''
@@ -164,7 +164,7 @@ def _cross_scan(xyz, size, step):
     new_pos = (cur_pos[0], cur_pos[1] + size*step, cur_pos[2])
     xyz.set_coordinates(new_pos)
     # start scanning
-    for i in xrange(size):
+    for i in range(size):
         y_axis.append(float(_get_signal(stages)))
         xyz.step('R')
     # go back to initial pos
@@ -179,7 +179,7 @@ def _cross_scan(xyz, size, step):
     new_pos = (cur_pos[0] + size*step, cur_pos[1], cur_pos[2])
     xyz.set_coordinates(new_pos)
     # start scanning
-    for i in xrange(size):
+    for i in range(size):
         y_axis.append(float(_get_signal(stages)))
         xyz.step('B')
     # go back to initial pos

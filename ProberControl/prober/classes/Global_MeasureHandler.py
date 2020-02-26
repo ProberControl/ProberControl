@@ -1,6 +1,6 @@
 import inspect
 import threading
-import object_chain
+from . import object_chain
 import time
 from functools import cmp_to_key
 # for connect with switch
@@ -11,7 +11,7 @@ SLEEP_TIME = 100.0 / 1000.0
 debug = 0
 def sdebug(msg):
     if debug > 0:
-        print 'G_Mh:: {}'.format(msg)
+        print(('G_Mh:: {}'.format(msg)))
 
 class Singleton(object):
     ''' Singleton paradigm implementation '''
@@ -24,7 +24,7 @@ class Singleton(object):
         return self.instance
 
 def _print_mh(msg):
-    print 'Global_MeasureHandler:: {}'.format(msg)
+    print(('Global_MeasureHandler:: {}'.format(msg)))
 
 def _look_for_obj(obj_list, comparator):
     '''
@@ -53,7 +53,7 @@ class Global_MeasureHandler(object):
 
     def update_stages(self, stages):
         self.Stages = stages
-        if 'SwitchHandler' in self.Stages.keys():
+        if 'SwitchHandler' in list(self.Stages.keys()):
             self.switchHandler = self.Stages['SwitchHandler']
 
     def get_locked(self):
@@ -62,9 +62,9 @@ class Global_MeasureHandler(object):
 
     def _get_locked(self):
         '''returns a list of the locked instruments pair(name, object)'''
-        locked_objects = [instr for locked_per_user in self.__locked.values() for instr in locked_per_user]
+        locked_objects = [instr for locked_per_user in list(self.__locked.values()) for instr in locked_per_user]
         names = [self._get_name_from_instrument(instr) for instr in locked_objects]
-        return zip(names, locked_objects)
+        return list(zip(names, locked_objects))
 
     def is_locked(self, instrument):
         '''
@@ -131,7 +131,7 @@ class Global_MeasureHandler(object):
         # write record
         caller = self._get_owner(function=True)
         with self.__usage_lock:
-            if self.__usage.has_key(caller):
+            if caller in self.__usage:
                 try:
                     self.__usage[caller].append(record)
                 except:
@@ -190,7 +190,7 @@ class Global_MeasureHandler(object):
             self.switchHandler.connect_devices(next_inst_name, inst_name)
 
     def _get_name_from_instrument(self, instrument):
-        return self.Stages.keys()[self.Stages.values().index(instrument)]
+        return list(self.Stages.keys())[list(self.Stages.values()).index(instrument)]
 
     def _find_trail_number(self, instrument):
         name = self._get_name_from_instrument(instrument)
@@ -223,7 +223,7 @@ class Global_MeasureHandler(object):
         inst_type = 'Fiber'
         fiber_id = str(fiber_id)
         with self.__access_lock:
-            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            used = [inst for sub_l in list(self.__locked.values()) for inst in sub_l]
             sdebug('id tyo find {}'.format(fiber_id))
             def isUnused(instrument):
                 sdebug('isUnused:: {}'.format('-' if not hasattr(instrument, 'fiber_id') else instrument.fiber_id))
@@ -231,7 +231,7 @@ class Global_MeasureHandler(object):
                 sdebug('isUnused:: who {}'.format(instrument.whoAmI()))
                 return instrument not in used and instrument.whoAmI() == inst_type and instrument.fiber_id == fiber_id
 
-            found = _look_for_obj(self._order_instr(self.Stages.values()), isUnused)
+            found = _look_for_obj(self._order_instr(list(self.Stages.values())), isUnused)
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_fiber(found, owner_id, fiber_id, isFiberIn)
@@ -298,7 +298,7 @@ class Global_MeasureHandler(object):
                         return found
 
             # Then take a look for available instruments
-            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            used = [inst for sub_l in list(self.__locked.values()) for inst in sub_l]
             sdebug('used instruments: {}'.format(used))
             def isUnused(instrument):
                 sdebug('{} | {} - {}'.format('used' if instrument in used else 'not used', instrument.whoAmI(), specifiedDevice))
@@ -306,11 +306,11 @@ class Global_MeasureHandler(object):
 
             ## DEBUG
             sdebug('ordering...')
-            for i in self._order_instr(self.Stages.values()):
+            for i in self._order_instr(list(self.Stages.values())):
                 sdebug('\t' + str(self._get_name_from_instrument(i)))
             sdebug('done with ordering.')
             ##
-            found = _look_for_obj(self._order_instr(self.Stages.values()), isUnused)
+            found = _look_for_obj(self._order_instr(list(self.Stages.values())), isUnused)
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)
@@ -321,7 +321,7 @@ class Global_MeasureHandler(object):
         owner_id = self._get_owner()
 
         # doing reverse lookup on the Stages dict here; no that good, but correct!
-        triggerObjectName = self.Stages.keys()[self.Stages.values().index(triggerObject)]
+        triggerObjectName = list(self.Stages.keys())[list(self.Stages.values()).index(triggerObject)]
         triggers = self.TriggerInfo.get(triggerObjectName)
         if triggers == None:
             _print_mh('no trigger info associated with {}'.format(triggerObjectName))
@@ -339,7 +339,7 @@ class Global_MeasureHandler(object):
                 owned_list = self.__locked.get(owner_id)
                 if owned_list != None:
                     def findOwnedTriggerMatch(instrument):
-                        instrument_name = self.Stages.keys()[self.Stages.values().index(instrument)]
+                        instrument_name = list(self.Stages.keys())[list(self.Stages.values()).index(instrument)]
                         triggerInfo = self.TriggerInfo.get(instrument_name)
                         if triggerInfo is None:
                             return False
@@ -351,16 +351,16 @@ class Global_MeasureHandler(object):
                         return found
 
             # Then take a look for available instruments
-            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            used = [inst for sub_l in list(self.__locked.values()) for inst in sub_l]
             def findOtherTriggerMatch(instrument):
-                instrument_name = self.Stages.keys()[self.Stages.values().index(instrument)]
+                instrument_name = list(self.Stages.keys())[list(self.Stages.values()).index(instrument)]
                 triggerInfo = self.TriggerInfo.get(instrument_name)
                 if triggerInfo is None:
                     return False
                 canDoWantedTriggerAction = triggerInfo[0 if returnTriggerable else 1] == TrigNet
                 return instrument not in used and instrument.whoAmI() == specifiedDevice and canDoWantedTriggerAction
 
-            found = _look_for_obj(self._order_instr(self.Stages.values()), findOtherTriggerMatch)
+            found = _look_for_obj(self._order_instr(list(self.Stages.values())), findOtherTriggerMatch)
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)
@@ -432,10 +432,10 @@ class Global_MeasureHandler(object):
                     return found
 
             # Then take a look for available instruments
-            used = [inst for sub_l in self.__locked.values() for inst in sub_l]
+            used = [inst for sub_l in list(self.__locked.values()) for inst in sub_l]
             sdebug('used instruments: {}'.format(used))
 
-            found = _look_for_obj(self._order_instr(self.Stages.values()), lambda x: x not in used and instrumentName == self._get_name_from_instrument(x))
+            found = _look_for_obj(self._order_instr(list(self.Stages.values())), lambda x: x not in used and instrumentName == self._get_name_from_instrument(x))
             if found != None:
                 self._lock_instrument(found, owner_id)
                 # self._connect_to_chain(found, owner_id, fiber_id)

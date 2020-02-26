@@ -7,36 +7,36 @@ from struct import unpack
 import logging
 
 def send_short_dst_src(ser, bay=0):
-	if bay == 0:
-		ser.write(hexString('50 01'))
+    if bay == 0:
+        ser.write(hexString('50 01'))
 
-	else:
-		ser.write(hexString('2{:1d} 01'.format(int(bay))))
+    else:
+        ser.write(hexString('2{:1d} 01'.format(int(bay))))
 
 
 def send_long_dst_src(ser, bay=0):
-	if bay == 0:
-		ser.write(hexString('D0 01'))
+    if bay == 0:
+        ser.write(hexString('D0 01'))
 
-	else:
-		ser.write(hexString('A{:1d} 01'.format(int(bay))))
+    else:
+        ser.write(hexString('A{:1d} 01'.format(int(bay))))
 
 def send_chan_ident(ser, chan=1):
-	ser.write(hexString('{:02d} 00'.format(int(chan))))
+    ser.write(hexString('{:02d} 00'.format(int(chan))))
 
 def prep_short_src_dst(bay=0):
-	if bay == 0:
-		return '01 50'
+    if bay == 0:
+        return '01 50'
 
-	else:
-		return '01 2'+str(int(bay))
+    else:
+        return '01 2'+str(int(bay))
 
 def prep_long_src_dst(bay=0):
-	if bay == 0:
-		return '81 50'
+    if bay == 0:
+        return '81 50'
 
-	else:
-		return '81 2'+str(int(bay))
+    else:
+        return '81 2'+str(int(bay))
 
 def int2hexStr(integer, numberOfBytes):
     '''
@@ -98,16 +98,16 @@ class Motor_MST_DRV(object):
         :param serial: the serial object that that corresponds to the port the motor is conected
         :type serial: multi_serial object
 
-		:param bay: the bay of the motor controller in main frame. For stand alone system bay should be 0.
-		:type ser: integer
+                :param bay: the bay of the motor controller in main frame. For stand alone system bay should be 0.
+                :type ser: integer
 
-		:param chan: channel of motor controller in corresponding bay
-		:type chan: integer
+                :param chan: channel of motor controller in corresponding bay
+                :type chan: integer
 
-		:param lock: if the step motor shares a serial connection with other motors (by being a part of a mainframe)
-		the lock needs to be a threading.Lock() object shared with all objects making
-		calls to the shared serial interface. Before each serial call lock.acquire() and after each call lock.realease() needs to be called
-		:type lock: threading.Lock() object
+                :param lock: if the step motor shares a serial connection with other motors (by being a part of a mainframe)
+                the lock needs to be a threading.Lock() object shared with all objects making
+                calls to the shared serial interface. Before each serial call lock.acquire() and after each call lock.realease() needs to be called
+                :type lock: threading.Lock() object
         '''
 
         self.serial = serial
@@ -119,7 +119,7 @@ class Motor_MST_DRV(object):
         self.zeros_position = 0    # the zero position
         self._count = -1           # internal step count from controller
 
-		#Acquire Lock over Serial
+        #Acquire Lock over Serial
         if self.ser.lock:
             self.ser.lock.acquire()
 
@@ -127,17 +127,17 @@ class Motor_MST_DRV(object):
         self.serial.flushInput()
         self.serial.flushOutput()
 
-		#MGMSG_HW_NO_FLASH_PROGRAMMING
+        #MGMSG_HW_NO_FLASH_PROGRAMMING
         self.serial.write(hexString('18 00 00 00'))
         send_short_dst_src(self.ser,self.bay)
 
-		#MGMSG_MOD_SET_CHANENABLESTATE
+        #MGMSG_MOD_SET_CHANENABLESTATE
         self.serial.write(hexString('10 02 {:02d} 01'.format(int(self.chan))))
         send_short_dst_src(self.ser,self.bay)
 
-		# Relase Serial
+        # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
         # get the logger we loaded once in the begining
         self.logger = logger
@@ -156,9 +156,9 @@ class Motor_MST_DRV(object):
 
         self.position += steps
 
-		#Acquire Lock over Serial
+        #Acquire Lock over Serial
         if self.ser.lock:
-			self.ser.lock.acquire()
+            self.ser.lock.acquire()
 
         # MGMSG_MOT_MOVE_RELATIVE extended
 
@@ -167,9 +167,9 @@ class Motor_MST_DRV(object):
         send_chan_ident(self.ser, self.chan)
         self.serial.write(int2hexStr(steps, 4))        # relative distance
 
-		# Relase Serial
+        # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
         self.move_complete()
 
@@ -181,9 +181,9 @@ class Motor_MST_DRV(object):
         :type steps: Integer
         '''
 
-		#Acquire Lock over Serial
+        #Acquire Lock over Serial
         if self.ser.lock:
-			self.ser.lock.acquire()
+            self.ser.lock.acquire()
 
         # MGMSG_MOT_MOVE_RELATIVE extended
         self.serial.write(hexString('48 04 06 00'))            # header
@@ -191,9 +191,9 @@ class Motor_MST_DRV(object):
         send_chan_ident(self.ser, self.chan)
         self.serial.write(int2hexStr(steps - self.position, 4))   # absolute distance
 
-		# Relase Serial
+        # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
         self.position = steps
 
@@ -223,9 +223,9 @@ class Motor_MST_DRV(object):
         :type vel_fin: Integer
         '''
 
-		#Acquire Lock over Serial
+        #Acquire Lock over Serial
         if self.ser.lock:
-			self.ser.lock.acquire()
+            self.ser.lock.acquire()
 
         # MGMSG_MOT_SET_VELPARAMS
 
@@ -236,9 +236,9 @@ class Motor_MST_DRV(object):
         self.serial.write(int2hexStr(accel, 4))                # acceleration
         self.serial.write(int2hexStr(vel_fin, 4))                # final velocity
 
-		# Relase Serial
+        # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
     def close(self):
         '''releases motor resources'''
@@ -265,10 +265,10 @@ class Motor_MST_DRV(object):
             #self.ser.print_buffer()
             #Acquire Lock over Serial
             if self.ser.lock:
-			    self.ser.lock.acquire()
+                self.ser.lock.acquire()
             found = self.ser.in_buffer(hexString('64 04 0E 00 '+prep_long_src_dst(self.bay)+' {:02d} 00'.format(self.chan)),12)
             if self.ser.lock:
-			    self.ser.lock.release()
+                self.ser.lock.release()
             counter = counter + 1
 
         if counter >= 60:
@@ -284,9 +284,9 @@ class Motor_MST_DRV(object):
 
     def _go_to_abs(self, steps):
 
-		#Acquire Lock over Serial
+        #Acquire Lock over Serial
         if self.ser.lock:
-			self.ser.lock.acquire()
+            self.ser.lock.acquire()
 
         # MGMSG_MOT_MOVE_RELATIVE extended
 
@@ -295,9 +295,9 @@ class Motor_MST_DRV(object):
         send_chan_ident(self.ser, self.chan)
         self.serial.write(int2hexStr(steps, 4))    # absolute distance
 
-		# Relase Serial
+        # Relase Serial
         if self.ser.lock:
-			self.ser.lock.release()
+            self.ser.lock.release()
 
         self.position = steps
         self.move_complete()

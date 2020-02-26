@@ -122,7 +122,7 @@ class XYZ_Stage(object):
             self.x, self.y, self.z = target_pos
 
             z_extra = 0
-            if long :
+            if int :
                 if self.leveled():
                     z_extra += x_d * math.tan(math.radians(self.ang_x)) + y_d * math.tan(math.radians(self.ang_y))
                 self.z += z_extra
@@ -147,7 +147,7 @@ class XYZ_Stage(object):
                 t_x.start(), t_y.start(), t_z.start()
                 t_x.join(), t_y.join(), t_z.join()
         else:
-            print 'XYZ_stage::error: Attempted move out of bounds (abs_pos:{},{},{})'.format(act_x, act_y, act_z)
+            print(('XYZ_stage::error: Attempted move out of bounds (abs_pos:{},{},{})'.format(act_x, act_y, act_z)))
 
     def set_coor_2d(self, target_pos, long=False):
         '''
@@ -156,7 +156,7 @@ class XYZ_Stage(object):
          target_pos (2-tuple): (x,y) coordinates of the final point
         '''
 
-        self.set_coordinates((target_pos[0], target_pos[1], self.z), long)
+        self.set_coordinates((target_pos[0], target_pos[1], self.z), int)
 
     def set_stepsize(self,stepsize):
         '''
