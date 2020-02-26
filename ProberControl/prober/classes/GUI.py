@@ -26,6 +26,9 @@ from .DataIO import DataIO
 
 class Application(tk.Frame):
 
+    def restartGUI(self, Maitre, stages = {}):
+        self.__init__(Maitre, stages)
+
     def __init__(self, master=None, stages={}):
         # Initialise GUI
         tk.Frame.__init__(self, master)
@@ -71,6 +74,7 @@ class Application(tk.Frame):
         self.StageArgDispText = tk.StringVar()
         self.Script_Path      = ''
         self.FileText         = tk.StringVar()
+        self.ConsoleText    = tk.StringVar()
 
         if self.ActiveStage != '-1':
             self.StepText.set(self.Stages[self.ActiveStage].stepsize)
@@ -83,11 +87,13 @@ class Application(tk.Frame):
         self.bind('<KeyRelease-Down>', self.backwardKey)
         self.bind('<Shift-KeyRelease-Up>',self.upKey)
         self.bind('<Shift-KeyRelease-Down>',self.downKey)
+        self.bind('<Return>', self.hitEnter)
 
         self.q = Queue()
 
         # Start Queue Listening event
         self.qLoop()
+
 
     def eth_loop(self):
         '''
@@ -108,10 +114,12 @@ class Application(tk.Frame):
                 if qr: qr.put(r)
         except:
             pass
-
         self.after(100, self.qLoop)
 
     # Setup Element on GUI
+    # This is main part that u edit
+    # TODO: run loop that continually refreshes/reinitializes all these features for debuggin purposes, remove that code before pushing.
+
     def createWidgets(self):
         # Create Menu
         MenuBar = tk.Menu(self.master)
@@ -130,39 +138,17 @@ class Application(tk.Frame):
         DataMenu.add_checkbutton(label='Sticky Data in Plotter',onvalue = 1, offvalue = 0, variable=self.stickyPlotter,command = self.ToggleStickyPlotter)
         MenuBar.add_cascade(label='Data',menu = DataMenu)
 
-        # Create Script Cascade
-        ScriptMenu = tk.Menu(MenuBar, tearoff=False)
-        ScriptMenu.add_command(label='ScriptBuilder',command = self.startScriptBuilder)
-        MenuBar.add_cascade(label='Scripts',menu = ScriptMenu)
+        # Create Debug Cascade, with Func to Exec window
+        DebugMenu = tk.Menu(MenuBar, tearoff=False)
+        DebugMenu.add_command(label='Debug',command = self.new_winF)
+        MenuBar.add_cascade(label='Debug',menu = DebugMenu)
 
         # Create Network Cascade
         NetworkMenu = tk.Menu(MenuBar, tearoff=False)
         NetworkMenu.add_command(label='Network Config',command = self.startEthernetGUI)
         MenuBar.add_cascade(label='Network',menu = NetworkMenu)
 
-
-        # Procedure OptionMenu for Procedure selection
-        ##Label
-        self.CommandLabel = tk.Label(self,text='Procedure Function to Exec')
-        self.CommandLabel.grid(column=0,row=2,columnspan = 2)
-        ##Module
-        self.ModBox = tk.OptionMenu(self,self.ProcMod,*self.Maitre.get_all_modules(),command=self.ModBoxChange)
-        self.ModBox.config(width = 20)
-        self.ModBox.grid(column=2,row=2,columnspan = 1)
-        ##Function
-        self.FuncBox = tk.OptionMenu(self,self.ProcFunc,*self.Maitre.get_func_name(0),command=self.FuncBoxChange)
-        self.FuncBox.config(width = 20)
-        self.FuncBox.grid(column=3,row=2,columnspan = 1)
-        ## Argument Display Field
-        self.CommandDisplay = tk.Entry(self,textvariable=self.ArgDispText, width = 60,state = 'disabled')
-        self.CommandDisplay.grid(column=4,row=1,columnspan = 2)
-        ## Argument Entry Field
-        self.CommandEntry = tk.Entry(self,textvariable=self.ArgText, width = 60)
-        self.CommandEntry.grid(column=4,row=2,columnspan = 2)
-        ## Execute Button
-        self.ProcButton = tk.Button(self, text='Execute',command=self.ProcButton)
-        self.ProcButton.grid(column=6,row=2)
-        # Stages OptionMenu for Function selection
+        # Hidden features on GUI
         if self.Stages != {}:
             ##Label
             self.StageCommandLabel = tk.Label(self,text='Stage Function to Exec')
@@ -185,26 +171,34 @@ class Application(tk.Frame):
             self.StageProcButton = tk.Button(self, text='Execute',command=self.StageClassButton)
             self.StageProcButton.grid(column=6,row=4)
 
-        # Command Field
-        self.CommandLabel = tk.Label(self,text='Command to Exec')
-        self.CommandLabel.grid(column=0,row=5,columnspan = 2)
-        self.CommandEntry = tk.Entry(self,textvariable=self.CommandText,width = 55)
-        self.CommandEntry.grid(column=2,row=5,columnspan = 2)
-        self.CommandButton = tk.Button(self, text='Execute',command=self.CommandButton)
-        self.CommandButton.grid(column=4,row=5)
 
-        # Scripting Field
+        # Parameters for adjusting main buttons on GUI (Browse, Execute, Build)
         self.ScriptLabel = tk.Label(self,text='Script to Execute')
-        self.ScriptLabel.grid(column=0,row=6,columnspan=2)
+        self.ScriptLabel.grid(column=0,row=0,columnspan=2)
 
         self.ScriptEntry = tk.Entry(self,textvariable=self.FileText,width = 55)
-        self.ScriptEntry.grid(column=2,row=6,columnspan=2)
+        self.ScriptEntry.grid(column=2,row=0,columnspan=2)
 
-        self.ScriptButton = tk.Button(self, text='Execute', command=self.ScriptRun)
-        self.ScriptButton.grid(column=4,row=6)
+        self.BrowseButton = tk.Button(self, text='Browse Scripts',command=self.FileBrowse, height = 5, width = 20)
+        self.BrowseButton.grid(column=0,row=2,columnspan=2, rowspan = 4, padx=5, pady=5)
 
-        self.BrowseButton = tk.Button(self, text='Browse',command=self.FileBrowse)
-        self.BrowseButton.grid(column=5,row=6)
+        self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20)
+        self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
+
+        self.BuildButton = tk.Button(self, text='Build Script',command=self.startScriptBuilder, height = 5, width = 20)
+        self.BuildButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
+
+        '''
+        Obsolete Console implementation; now using the Text Widget right below this block of code
+
+        self.ConsoleText.set(main_output.getvalue() +" \n" + buffer.getvalue())
+        self.Consolelabel = tk.Label(self,textvariable=self.ConsoleText, height = 18, width = 45, bg="white", wraplength=300, justify=LEFT)
+        self.Consolelabel.grid(column=2,row=2,columnspan = 2, rowspan = 12)
+        '''
+
+        #Console Text Widget
+        self.Console = tk.Text(self, height=18, width=55)
+        self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30)
 
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
@@ -237,6 +231,75 @@ class Application(tk.Frame):
             self.StepButton = tk.Button(self, text='Set Step',command=self.StepSetButton)
             self.StepButton.grid(column=4,row=8)
 
+    # Function for creating Debug Window
+    def new_winF(self):
+        newwin = tk.Toplevel(self)
+
+        # COMMAND TO EXEC
+        newwin.CommandLabel = tk.Label(newwin,text='Command to Exec')
+        newwin.CommandLabel.grid(column=0,row=5,columnspan = 2)
+        newwin.CommandEntry = tk.Entry(newwin,textvariable=self.CommandText,width = 55)
+        newwin.CommandEntry.grid(column=2,row=5,columnspan = 2)
+        newwin.CommandButton = tk.Button(newwin, text='Execute',command=self.CommandButton)
+        newwin.CommandButton.grid(column=4,row=5)
+
+        # Procedure OptionMenu for Procedure selection
+        ##Label
+        newwin.CommandLabel = tk.Label(newwin,text='Procedure Function to Exec')
+        newwin.CommandLabel.grid(column=0,row=20,columnspan = 2)
+        ##Module
+        newwin.ModBox = tk.OptionMenu(newwin,self.ProcMod,*self.Maitre.get_all_modules(),command=self.ModBoxChange)
+        newwin.ModBox.config(width = 20)
+        newwin.ModBox.grid(column=2,row=20,columnspan = 1)
+        ##Function
+        newwin.FuncBox = tk.OptionMenu(newwin,self.ProcFunc,*self.Maitre.get_func_name(0),command=self.FuncBoxChange)
+        newwin.FuncBox.config(width = 20)
+        newwin.FuncBox.grid(column=3,row=20,columnspan = 1)
+        ## Argument Display Field
+        newwin.CommandDisplay = tk.Entry(newwin,textvariable=self.ArgDispText, width = 60,state = 'disabled')
+        newwin.CommandDisplay.grid(column=4,row=19,columnspan = 2)
+        ## Argument Entry Field
+        newwin.CommandEntry = tk.Entry(newwin,textvariable=self.ArgText, width = 60)
+        newwin.CommandEntry.grid(column=4,row=20,columnspan = 2)
+        ## Execute Button
+        newwin.ProcButton = tk.Button(newwin, text='Execute',command=self.ProcButton)
+        newwin.ProcButton.grid(column=6,row=20)
+
+        # STAGE FUNC TO EXEC
+
+        if self.Stages != {}:
+            ##Label
+            newwin.StageCommandLabel = tk.Label(newwin,text='Stage Function to Exec')
+            newwin.StageCommandLabel.grid(column=0,row=4,columnspan = 2)
+            ##Stage-Class
+            newwin.StageModBox = tk.OptionMenu(newwin,self.StageMod,*list(self.Stages.keys()),command=self.StageClassChange)
+            newwin.StageModBox.config(width = 20)
+            newwin.StageModBox.grid(column=2,row=4,columnspan = 1)
+            ##Function
+            newwin.StageFuncBox = tk.OptionMenu(newwin,self.StageFunc,[],command=self.StageFuncChange)
+            newwin.StageFuncBox.config(width = 20)
+            newwin.StageFuncBox.grid(column=3,row=4,columnspan = 1)
+            ## Argument Display Field
+            newwin.StageCommandEntry = tk.Entry(newwin,textvariable=self.StageArgDispText, width = 60,state = 'disabled')
+            newwin.StageCommandEntry.grid(column=4,row=3,columnspan = 2)
+            ## Argument Entry Field
+            newwin.StageCommandEntry = tk.Entry(newwin,textvariable=self.StageArgText, width = 60)
+            newwin.StageCommandEntry.grid(column=4,row=4,columnspan = 2)
+            ## Execute Button
+            newwin.StageProcButton = tk.Button(newwin, text='Execute',command=self.StageClassButton)
+            newwin.StageProcButton.grid(column=6,row=4)
+
+    # function for enabling you to hit enter to run script instead of pressing execute
+    def hitEnter(self, event):
+        self.ScriptRun()
+
+    # function for updating console every time script is run; ideally would be placed in loop that updates even when no script is running
+    def updateConsole(self, controller):
+        # buffer holds output in stdout; buffer2 holds output in stderr; this function prints stdout and stderr for scriptcontroller and this gui class, but u can implement this for any number of classes
+        self.ConsoleText.set("GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue())
+        self.Console.delete(1.0, tk.END)
+        self.Console.insert(tk.END, "GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue())
+
     ### Functions Triggered by events
     def ToggleStickyPlotter(self):
 
@@ -246,6 +309,7 @@ class Application(tk.Frame):
         else:
             pl = NBPlot()
             pl.set_clear(1)
+
 
     def FileBrowse(self):
         try:
@@ -265,6 +329,22 @@ class Application(tk.Frame):
 
             # Start a thread for the script to run with
             controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
+            self.updateConsole(controller)
+
+            # Obsolete code
+
+            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
+            #outputs = list()
+            #outputs.append(controller.getBuffer())
+            #outputs.append(buffer)
+            #main_output.write(controller.getBuffer().getvalue())
+            #main_output.write(buffer.getvalue().getvalue())
+            #main_output.write(''.join([i.getvalue() for i in outputs]))
+            #self.ConsoleText.set(main_output.getvalue())
+            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
+            #buffer2 = controller.getBuffer().getvalue())
+            #self.ConsoleText.set(controller.getBuffer().getvalue())
+
             scriptThread = threading.Thread(target=controller.read_execute)
             scriptThread.start()
 
@@ -345,6 +425,7 @@ class Application(tk.Frame):
         self.ProcFunc.set(choice)
         argslist = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc)
 
+
         shortlist = []
         for x in argslist:
             if not(x in ["Stages","stages","Maitre","maitre","self"]):
@@ -409,8 +490,19 @@ if __name__=='__main__':
     ### Set Focus on windows to catch key strokes
     app.focus_set()
     ### Start Looping and wating for events
-    app.mainloop()
 
+    #while True:
+        #if userpushbutton call reload() function
+        #reload() will reinitialize components of gui
+    '''
+    import imp
+    import time
+    while True:
+        mod = imp.load_source("GUI", "./GUI.py")
+        mod.function()
+        time.sleep(1)
+    '''
+    app.mainloop()
 
 
 '''

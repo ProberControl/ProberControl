@@ -9,7 +9,20 @@ from queue import Queue
 
 from .DataIO import DataIO
 
+import sys
+import StringIO
+
+# Fields for holding stdout, stderr
+old_stdout = sys.stdout # Memorize the default stdout stream
+sys.stdout = buffer = StringIO.StringIO()
+sys.stderr = buffer2 = StringIO.StringIO()
+
+
 class ScriptController(object):
+
+    # for testing the console in GUI.py
+    print 'Testing Stdout From ScriptController'
+   
     '''
     The purpose of this class is to read-in a measurement script, then
     execute the script when appropriate. It also handles sending
@@ -48,6 +61,13 @@ class ScriptController(object):
     def _promptForErrorHandling(self,text):
         self.upQueue.put((tkinter.messagebox.askquestion,('Prober Error', 'Could the Error be manually resolved ? \n Details: \n'+text),{},self.downQueue))
         return 'yes' == self.downQueue.get()
+
+    # for returning stdout and stderr to GUI.py
+    def getBuffer(self):
+        return buffer
+
+    def getBuffer2(self):
+        return buffer2
 
     def execute_script(self, path = 'results.csv'):
         '''Opens the results file(s) and executes experiments according to the configuration files'''
@@ -297,11 +317,13 @@ class ScriptController(object):
 
         else:
             # Case when ProberControl controls connected stages
+            print('error')
             if not connecting.connect_structure(
                 self.stages,
                 self.maitre,
                 self.coordinatePath,
                 entry['structure'] ):
+                
                 # Write the error to the results but keep going
                 DataIO.writeData(file, "Error Connecting {}.".format(entry['structure']))
                 return True

@@ -51,7 +51,7 @@ class ScriptBuilderGUI:
 
         self.Maitre = Maitre
 
-        _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
+        _bgcolor = '#000000'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
         _ana1color = '#d9d9d9' # X11 color: 'gray85'
@@ -65,14 +65,13 @@ class ScriptBuilderGUI:
         self.style.map('.',background=
             [('selected', _compcolor), ('active',_ana2color)])
 
-        top.geometry("1176x859+459+11")
-        top.title("ScriptBuilder")
+        top.geometry("1000x400+459+11")
+        top.title("Script Builder")
         top.configure(background="#d9d9d9")
 
-
-
+        #TEXTBOX
         self.Scrolledtext1 = ScrolledText(top)
-        self.Scrolledtext1.place(relx=0.55, rely=0.03, relheight=0.93
+        self.Scrolledtext1.place(relx=0.55, rely=0.03, relheight=0.8
                 , relwidth=0.43)
         self.Scrolledtext1.configure(background="white")
         self.Scrolledtext1.configure(font="TkTextFont")
@@ -109,9 +108,8 @@ class ScriptBuilderGUI:
                 command=ScriptBuilder.searchAndReplace,
                 label="Search and Replace")
 
-
         self.AddMeasFrame = LabelFrame(top)
-        self.AddMeasFrame.place(relx=0.03, rely=0.02, relheight=0.4
+        self.AddMeasFrame.place(relx=0.03, rely=0.04, relheight=0.8
                 , relwidth=0.5)
         self.AddMeasFrame.configure(relief=GROOVE)
         self.AddMeasFrame.configure(foreground="black")
@@ -120,7 +118,7 @@ class ScriptBuilderGUI:
         self.AddMeasFrame.configure(width=590)
 
         self.MeasNameEntry = Entry(self.AddMeasFrame)
-        self.MeasNameEntry.place(relx=0.02, rely=0.14, relheight=0.06
+        self.MeasNameEntry.place(relx=0.02, rely=0.28, relheight=0.06
                 , relwidth=0.72)
         self.MeasNameEntry.configure(background="white")
         self.MeasNameEntry.configure(disabledforeground="#a3a3a3")
@@ -166,7 +164,7 @@ class ScriptBuilderGUI:
 
         self.ProcLabel = Label(self.AddMeasFrame)
         self.ProcLabel.place(relx=0.02, rely=0.36, height=20, width=81)
-        self.ProcLabel.configure(background="#d9d9d9")
+        self.ProcLabel.configure(background="#d9d9d9")#d9d9d9
         self.ProcLabel.configure(disabledforeground="#a3a3a3")
         self.ProcLabel.configure(foreground="#000000")
         self.ProcLabel.configure(text='''Procedure File''')
@@ -215,7 +213,7 @@ class ScriptBuilderGUI:
         self.ArgShowEntry.configure(state=DISABLED)
         self.ArgShowEntry.configure(textvariable=ScriptBuilder.ArgShowEntryVar)
         self.ArgShowEntry.configure(width=424)
-
+        
         self.AddMeasButton = Button(self.AddMeasFrame)
         self.AddMeasButton.place(relx=0.02, rely=0.87, height=24, width=147)
         self.AddMeasButton.configure(activebackground="#d9d9d9")
@@ -229,196 +227,6 @@ class ScriptBuilderGUI:
         self.AddMeasButton.configure(pady="0")
         self.AddMeasButton.configure(text='''AddMeasurement''')
         self.AddMeasButton.configure(width=147)
-
-        self.AddBlockFrame = LabelFrame(top)
-        self.AddBlockFrame.place(relx=0.03, rely=0.44, relheight=0.31
-                , relwidth=0.5)
-        self.AddBlockFrame.configure(relief=GROOVE)
-        self.AddBlockFrame.configure(foreground="black")
-        self.AddBlockFrame.configure(text='''Add Block''')
-        self.AddBlockFrame.configure(background="#d9d9d9")
-        self.AddBlockFrame.configure(width=590)
-
-        self.AddBlockButton = Button(self.AddBlockFrame)
-        self.AddBlockButton.place(relx=0.03, rely=0.83, height=24, width=142)
-        self.AddBlockButton.configure(activebackground="#d9d9d9")
-        self.AddBlockButton.configure(activeforeground="#000000")
-        self.AddBlockButton.configure(background="#d9d9d9")
-        self.AddBlockButton.configure(command=ScriptBuilder.addBlock)
-        self.AddBlockButton.configure(disabledforeground="#a3a3a3")
-        self.AddBlockButton.configure(foreground="#000000")
-        self.AddBlockButton.configure(highlightbackground="#d9d9d9")
-        self.AddBlockButton.configure(highlightcolor="black")
-        self.AddBlockButton.configure(pady="0")
-        self.AddBlockButton.configure(text='''Add Block''')
-        self.AddBlockButton.configure(width=142)
-
-        self.BlockTypeLabel = Label(self.AddBlockFrame)
-        self.BlockTypeLabel.place(relx=0.03, rely=0.11, height=21, width=61)
-        self.BlockTypeLabel.configure(background="#d9d9d9")
-        self.BlockTypeLabel.configure(disabledforeground="#a3a3a3")
-        self.BlockTypeLabel.configure(foreground="#000000")
-        self.BlockTypeLabel.configure(text='''BlockType''')
-
-        self.BlockTypeBox = OptionMenu(self.AddBlockFrame,
-        ScriptBuilder.BlockTypeBoxVar,
-        *('','Wafer','Chip','Group'))
-        self.BlockTypeBox.place(relx=0.03, rely=0.19, relheight=0.08
-                , relwidth=0.16)
-        self.BlockTypeBox.configure(width=93)
-        self.BlockTypeBox.configure(takefocus="")
-
-        self.BlockNameLabel = Label(self.AddBlockFrame)
-        self.BlockNameLabel.place(relx=0.31, rely=0.11, height=21, width=67)
-        self.BlockNameLabel.configure(background="#d9d9d9")
-        self.BlockNameLabel.configure(disabledforeground="#a3a3a3")
-        self.BlockNameLabel.configure(foreground="#000000")
-        self.BlockNameLabel.configure(text='''BlockName''')
-
-        self.BlockNameEntry = Entry(self.AddBlockFrame)
-        self.BlockNameEntry.place(relx=0.31, rely=0.19, relheight=0.08
-                , relwidth=0.28)
-        self.BlockNameEntry.configure(background="white")
-        self.BlockNameEntry.configure(disabledforeground="#a3a3a3")
-        self.BlockNameEntry.configure(font="TkFixedFont")
-        self.BlockNameEntry.configure(foreground="#000000")
-        self.BlockNameEntry.configure(insertbackground="black")
-        self.BlockNameEntry.configure(textvariable=ScriptBuilder.BlockNameVar)
-
-        self.CopyCheck = Checkbutton(self.AddBlockFrame)
-        self.CopyCheck.place(relx=0.32, rely=0.83, relheight=0.09, relwidth=0.42)
-        self.CopyCheck.configure(activebackground="#d9d9d9")
-        self.CopyCheck.configure(activeforeground="#000000")
-        self.CopyCheck.configure(background="#d9d9d9")
-        self.CopyCheck.configure(disabledforeground="#a3a3a3")
-        self.CopyCheck.configure(foreground="#000000")
-        self.CopyCheck.configure(highlightbackground="#d9d9d9")
-        self.CopyCheck.configure(highlightcolor="black")
-        self.CopyCheck.configure(justify=LEFT)
-        self.CopyCheck.configure(text='''Copy Measurements from previous Block''')
-        self.CopyCheck.configure(variable=ScriptBuilder.copyLastMeasBlock)
-
-        self.LocalBinFuncLabel = Label(self.AddBlockFrame)
-        self.LocalBinFuncLabel.place(relx=0.03, rely=0.34, height=21, width=128)
-        self.LocalBinFuncLabel.configure(background="#d9d9d9")
-        self.LocalBinFuncLabel.configure(disabledforeground="#a3a3a3")
-        self.LocalBinFuncLabel.configure(foreground="#000000")
-        self.LocalBinFuncLabel.configure(text='''Local Binning Function''')
-
-        self.LocalBinFuncFileLabel = Label(self.AddBlockFrame)
-        self.LocalBinFuncFileLabel.place(relx=0.03, rely=0.42, height=21
-                , width=24)
-        self.LocalBinFuncFileLabel.configure(background="#d9d9d9")
-        self.LocalBinFuncFileLabel.configure(disabledforeground="#a3a3a3")
-        self.LocalBinFuncFileLabel.configure(foreground="#000000")
-        self.LocalBinFuncFileLabel.configure(text='''File''')
-
-        self.LocalBinFuncFileBox = OptionMenu(self.AddBlockFrame,
-        ScriptBuilder.LocalBinFuncFileBoxVar,
-        *self.Maitre.get_all_modules(),
-        command = ScriptBuilder.LocalBinFuncFileBoxChange
-        )
-        self.LocalBinFuncFileBox.place(relx=0.03, rely=0.49, relheight=0.08
-                , relwidth=0.7)
-        self.LocalBinFuncFileBox.configure(width=413)
-        self.LocalBinFuncFileBox.configure(takefocus="")
-
-        self.LocalBinFuncFuncLabel = Label(self.AddBlockFrame)
-        self.LocalBinFuncFuncLabel.place(relx=0.03, rely=0.6, height=21
-                , width=53)
-        self.LocalBinFuncFuncLabel.configure(background="#d9d9d9")
-        self.LocalBinFuncFuncLabel.configure(disabledforeground="#a3a3a3")
-        self.LocalBinFuncFuncLabel.configure(foreground="#000000")
-        self.LocalBinFuncFuncLabel.configure(text='''Function''')
-
-        self.LocalBinFuncFuncBox = OptionMenu(self.AddBlockFrame,
-        ScriptBuilder.LocalBinFuncFuncBoxVar,
-        *self.Maitre.get_func_name(0)
-        )
-        self.LocalBinFuncFuncBox.place(relx=0.03, rely=0.68, relheight=0.08
-                , relwidth=0.7)
-        self.LocalBinFuncFuncBox.configure(width=413)
-        self.LocalBinFuncFuncBox.configure(takefocus="")
-
-        self.GlobalSettingsFrame = LabelFrame(top)
-        self.GlobalSettingsFrame.place(relx=0.03, rely=0.77, relheight=0.19
-                , relwidth=0.5)
-        self.GlobalSettingsFrame.configure(relief=GROOVE)
-        self.GlobalSettingsFrame.configure(foreground="black")
-        self.GlobalSettingsFrame.configure(text='''Global Settings''')
-        self.GlobalSettingsFrame.configure(background="#d9d9d9")
-        self.GlobalSettingsFrame.configure(width=590)
-
-        self.GroupByLabel = Label(self.GlobalSettingsFrame)
-        self.GroupByLabel.place(relx=0.8, rely=0.18, height=21, width=58)
-        self.GroupByLabel.configure(background="#d9d9d9")
-        self.GroupByLabel.configure(disabledforeground="#a3a3a3")
-        self.GroupByLabel.configure(foreground="#000000")
-        self.GroupByLabel.configure(text='''Group By:''')
-
-        self.GroupByBox = OptionMenu(self.GlobalSettingsFrame,
-        ScriptBuilder.GroupByBoxVar,
-        *('','Wafer','Chip','Group'))
-        self.GroupByBox.place(relx=0.8, rely=0.36, relheight=0.13, relwidth=0.14)
-        self.GroupByBox.configure(width=83)
-        self.GroupByBox.configure(takefocus="")
-
-        self.GlobBinFuncLabel = Label(self.GlobalSettingsFrame)
-        self.GlobBinFuncLabel.place(relx=0.02, rely=0.12, height=21, width=134)
-        self.GlobBinFuncLabel.configure(background="#d9d9d9")
-        self.GlobBinFuncLabel.configure(disabledforeground="#a3a3a3")
-        self.GlobBinFuncLabel.configure(foreground="#000000")
-        self.GlobBinFuncLabel.configure(text='''Global Binning Function''')
-
-        self.GlobBinFuncFileLabel = Label(self.GlobalSettingsFrame)
-        self.GlobBinFuncFileLabel.place(relx=0.02, rely=0.24, height=21
-                , width=24)
-        self.GlobBinFuncFileLabel.configure(background="#d9d9d9")
-        self.GlobBinFuncFileLabel.configure(disabledforeground="#a3a3a3")
-        self.GlobBinFuncFileLabel.configure(foreground="#000000")
-        self.GlobBinFuncFileLabel.configure(text='''File''')
-
-        self.GlobBinFuncFileBox = OptionMenu(self.GlobalSettingsFrame,
-        ScriptBuilder.GlobBinFuncFileBoxVar,
-        *self.Maitre.get_all_modules(),
-        command = ScriptBuilder.GlobBinFuncFileBoxChange
-        )
-        self.GlobBinFuncFileBox.place(relx=0.02, rely=0.36, relheight=0.13
-                , relwidth=0.72)
-        self.GlobBinFuncFileBox.configure(width=423)
-        self.GlobBinFuncFileBox.configure(takefocus="")
-
-        self.GlobBinFuncFuncLabel = Label(self.GlobalSettingsFrame)
-        self.GlobBinFuncFuncLabel.place(relx=0.02, rely=0.48, height=21
-                , width=53)
-        self.GlobBinFuncFuncLabel.configure(background="#d9d9d9")
-        self.GlobBinFuncFuncLabel.configure(disabledforeground="#a3a3a3")
-        self.GlobBinFuncFuncLabel.configure(foreground="#000000")
-        self.GlobBinFuncFuncLabel.configure(text='''Function''')
-
-        self.GlobBinFuncFuncBox = OptionMenu(self.GlobalSettingsFrame,
-        ScriptBuilder.GlobBinFuncFuncBoxVar,
-        *self.Maitre.get_func_name(0)
-        )
-        self.GlobBinFuncFuncBox.place(relx=0.02, rely=0.61, relheight=0.13
-                , relwidth=0.72)
-        self.GlobBinFuncFuncBox.configure(width=423)
-        self.GlobBinFuncFuncBox.configure(takefocus="")
-
-        self.GlobalUpdateButton = Button(self.GlobalSettingsFrame)
-        self.GlobalUpdateButton.place(relx=0.02, rely=0.79, height=24, width=137)
-        self.GlobalUpdateButton.configure(activebackground="#d9d9d9")
-        self.GlobalUpdateButton.configure(activeforeground="#000000")
-        self.GlobalUpdateButton.configure(background="#d9d9d9")
-        self.GlobalUpdateButton.configure(disabledforeground="#a3a3a3")
-        self.GlobalUpdateButton.configure(foreground="#000000")
-        self.GlobalUpdateButton.configure(highlightbackground="#d9d9d9")
-        self.GlobalUpdateButton.configure(highlightcolor="black")
-        self.GlobalUpdateButton.configure(pady="0")
-        self.GlobalUpdateButton.configure(text='''Update''')
-        self.GlobalUpdateButton.configure(width=137)
-        self.GlobalUpdateButton.configure(command=ScriptBuilder.GlobalsUpdate)
-
 
 
 
@@ -500,3 +308,4 @@ class ScrolledText(AutoScroll, Text):
 
 if __name__ == '__main__':
     vp_start_gui()
+

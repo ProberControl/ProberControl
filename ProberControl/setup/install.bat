@@ -8,3 +8,5 @@ python -m pip install -r requirements.txt
 
 REM INSTALLING OPENCV
 python -m pip install opencv-python
+
+pause
