@@ -3,7 +3,7 @@ appdirs==1.4.3
 Babel==2.4.0
 backports-abc==0.5
 backports.shutil-get-terminal-size==1.0.0
-bleach==2.0.0
+bleach==3.1.2
 certifi==2017.4.17
 chardet==3.0.3
 colorama==0.3.9
