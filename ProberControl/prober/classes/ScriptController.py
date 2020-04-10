@@ -22,7 +22,7 @@ class ScriptController(object):
 
     # for testing the console in GUI.py
     print('Testing Stdout From ScriptController')
-   
+
     '''
     The purpose of this class is to read-in a measurement script, then
     execute the script when appropriate. It also handles sending
@@ -59,13 +59,9 @@ class ScriptController(object):
         self.resultsPath = os.path.join(self.pwd, 'ProberControl\\config\\')
 
     def _promptForErrorHandling(self,text):
-<<<<<<< Updated upstream
-        self.upQueue.put((tkinter.messagebox.askquestion,('Prober Error', 'Could the Error be manually resolved ? \n Details: \n'+text),{},self.downQueue))
-        return 'yes' == self.downQueue.get()
-=======
+
           self.upQueue.put((tkinter.messagebox.askquestion,('Prober Error', 'Could the Error be manually resolved ? \n Details: \n'+text),{},self.downQueue))
           return 'yes' == self.downQueue.get()
->>>>>>> Stashed changes
 
     # for returning stdout and stderr to GUI.py
     def getBuffer(self):
@@ -102,11 +98,8 @@ class ScriptController(object):
                 # Load New Die
                 if self.binningMode == 'chip' and 'chip' in list(entry.keys()):
                     if old_chip != entry['chip']:
-<<<<<<< Updated upstream
-                        print(("\n Finished Measurement Block of "+old_chip))
-=======
+
                         print("\n Finished Measurement Block of "+old_chip)
->>>>>>> Stashed changes
 
                         args = [old_chip]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
                         binningResult = self._callBinningFunction(old_entry,args)
@@ -121,11 +114,8 @@ class ScriptController(object):
                 # If yes possible start local or default binning function
                 if self.binningMode == 'wafer' and 'wafer' in list(entry.keys()):
                     if old_wafer != entry['wafer']:
-<<<<<<< Updated upstream
-                        print(("\n Finished Measurement Block of "+old_wafer))
-=======
+
                         print("\n Finished Measurement Block of "+old_wafer)
->>>>>>> Stashed changes
 
                         args = [old_wafer]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
                         binningResult = self._callBinningFunction(old_entry,args)
@@ -150,22 +140,16 @@ class ScriptController(object):
 
         # check whether last wafer/chip needs to be binned and stored
         if self.binningMode == 'wafer' and old_wafer:
-<<<<<<< Updated upstream
-            print(("Finished Measurement Block of "+old_wafer))
-=======
+
             print("Finished Measurement Block of "+old_wafer)
->>>>>>> Stashed changes
             args = [old_wafer]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
             binningResult = self._callBinningFunction(old_entry,args)
             self._storeBinningResult(old_wafer, binningResult)
 
             self._freeProber()
         elif self.binningMode == 'chip' and old_chip:
-<<<<<<< Updated upstream
-            print(("Finished Measurement Block of "+old_chip))
-=======
+
             print("Finished Measurement Block of "+old_chip)
->>>>>>> Stashed changes
             args = [old_chip]+out.getRelatedFiles(self.script,self.binningMode,old_entry)
             binningResult = self._callBinningFunction(old_entry,args)
             self._storeBinningResult(old_chip,binningResult)
@@ -324,11 +308,9 @@ class ScriptController(object):
             except Exception as e:
                 data = str(e)
                 usage = None
-<<<<<<< Updated upstream
-                print(('ERROR:: while executing {}:\n{}'.format(entry['function'], e)))
-=======
+
                 print('ERROR:: while executing {}:\n{}'.format(entry['function'], e), file=sys.stderr)
->>>>>>> Stashed changes
+
             finally:
                 # Write the results of the experiment to file
                 DataIO.writeData(file, data, entry['measurement'])
@@ -348,7 +330,7 @@ class ScriptController(object):
                 self.maitre,
                 self.coordinatePath,
                 entry['structure'] ):
-                
+
                 # Write the error to the results but keep going
                 DataIO.writeData(file, "Error Connecting {}.".format(entry['structure']))
                 return True
@@ -367,11 +349,8 @@ class ScriptController(object):
                 except Exception as e:
                     data = str(e)
                     usage = None
-<<<<<<< Updated upstream
-                    print(('ERROR:: while executing {}:\n{}'.format(entry['function'], e)))
-=======
+
                     print('ERROR:: while executing {}:\n{}'.format(entry['function'], e), file=sys.stderr)
->>>>>>> Stashed changes
                 finally:
                     # Write the results of the experiment to file
                     DataIO.writeData(file, data, entry['measurement'])
@@ -397,11 +376,8 @@ class ScriptController(object):
         except Exception as e:
             data = str(e)
             usage = None
-<<<<<<< Updated upstream
-            print(('ERROR:: while executing {}:\n{}'.format(entry['function'], e)))
-=======
+
             print('ERROR:: while executing {}:\n{}'.format(entry['function'], e), file=sys.stderr)
->>>>>>> Stashed changes
         finally:
             # Write the results of the experiment to file
             DataIO.writeData(file, data, entry['measurement'])
@@ -499,13 +475,8 @@ class ScriptController(object):
             else:
                 self._setBinningMode(measurement_collection)
 
-<<<<<<< Updated upstream
-            print(("Detected Binning Group / Mode: " + str(self.binningMode)))
-            print(("Detected Default Binning Function: " + str(self.defaultBinFunc)))
-=======
             print("Detected Binning Group / Mode: " + str(self.binningMode))
             print("Detected Default Binning Function: " + str(self.defaultBinFunc))
->>>>>>> Stashed changes
 
             return measurement_collection
         except IOError as e:
