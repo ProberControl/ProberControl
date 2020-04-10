@@ -18,8 +18,7 @@ from . import ScriptBuilderGUI
 from .EthernetInterface import Eth_Server
 from .EthernetInterface import Eth_GUI
 from .DataIO import DataIO
-<<<<<<< Updated upstream
-=======
+
 from tkinter import *
 
 import sys
@@ -30,8 +29,6 @@ old_stdout = sys.stdout # Memorize the default stdout stream
 sys.stdout = buffer = io.StringIO()
 sys.stderr = buffer2 = io.StringIO()
 main_output = io.StringIO()
-
->>>>>>> Stashed changes
 
 
 ####### Define Window
@@ -333,23 +330,16 @@ class Application(tk.Frame):
             pass # No file selected, no reason to report error
         except Exception as e:
             print(("Error: {}".format(e)))
-<<<<<<< Updated upstream
-=======
+
             self.ConsoleText.set(self.ConsoleText.get() + " \n Error: {}".format(e))
 
->>>>>>> Stashed changes
 
     def ScriptRun(self):
         path = self.FileText.get()
 
         try:
-<<<<<<< Updated upstream
-            print(("Running script {}".format(path)))
-=======
             print((">>Running script {}".format(path)))
-            
-            
->>>>>>> Stashed changes
+
             name = path.split('/')[-1:][0]
 
             # Start a thread for the script to run with
@@ -375,27 +365,19 @@ class Application(tk.Frame):
 
         except IndexError as e:
             print(("Command line error: {}".format(e)))
-<<<<<<< Updated upstream
-        except IOError as e:
-            print(("IO Error: {}".format(e)))
-        except KeyError as e:
-            print(("Error within the configuration file: {}".format(e)))
-        except Exception as e:
-            print(("Error: {}".format(e)))
-=======
+
             self.ConsoleText.set(self.ConsoleText.get() + "\n Command line error: {}".format(e))
-            
+
         except IOError as e:
             print(("IO Error: {}".format(e)))
             self.ConsoleText.set(self.ConsoleText.get() +  "\n Command line error: {}".format(e))
-            
+
         except KeyError as e:
             print(("Error within the configuration file: {}".format(e)))
             self.ConsoleText.set(self.ConsoleText.get() +  "\n Error within the configuration file: {}".format(e))
         except Exception as e:
             print(("Error: {}".format(e)))
             self.ConsoleText.set(self.ConsoleText.get() +  "\n Error: {}".format(e))
->>>>>>> Stashed changes
 
     def startEthernetGUI(self):
         BuilderWindow=tk.Toplevel(self)
@@ -420,17 +402,13 @@ class Application(tk.Frame):
         # check if instrument has been locked
         bounded_method = self.ActiveStageFuncList[self.ActiveStageFunc]
         if g().is_locked(bounded_method.__self__):
-<<<<<<< Updated upstream
-            print(('Cannot execute method {} : instrument locked by running script.'.format(bounded_method)))
-        else:
-            print((bounded_method(*ArgList)))
-=======
+
             print('Cannot execute method {} : instrument locked by running script.'.format(bounded_method))
             self.ConsoleText.set(self.ConsoleText.get() +  '\n Cannot execute method {} : instrument locked by running script.'.format(bounded_method))
         else:
             print(bounded_method(*ArgList))
             self.ConsoleText.set(self.ConsoleText.get() + bounded_method(*ArgList))
->>>>>>> Stashed changes
+
 
     def StageFuncChange(self,choice):
         self.ActiveStageFunc = self.ActiveStageFuncNames.index(choice)
@@ -464,11 +442,7 @@ class Application(tk.Frame):
 
         ArgList = DataIO.parameter_prep(Stages = self.Stages, Maitre = self.Maitre,arg_string = self.ArgText.get(),func_parameter_list = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc))
 
-<<<<<<< Updated upstream
-        print((self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList)))
-=======
         print(self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList))
->>>>>>> Stashed changes
         self.gh.release_current_user_instruments()
 
 
