@@ -1,37 +1,34 @@
 #!/usr/bin/env python
-import tkinter as tk
+import Tkinter as tk
 import threading
-from queue import Queue
+from Queue import Queue
 import inspect
 import operator
 import logging
 from time import sleep
 from functools import partial
-from .maitre import Maitre
-from .DataViewer import DataViewer
-from . import Initializer as i
-import tkinter.filedialog
-from . import ScriptController
-from .plotter import NBPlot
-from .Global_MeasureHandler import Global_MeasureHandler as g
-from . import ScriptBuilderGUI
-from .EthernetInterface import Eth_Server
-from .EthernetInterface import Eth_GUI
-from .DataIO import DataIO
-<<<<<<< Updated upstream
-=======
-from tkinter import *
+from maitre import Maitre
+from DataViewer import DataViewer
+import Initializer as i
+import tkFileDialog
+import ScriptController
+from plotter import NBPlot
+from Global_MeasureHandler import Global_MeasureHandler as g
+import ScriptBuilderGUI
+from EthernetInterface import Eth_Server
+from EthernetInterface import Eth_GUI
+from DataIO import DataIO
+from Tkinter import *
 
 import sys
-import io
+import StringIO
 
 # For memorizing stdout and stderr to display on the console Text widget in GUI
 old_stdout = sys.stdout # Memorize the default stdout stream
-sys.stdout = buffer = io.StringIO()
-sys.stderr = buffer2 = io.StringIO()
-main_output = io.StringIO()
+sys.stdout = buffer = StringIO.StringIO()
+sys.stderr = buffer2 = StringIO.StringIO()
+main_output = StringIO.StringIO()
 
->>>>>>> Stashed changes
 
 
 ####### Define Window
@@ -42,7 +39,7 @@ class Application(tk.Frame):
 
     def restartGUI(self, Maitre, stages = {}):
         self.__init__(Maitre, stages)
-
+    
     def __init__(self, master=None, stages={}):
         # Initialise GUI
         tk.Frame.__init__(self, master)
@@ -107,8 +104,8 @@ class Application(tk.Frame):
 
         # Start Queue Listening event
         self.qLoop()
-
-
+        
+    
     def eth_loop(self):
         '''
         Calls repeatedly Eth interface update function. To check for new connections or commands.
@@ -133,7 +130,7 @@ class Application(tk.Frame):
     # Setup Element on GUI
     # This is main part that u edit
     # TODO: run loop that continually refreshes/reinitializes all these features for debuggin purposes, remove that code before pushing.
-
+  
     def createWidgets(self):
         # Create Menu
         MenuBar = tk.Menu(self.master)
@@ -161,7 +158,7 @@ class Application(tk.Frame):
         NetworkMenu = tk.Menu(MenuBar, tearoff=False)
         NetworkMenu.add_command(label='Network Config',command = self.startEthernetGUI)
         MenuBar.add_cascade(label='Network',menu = NetworkMenu)
-
+       
         # Hidden features on GUI
         if self.Stages != {}:
             ##Label
@@ -184,7 +181,7 @@ class Application(tk.Frame):
             ## Execute Button
             self.StageProcButton = tk.Button(self, text='Execute',command=self.StageClassButton)
             self.StageProcButton.grid(column=6,row=4)
-
+        
 
         # Parameters for adjusting main buttons on GUI (Browse, Execute, Build)
         self.ScriptLabel = tk.Label(self,text='Script to Execute')
@@ -192,16 +189,16 @@ class Application(tk.Frame):
 
         self.ScriptEntry = tk.Entry(self,textvariable=self.FileText,width = 55)
         self.ScriptEntry.grid(column=2,row=0,columnspan=2)
-
+        
         self.BrowseButton = tk.Button(self, text='Browse Scripts',command=self.FileBrowse, height = 5, width = 20)
         self.BrowseButton.grid(column=0,row=2,columnspan=2, rowspan = 4, padx=5, pady=5)
-
+        
         self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20)
         self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
-
+        
         self.BuildButton = tk.Button(self, text='Build Script',command=self.startScriptBuilder, height = 5, width = 20)
         self.BuildButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
-
+        
         '''
         Obsolete Console implementation; now using the Text Widget right below this block of code
 
@@ -213,11 +210,11 @@ class Application(tk.Frame):
         #Console Text Widget
         self.Console = tk.Text(self, height=18, width=55)
         self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30)
-
+        
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
         self.StageButtons = {}
-        for k,v in list(self.Stages.items()):
+        for k,v in self.Stages.items():
             if 'O' == k[0]:
                 self.StageButtons[k]=tk.Button(self, text=k ,command= partial(self.SetActiveStage,k))
                 self.StageButtons[k].grid(column=self.StageButtonI,row=7)
@@ -246,9 +243,9 @@ class Application(tk.Frame):
             self.StepButton.grid(column=4,row=8)
 
     # Function for creating Debug Window
-    def new_winF(self):
+    def new_winF(self): 
         newwin = tk.Toplevel(self)
-
+        
         # COMMAND TO EXEC
         newwin.CommandLabel = tk.Label(newwin,text='Command to Exec')
         newwin.CommandLabel.grid(column=0,row=5,columnspan = 2)
@@ -278,7 +275,7 @@ class Application(tk.Frame):
         ## Execute Button
         newwin.ProcButton = tk.Button(newwin, text='Execute',command=self.ProcButton)
         newwin.ProcButton.grid(column=6,row=20)
-
+        
         # STAGE FUNC TO EXEC
 
         if self.Stages != {}:
@@ -302,15 +299,15 @@ class Application(tk.Frame):
             ## Execute Button
             newwin.StageProcButton = tk.Button(newwin, text='Execute',command=self.StageClassButton)
             newwin.StageProcButton.grid(column=6,row=4)
-
-    # function for enabling you to hit enter to run script instead of pressing execute
+    
+    # function for enabling you to hit enter to run script instead of pressing execute      
     def hitEnter(self, event):
-        self.ScriptRun()
+        self.ScriptRun()      
 
     # function for updating console every time script is run; ideally would be placed in loop that updates even when no script is running
     def updateConsole(self, controller):
         # buffer holds output in stdout; buffer2 holds output in stderr; this function prints stdout and stderr for scriptcontroller and this gui class, but u can implement this for any number of classes
-        self.ConsoleText.set("GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue())
+        self.ConsoleText.set("GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue()) 
         self.Console.delete(1.0, tk.END)
         self.Console.insert(tk.END, "GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue())
 
@@ -323,33 +320,26 @@ class Application(tk.Frame):
         else:
             pl = NBPlot()
             pl.set_clear(1)
-
+    
 
     def FileBrowse(self):
         try:
-            inputFiles = tkinter.filedialog.askopenfilenames()
+            inputFiles = tkFileDialog.askopenfilenames()
             self.FileText.set(self.master.tk.splitlist(inputFiles)[0])
         except IndexError:
             pass # No file selected, no reason to report error
         except Exception as e:
-            print(("Error: {}".format(e)))
-<<<<<<< Updated upstream
-=======
+            print("Error: {}".format(e))
             self.ConsoleText.set(self.ConsoleText.get() + " \n Error: {}".format(e))
 
->>>>>>> Stashed changes
 
     def ScriptRun(self):
         path = self.FileText.get()
 
         try:
-<<<<<<< Updated upstream
-            print(("Running script {}".format(path)))
-=======
-            print((">>Running script {}".format(path)))
+            print(">>Running script {}".format(path))
             
             
->>>>>>> Stashed changes
             name = path.split('/')[-1:][0]
 
             # Start a thread for the script to run with
@@ -374,28 +364,19 @@ class Application(tk.Frame):
             scriptThread.start()
 
         except IndexError as e:
-            print(("Command line error: {}".format(e)))
-<<<<<<< Updated upstream
-        except IOError as e:
-            print(("IO Error: {}".format(e)))
-        except KeyError as e:
-            print(("Error within the configuration file: {}".format(e)))
-        except Exception as e:
-            print(("Error: {}".format(e)))
-=======
+            print("Command line error: {}".format(e))
             self.ConsoleText.set(self.ConsoleText.get() + "\n Command line error: {}".format(e))
             
         except IOError as e:
-            print(("IO Error: {}".format(e)))
+            print("IO Error: {}".format(e))
             self.ConsoleText.set(self.ConsoleText.get() +  "\n Command line error: {}".format(e))
             
         except KeyError as e:
-            print(("Error within the configuration file: {}".format(e)))
+            print("Error within the configuration file: {}".format(e))
             self.ConsoleText.set(self.ConsoleText.get() +  "\n Error within the configuration file: {}".format(e))
         except Exception as e:
-            print(("Error: {}".format(e)))
+            print("Error: {}".format(e))
             self.ConsoleText.set(self.ConsoleText.get() +  "\n Error: {}".format(e))
->>>>>>> Stashed changes
 
     def startEthernetGUI(self):
         BuilderWindow=tk.Toplevel(self)
@@ -420,17 +401,11 @@ class Application(tk.Frame):
         # check if instrument has been locked
         bounded_method = self.ActiveStageFuncList[self.ActiveStageFunc]
         if g().is_locked(bounded_method.__self__):
-<<<<<<< Updated upstream
-            print(('Cannot execute method {} : instrument locked by running script.'.format(bounded_method)))
-        else:
-            print((bounded_method(*ArgList)))
-=======
-            print('Cannot execute method {} : instrument locked by running script.'.format(bounded_method))
+            print 'Cannot execute method {} : instrument locked by running script.'.format(bounded_method)
             self.ConsoleText.set(self.ConsoleText.get() +  '\n Cannot execute method {} : instrument locked by running script.'.format(bounded_method))
         else:
-            print(bounded_method(*ArgList))
+            print bounded_method(*ArgList)
             self.ConsoleText.set(self.ConsoleText.get() + bounded_method(*ArgList))
->>>>>>> Stashed changes
 
     def StageFuncChange(self,choice):
         self.ActiveStageFunc = self.ActiveStageFuncNames.index(choice)
@@ -464,11 +439,7 @@ class Application(tk.Frame):
 
         ArgList = DataIO.parameter_prep(Stages = self.Stages, Maitre = self.Maitre,arg_string = self.ArgText.get(),func_parameter_list = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc))
 
-<<<<<<< Updated upstream
-        print((self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList)))
-=======
-        print(self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList))
->>>>>>> Stashed changes
+        print self.Maitre.execute_func(self.ActiveMod,self.ActiveFunc,ArgList)
         self.gh.release_current_user_instruments()
 
 
@@ -476,7 +447,7 @@ class Application(tk.Frame):
         self.ActiveFunc = self.Maitre.get_func_name(self.ActiveMod).index(choice)
         self.ProcFunc.set(choice)
         argslist = self.Maitre.get_func_params(self.ActiveMod,self.ActiveFunc)
-
+        
 
         shortlist = []
         for x in argslist:
@@ -493,7 +464,7 @@ class Application(tk.Frame):
 
 
     def SetActiveStage(self,Stage):
-        print(Stage)
+        print Stage
         self.ActiveStage = Stage
         self.StepText.set(self.Stages[self.ActiveStage].stepsize)
         if 'O' in self.ActiveStage or 'E' in self.ActiveStage:
@@ -504,7 +475,7 @@ class Application(tk.Frame):
     def CommandButton(self):
         # Strg in Command Field:
         command = self.CommandText.get()
-        print(command)
+        print command
         exec(command)
         self.focus_set()
 
@@ -542,10 +513,10 @@ if __name__=='__main__':
     ### Set Focus on windows to catch key strokes
     app.focus_set()
     ### Start Looping and wating for events
-
+   
     #while True:
         #if userpushbutton call reload() function
-        #reload() will reinitialize components of gui
+        #reload() will reinitialize components of gui   
     '''
     import imp
     import time
