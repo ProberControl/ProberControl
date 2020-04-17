@@ -193,11 +193,13 @@ class Application(tk.Frame):
         self.BrowseButton = tk.Button(self, text='Browse Scripts',command=self.FileBrowse, height = 5, width = 20)
         self.BrowseButton.grid(column=0,row=2,columnspan=2, rowspan = 4, padx=5, pady=5)
 
-        self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20)
-        self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
-
         self.BuildButton = tk.Button(self, text='Build Script',command=self.startScriptBuilder, height = 5, width = 20)
         self.BuildButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
+
+        self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20, bg = "green", fg = "white")
+        self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
+
+
 
         '''
         Obsolete Console implementation; now using the Text Widget right below this block of code

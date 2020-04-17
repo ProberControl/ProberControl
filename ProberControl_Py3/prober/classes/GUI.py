@@ -19,6 +19,7 @@ from .EthernetInterface import Eth_Server
 from .EthernetInterface import Eth_GUI
 from .DataIO import DataIO
 from tkinter import *
+from tkinter import font as tkFont
 
 import sys
 import io
@@ -175,6 +176,7 @@ class Application(tk.Frame):
             ## Argument Display Field
             self.StageCommandEntry = tk.Entry(self,textvariable=self.StageArgDispText, width = 60,state = 'disabled')
             self.StageCommandEntry.grid(column=4,row=3,columnspan = 2)
+
             ## Argument Entry Field
             self.StageCommandEntry = tk.Entry(self,textvariable=self.StageArgText, width = 60)
             self.StageCommandEntry.grid(column=4,row=4,columnspan = 2)
@@ -187,17 +189,27 @@ class Application(tk.Frame):
         self.ScriptLabel = tk.Label(self,text='Script to Execute')
         self.ScriptLabel.grid(column=0,row=0,columnspan=2)
 
-        self.ScriptEntry = tk.Entry(self,textvariable=self.FileText,width = 55)
-        self.ScriptEntry.grid(column=2,row=0,columnspan=2)
+
+        self.ScriptEntry = tk.Entry(self,textvariable=self.FileText) #,width = 55
+        self.ScriptEntry.grid(column=2,row=0, columnspan = 2, sticky="ew")
+        self.rowconfigure(0, weight = 2)
+        self.columnconfigure(2, weight = 1)
+        #self.ScriptEntry.columnconfigure(3, weight = 0)
+        #self.ScriptEntry.columnconfigure(4, weight = 0)
 
         self.BrowseButton = tk.Button(self, text='Browse Scripts',command=self.FileBrowse, height = 5, width = 20)
         self.BrowseButton.grid(column=0,row=2,columnspan=2, rowspan = 4, padx=5, pady=5)
 
-        self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20)
-        self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
-
         self.BuildButton = tk.Button(self, text='Build Script',command=self.startScriptBuilder, height = 5, width = 20)
-        self.BuildButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
+        self.BuildButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
+
+        myFont = tkFont.Font(size = 30)
+        self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20, bg = "green", fg = "white")
+        self.ScriptButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
+
+        #self.ScriptButton['font'] = myFont
+
+
 
         '''
         Obsolete Console implementation; now using the Text Widget right below this block of code
