@@ -39,11 +39,12 @@ main_output = io.StringIO()
 class Application(tk.Frame):
 
     def restartGUI(self, Maitre, stages = {}):
-        self.__init__(Maitre, stages)
+        self.__init__( Maitre, stages)
 
     def __init__(self, master=None, stages={}):
         # Initialise GUI
         tk.Frame.__init__(self, master)
+        frame = ttk.Frame(self, borderwidth=5, relief = "sunken", width=200, height = 100)
         self.master.title("Prober Control")
         self.grid()
 
@@ -188,24 +189,44 @@ class Application(tk.Frame):
         # Parameters for adjusting main buttons on GUI (Browse, Execute, Build)
         self.ScriptLabel = tk.Label(self,text='Script to Execute')
         self.ScriptLabel.grid(column=0,row=0,columnspan=2)
+        self.ScriptLabel.place(x = 40, y = 10)
+        #self.ScriptLabel.place(x = 10, y = 15)
 
 
         self.ScriptEntry = tk.Entry(self,textvariable=self.FileText) #,width = 55
-        self.ScriptEntry.grid(column=2,row=0, columnspan = 2, sticky="ew")
-        self.rowconfigure(0, weight = 2)
-        self.columnconfigure(2, weight = 1)
+        self.ScriptEntry.grid(column=2,row=0, sticky= 'nsew')
+        self.ScriptEntry.place(x=200, y=8, relwidth=0.70)
+
         #self.ScriptEntry.columnconfigure(3, weight = 0)
         #self.ScriptEntry.columnconfigure(4, weight = 0)
 
         self.BrowseButton = tk.Button(self, text='Browse Scripts',command=self.FileBrowse, height = 5, width = 20)
-        self.BrowseButton.grid(column=0,row=2,columnspan=2, rowspan = 4, padx=5, pady=5)
+        self.BrowseButton.grid(column=0,row=2,columnspan=2)
+        self.BrowseButton.place(x = 10, rely = 0.1, relheight = 0.2 )
+        #self.BrowseButton.pack()
 
         self.BuildButton = tk.Button(self, text='Build Script',command=self.startScriptBuilder, height = 5, width = 20)
-        self.BuildButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
+        self.BuildButton.grid(column=0,row=6,columnspan=2)
+        self.BuildButton.place(x = 10, rely = 0.4, relheight = 0.2 )
 
         myFont = tkFont.Font(size = 30)
         self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20, bg = "green", fg = "white")
-        self.ScriptButton.grid(column=0,row=10,columnspan=2, rowspan = 4, padx=5, pady=5)
+        self.ScriptButton.grid(column=0,row=10,columnspan=2)
+        self.ScriptButton.place(x = 10, rely = 0.7, relheight = 0.2 )
+        #self.ScriptButton.pack()
+
+        #self.grid(column = 0, row = 0)
+        #self.master.grid(column = 0, row = 0, sticky = (N,S,E,W))
+        #frame.grid(column = 0, row = 0, columnspan = 3, rowspan = 2, sticky = (N,S,E,W))
+        self.grid(column=0, row=0, sticky='nsew')
+        self.master.grid_columnconfigure(0, weight=1, minsize = 700)
+        self.master.grid_rowconfigure(0, weight=1, minsize = 400)
+
+        self.rowconfigure(0, weight = 0)
+        self.rowconfigure(2, weight = 1)
+        self.rowconfigure(6, weight = 1)
+        self.rowconfigure(10, weight = 1)
+
 
         #self.ScriptButton['font'] = myFont
 
@@ -221,7 +242,9 @@ class Application(tk.Frame):
 
         #Console Text Widget
         self.Console = tk.Text(self, height=18, width=55)
-        self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30)
+        self.Console.grid(column=2,row=2)
+        self.Console.place(x = 200, y = 40, relwidth = 0.70, relheight = 0.80)
+
 
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
@@ -519,11 +542,18 @@ class Application(tk.Frame):
         t_x = threading.Thread(target=self.Stages[self.ActiveStage].step, args=('B'))
         t_x.start()
 
+def main():
+    root = Tk()
+    app = Application(master=root)
+    #root.focus_set()
+    root.mainloop()
 if __name__=='__main__':
+    main()
+
     ### Create Instance of Window
-    app = Application()
+
     ### Set Focus on windows to catch key strokes
-    app.focus_set()
+
     ### Start Looping and wating for events
 
     #while True:
@@ -537,7 +567,7 @@ if __name__=='__main__':
         mod.function()
         time.sleep(1)
     '''
-    app.mainloop()
+
 
 
 '''
