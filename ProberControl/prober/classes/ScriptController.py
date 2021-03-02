@@ -20,9 +20,6 @@ sys.stderr = buffer2 = io.StringIO()
 
 class ScriptController(object):
 
-    # for testing the console in GUI.py
-    print('Testing Stdout From ScriptController')
-
     '''
     The purpose of this class is to read-in a measurement script, then
     execute the script when appropriate. It also handles sending
@@ -52,7 +49,7 @@ class ScriptController(object):
     def __configurePaths(self, scriptName):
         # This will be different depending on how the program was launched
         pwd = os.path.abspath(path='.')
-
+        print(scriptName)
         self.pwd = os.path.abspath(path='.\\..\\')
         self.configPath = os.path.join(self.pwd, 'ProberControl\\config\\'+scriptName)
         self.coordinatePath = os.path.join(self.pwd, 'ProberControl\\config\\Coordinates.conf')
