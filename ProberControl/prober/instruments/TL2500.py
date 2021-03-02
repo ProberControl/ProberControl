@@ -64,7 +64,7 @@ class TL2500(object):
             try:
                 sock.connect((self.ip_address, self.port))
                 sock.sendall(message + '\n')
-                print sock.recv(1024)
+                print(sock.recv(1024))
                 sock.close()
 
             except Exception:
@@ -319,7 +319,7 @@ class TL2500(object):
 
     def test_connection(self):
         self.sock.sendall('ANSWER ME FROM WITHIN THE CLASS\n')
-        print self.sock.recv(1024)
+        print(self.sock.recv(1024))
 
 
 if __name__ == "__main__":
@@ -356,7 +356,7 @@ if __name__ == "__main__":
         try:
             sock.connect((ip_address, port))
             sock.sendall(message + '\n')
-            print sock.recv(1024)
+            print(sock.recv(1024))
             sock.close()
 
         except Exception:
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     if option > 3:
         # DUMMY FUNCTION FOR prepare_for_coupling
         def prepare_for_coupling(needs):
-            print "ProberControl Ready for Coupling "
+            print("ProberControl Ready for Coupling ")
 
         # Initiate communication channel with TL2500
         prober = TL2500(None, ip_address+":"+str(port))
