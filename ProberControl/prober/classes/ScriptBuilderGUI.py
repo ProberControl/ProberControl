@@ -59,33 +59,22 @@ class ScriptBuilderGUI:
         self.style = tkinter.ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
-        self.style.configure('.',background=_bgcolor)
-        self.style.configure('.',foreground=_fgcolor)
         self.style.configure('.',font="TkDefaultFont")
         self.style.map('.',background=
             [('selected', _compcolor), ('active',_ana2color)])
 
-        top.geometry("1000x400+459+11")
+        top.geometry("1000x600+459+11")
         top.title("Script Builder")
-        top.configure(background="#d9d9d9")
 
         #TEXTBOX
         self.Scrolledtext1 = ScrolledText(top)
         self.Scrolledtext1.place(relx=0.55, rely=0.03, relheight=0.8
                 , relwidth=0.43)
-        self.Scrolledtext1.configure(background="white")
         self.Scrolledtext1.configure(font="TkTextFont")
-        self.Scrolledtext1.configure(foreground="black")
-        self.Scrolledtext1.configure(highlightbackground="#d9d9d9")
-        self.Scrolledtext1.configure(highlightcolor="black")
-        self.Scrolledtext1.configure(insertbackground="black")
-        self.Scrolledtext1.configure(insertborderwidth="3")
-        self.Scrolledtext1.configure(selectbackground="#c4c4c4")
-        self.Scrolledtext1.configure(selectforeground="black")
         self.Scrolledtext1.configure(width=10)
         self.Scrolledtext1.configure(wrap=NONE)
 
-        self.menubar = Menu(top,font="TkMenuFont",bg=_bgcolor,fg=_fgcolor)
+        self.menubar = Menu(top,font="TkMenuFont")
         top.configure(menu = self.menubar)
 
         self.file = Menu(top,tearoff=0)
@@ -109,22 +98,16 @@ class ScriptBuilderGUI:
                 label="Search and Replace")
 
         self.AddMeasFrame = LabelFrame(top)
-        self.AddMeasFrame.place(relx=0.03, rely=0.04, relheight=0.8
+        self.AddMeasFrame.place(relx=0.03, rely=0.04, relheight=0.9
                 , relwidth=0.5)
         self.AddMeasFrame.configure(relief=GROOVE)
-        self.AddMeasFrame.configure(foreground="black")
         self.AddMeasFrame.configure(text='''Add Measurement''')
-        self.AddMeasFrame.configure(background="#d9d9d9")
         self.AddMeasFrame.configure(width=590)
 
         self.MeasNameEntry = Entry(self.AddMeasFrame)
-        self.MeasNameEntry.place(relx=0.02, rely=0.28, relheight=0.06
+        self.MeasNameEntry.place(relx=0.02, rely=0.05, relheight=0.06
                 , relwidth=0.72)
-        self.MeasNameEntry.configure(background="white")
-        self.MeasNameEntry.configure(disabledforeground="#a3a3a3")
         self.MeasNameEntry.configure(font="TkFixedFont")
-        self.MeasNameEntry.configure(foreground="#000000")
-        self.MeasNameEntry.configure(insertbackground="black")
         self.MeasNameEntry.configure(textvariable=ScriptBuilder.MeasNameVar)
         self.MeasNameEntry.configure(width=424)
 
@@ -133,47 +116,31 @@ class ScriptBuilderGUI:
         *self.Maitre.get_all_modules(),
         command = ScriptBuilder.ProcBoxChange
         )
-        self.ProcBox.place(relx=0.02, rely=0.43, relheight=0.06, relwidth=0.72)
+        self.ProcBox.place(relx=0.02, rely=0.35, relheight=0.06, relwidth=0.72)
         self.ProcBox.configure(width=423)
         self.ProcBox.configure(takefocus="")
 
         self.StructEntry = Entry(self.AddMeasFrame)
-        self.StructEntry.place(relx=0.02, rely=0.26, relheight=0.06
+        self.StructEntry.place(relx=0.02, rely=0.20, relheight=0.06
                 , relwidth=0.72)
-        self.StructEntry.configure(background="white")
-        self.StructEntry.configure(disabledforeground="#a3a3a3")
         self.StructEntry.configure(font="TkFixedFont")
-        self.StructEntry.configure(foreground="#000000")
-        self.StructEntry.configure(insertbackground="black")
         self.StructEntry.configure(textvariable=ScriptBuilder.StructNameVar)
         self.StructEntry.configure(width=424)
 
         self.MeasNameLabel = Label(self.AddMeasFrame)
-        self.MeasNameLabel.place(relx=0.02, rely=0.07, height=21, width=114)
-        self.MeasNameLabel.configure(background="#d9d9d9")
-        self.MeasNameLabel.configure(disabledforeground="#a3a3a3")
-        self.MeasNameLabel.configure(foreground="#000000")
+        self.MeasNameLabel.place(relx=0.02, rely=0.00, height=21, width=114)
         self.MeasNameLabel.configure(text='''Measurement Name''')
 
         self.StructLabel = Label(self.AddMeasFrame)
-        self.StructLabel.place(relx=0.02, rely=0.197, height=21, width=86)
-        self.StructLabel.configure(background="#d9d9d9")
-        self.StructLabel.configure(disabledforeground="#a3a3a3")
-        self.StructLabel.configure(foreground="#000000")
+        self.StructLabel.place(relx=0.02, rely=0.15, height=21, width=86)
         self.StructLabel.configure(text='''StructureName''')
 
         self.ProcLabel = Label(self.AddMeasFrame)
-        self.ProcLabel.place(relx=0.02, rely=0.36, height=20, width=81)
-        self.ProcLabel.configure(background="#d9d9d9")#d9d9d9
-        self.ProcLabel.configure(disabledforeground="#a3a3a3")
-        self.ProcLabel.configure(foreground="#000000")
+        self.ProcLabel.place(relx=0.02, rely=0.30, height=20, width=81)
         self.ProcLabel.configure(text='''Procedure File''')
 
         self.FuncLabel = Label(self.AddMeasFrame)
-        self.FuncLabel.place(relx=0.02, rely=0.52, height=21, width=142)
-        self.FuncLabel.configure(background="#d9d9d9")
-        self.FuncLabel.configure(disabledforeground="#a3a3a3")
-        self.FuncLabel.configure(foreground="#000000")
+        self.FuncLabel.place(relx=0.02, rely=0.45, height=21, width=142)
         self.FuncLabel.configure(text='''Function to be performed''')
 
         self.FuncBox = OptionMenu(self.AddMeasFrame,
@@ -181,49 +148,31 @@ class ScriptBuilderGUI:
         *self.Maitre.get_func_name(0),
         command = ScriptBuilder.FuncBoxChange
         )
-        self.FuncBox.place(relx=0.02, rely=0.58, relheight=0.06, relwidth=0.72)
+        self.FuncBox.place(relx=0.02, rely=0.50, relheight=0.06, relwidth=0.72)
         self.FuncBox.configure(width=423)
         self.FuncBox.configure(takefocus="")
 
         self.ArgLabel = Label(self.AddMeasFrame)
-        self.ArgLabel.place(relx=0.02, rely=0.64, height=21, width=65)
-        self.ArgLabel.configure(background="#d9d9d9")
-        self.ArgLabel.configure(disabledforeground="#a3a3a3")
-        self.ArgLabel.configure(foreground="#000000")
+        self.ArgLabel.place(relx=0.02, rely=0.60, height=21, width=65)
         self.ArgLabel.configure(text='''Arguments''')
 
         self.ArgEntry = Entry(self.AddMeasFrame)
-        self.ArgEntry.place(relx=0.02, rely=0.78, relheight=0.06, relwidth=0.72)
-        self.ArgEntry.configure(background="white")
-        self.ArgEntry.configure(disabledforeground="#a3a3a3")
+        self.ArgEntry.place(relx=0.02, rely=0.75, relheight=0.06, relwidth=0.72)
         self.ArgEntry.configure(font="TkFixedFont")
-        self.ArgEntry.configure(foreground="#000000")
-        self.ArgEntry.configure(insertbackground="black")
         self.ArgEntry.configure(textvariable=ScriptBuilder.ArgEntryVar)
         self.ArgEntry.configure(width=424)
 
         self.ArgShowEntry = Entry(self.AddMeasFrame)
-        self.ArgShowEntry.place(relx=0.02, rely=0.7, relheight=0.06
+        self.ArgShowEntry.place(relx=0.02, rely=0.65, relheight=0.06
                 , relwidth=0.72)
-        self.ArgShowEntry.configure(background="white")
-        self.ArgShowEntry.configure(disabledforeground="#a3a3a3")
         self.ArgShowEntry.configure(font="TkFixedFont")
-        self.ArgShowEntry.configure(foreground="#000000")
-        self.ArgShowEntry.configure(insertbackground="black")
         self.ArgShowEntry.configure(state=DISABLED)
         self.ArgShowEntry.configure(textvariable=ScriptBuilder.ArgShowEntryVar)
         self.ArgShowEntry.configure(width=424)
-        
+
         self.AddMeasButton = Button(self.AddMeasFrame)
-        self.AddMeasButton.place(relx=0.02, rely=0.87, height=24, width=147)
-        self.AddMeasButton.configure(activebackground="#d9d9d9")
-        self.AddMeasButton.configure(activeforeground="#000000")
-        self.AddMeasButton.configure(background="#d9d9d9")
+        self.AddMeasButton.place(relx=0.02, rely=0.9, height=24, width=147)
         self.AddMeasButton.configure(command=ScriptBuilder.addMeasurement)
-        self.AddMeasButton.configure(disabledforeground="#a3a3a3")
-        self.AddMeasButton.configure(foreground="#000000")
-        self.AddMeasButton.configure(highlightbackground="#d9d9d9")
-        self.AddMeasButton.configure(highlightcolor="black")
         self.AddMeasButton.configure(pady="0")
         self.AddMeasButton.configure(text='''AddMeasurement''')
         self.AddMeasButton.configure(width=147)
@@ -308,4 +257,3 @@ class ScrolledText(AutoScroll, Text):
 
 if __name__ == '__main__':
     vp_start_gui()
-
