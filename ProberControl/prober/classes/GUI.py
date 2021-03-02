@@ -199,19 +199,12 @@ class Application(tk.Frame):
         self.ScriptButton = tk.Button(self, text='Execute Script', command=self.ScriptRun, height = 5, width = 20, bg = "green", fg = "white")
         self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
 
-
-
-        '''
-        Obsolete Console implementation; now using the Text Widget right below this block of code
-
-        self.ConsoleText.set(main_output.getvalue() +" \n" + buffer.getvalue())
-        self.Consolelabel = tk.Label(self,textvariable=self.ConsoleText, height = 18, width = 45, bg="white", wraplength=300, justify=LEFT)
-        self.Consolelabel.grid(column=2,row=2,columnspan = 2, rowspan = 12)
-        '''
-
         #Console Text Widget
-        self.Console = tk.Text(self, height=18, width=55)
-        self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30)
+        self.Console = tk.Text(self, height=18, width=80)
+        self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30, sticky='ew')
+        self.ConsoleScrollBar = tk.Scrollbar(self, orient='vertical')
+        self.ConsoleScrollBar.grid(row=2,column=2,columnspan = 2, rowspan = 30, sticky='nse')
+        self.ConsoleScrollBar.config(command=self.Console.yview)
 
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
@@ -308,10 +301,8 @@ class Application(tk.Frame):
 
     # function for updating console every time script is run; ideally would be placed in loop that updates even when no script is running
     def updateConsole(self, controller):
-        # buffer holds output in stdout; buffer2 holds output in stderr; this function prints stdout and stderr for scriptcontroller and this gui class, but u can implement this for any number of classes
-        self.ConsoleText.set("GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue())
-        self.Console.delete(1.0, tk.END)
-        self.Console.insert(tk.END, "GUI: " + buffer.getvalue() + buffer2.getvalue() + "\nScriptBuilder: "  +  controller.getBuffer().getvalue() + controller.getBuffer2().getvalue())
+        self.Console.insert(tk.END, buffer.getvalue() + buffer2.getvalue())
+        self.Console.see("end")
 
     ### Functions Triggered by events
     def ToggleStickyPlotter(self):
@@ -340,27 +331,12 @@ class Application(tk.Frame):
         path = self.FileText.get()
 
         try:
-            print((">>Running script {}".format(path)))
 
             name = path.split('/')[-1:][0]
 
             # Start a thread for the script to run with
             controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
             self.updateConsole(controller)
-
-            # Obsolete code
-
-            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
-            #outputs = list()
-            #outputs.append(controller.getBuffer())
-            #outputs.append(buffer)
-            #main_output.write(controller.getBuffer().getvalue())
-            #main_output.write(buffer.getvalue().getvalue())
-            #main_output.write(''.join([i.getvalue() for i in outputs]))
-            #self.ConsoleText.set(main_output.getvalue())
-            #self.ConsoleText.set(buffer.getvalue() + controller.getBuffer().getvalue())
-            #buffer2 = controller.getBuffer().getvalue())
-            #self.ConsoleText.set(controller.getBuffer().getvalue())
 
             scriptThread = threading.Thread(target=controller.read_execute)
             scriptThread.start()
