@@ -83,10 +83,6 @@ def get_o_spectrum_triggered_PowerMeter(maitre,start, stop, step, channels = 1, 
     	pm.prep_measure_on_trigger(sampleNumber)
         pms.append(pm)
 
-    #t0 = time.time()
-    #osa = gh.get_instrument('OSA')
-    #OSAData = osa.get_o_spectrum(start, stop, step)
-
 	laser.startSweep()
 
     while laser.checkSweepStatus() == False:

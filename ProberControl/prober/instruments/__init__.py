@@ -42,7 +42,9 @@ __all__ = [
     'PSY_201',
     'GenPhotPCD104',
     'Keysight8164B_PowerMeter',
-    'Keysight8164B_Laser'
+    'Keysight8164B_Laser',
+    'EXFOT100HP_Laser',
+    'EXFOT100_Laser'
 ]
 
 pipe_instrument_groups = {
