@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import tkinter as tk
+from tkinter import scrolledtext
 import threading
 from queue import Queue
 import inspect
@@ -24,13 +25,16 @@ from tkinter import *
 import sys
 import io
 
-class StdoutRedirector(object):
-    def __init__(self,text_widget):
-        self.text_space = text_widget
-    def write(self,string):
-        self.text_space.insert('end', string)
-        self.text_space.see('end')
+class TextRedirector(object):
+    def __init__(self, widget, tag="stdout"):
+        self.widget = widget
+        self.tag = tag
 
+    def write(self, str):
+        self.widget.configure(state="normal")
+        self.widget.insert("end", str, (self.tag,))
+        self.widget.see("end")
+        self.widget.configure(state="disabled")
 
 ####### Define Window
 # Widgets define Buttons etc
@@ -91,7 +95,8 @@ class Application(tk.Frame):
         if self.ActiveStage != '-1':
             self.StepText.set(self.Stages[self.ActiveStage].stepsize)
         self.createWidgets()
-        #sys.stdout = StdoutRedirector(self.Console)
+        sys.stdout = TextRedirector(self.Console, "stdout")
+        sys.stderr = TextRedirector(self.Console, "stderr")
 
         # Bind Key Strokes To Function
         self.bind('<KeyRelease-Left>', self.leftKey)
@@ -202,10 +207,8 @@ class Application(tk.Frame):
         self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
 
         #Console Text Widget
-        self.Console = tk.Text(self, height=18, width=80)
+        self.Console = scrolledtext.ScrolledText(self, height=18, width=80)
         self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30, sticky='ew')
-        self.ConsoleScrollBar = tk.Scrollbar(self, orient='vertical', command=self.Console.yview)
-        self.ConsoleScrollBar.grid(row=2,column=2,columnspan = 2, rowspan = 30, sticky='nse')
 
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
