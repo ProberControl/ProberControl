@@ -30,12 +30,7 @@ try:
 
         from prober.classes import Initializer, ScriptController, GUI, maitre, ScriptBuilderGUI
         import ScriptBuilder
-        '''
-        import imp
-        import time
 
-        GUI = imp.load_source("GUI", "./prober/classes/GUI.py")
-        '''
         # SYSTEM INITIALIZATION
         init = Initializer.Initializer()
         init.read_config()
@@ -48,7 +43,7 @@ try:
                 #GUI = imp.load_source("GUI", "./prober/classes/GUI.py")
             app = GUI.Application(stages = stages)
             app.focus_set()
-        
+
             import time
         ### Start Looping and wating for events
             app.mainloop()
