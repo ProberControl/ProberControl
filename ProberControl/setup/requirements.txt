@@ -36,7 +36,7 @@ python-dateutil==2.6.0
 pythonlangutil==0.1
 pytz==2016.4
 PyVISA==1.8
-pyzmq==17.0.0
+pyzmq>=17.0.0
 qtconsole==4.3.0
 simplegeneric==0.8.1
 singledispatch==3.4.0.3
