@@ -15,17 +15,14 @@ docutils==0.13.1
 dxfgrabber==0.8.2
 entrypoints==0.2.2
 enum34==1.1.6
-functools32==3.2.3.post2
-gdsCAD==0.4.5
 idna==2.5
 imagesize==0.7.1
 lesscpy==0.13.0
-MarkupSafe==1.0
-matplotlib==1.5.1
+matplotlib>=1.5.1
 mistune==0.8.1
 nbconvert==5.2.1
 nbformat==4.3.0
-numpy==1.11.1
+numpy>=1.11.1
 packaging==16.8
 pandocfilters==1.4.1
 pathlib2==2.2.1
@@ -57,6 +54,6 @@ wcwidth==0.1.7
 webencodings==0.5.1
 widgetsnbextension==2.0.0
 win-unicode-console==0.5
-opencv-python==3.2.0.7
 tqdm==4.11.2
 setuptools==18.5
+serial
