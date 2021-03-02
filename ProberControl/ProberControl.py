@@ -33,7 +33,7 @@ try:
         '''
         import imp
         import time
-        
+
         GUI = imp.load_source("GUI", "./prober/classes/GUI.py")
         '''
         # SYSTEM INITIALIZATION
@@ -48,20 +48,19 @@ try:
                 #GUI = imp.load_source("GUI", "./prober/classes/GUI.py")
             app = GUI.Application(stages = stages)
             app.focus_set()
-        
             import time
         ### Start Looping and wating for events
             app.mainloop()
                 #app.restartGUI(stages = stages)
                 #time.sleep(3)
-            
+
         # stages clean-up
         finally:
             cleanUp(stages)
-        
-        
-        
-        
+
+
+
+
 except:
     traceback.print_exc()
     eval(input("Press Enter to close")) # Python 2

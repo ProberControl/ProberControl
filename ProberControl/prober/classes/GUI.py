@@ -24,11 +24,12 @@ from tkinter import *
 import sys
 import io
 
-# For memorizing stdout and stderr to display on the console Text widget in GUI
-old_stdout = sys.stdout # Memorize the default stdout stream
-sys.stdout = buffer = io.StringIO()
-sys.stderr = buffer2 = io.StringIO()
-main_output = io.StringIO()
+class StdoutRedirector(object):
+    def __init__(self,text_widget):
+        self.text_space = text_widget
+    def write(self,string):
+        self.text_space.insert('end', string)
+        self.text_space.see('end')
 
 
 ####### Define Window
@@ -90,6 +91,7 @@ class Application(tk.Frame):
         if self.ActiveStage != '-1':
             self.StepText.set(self.Stages[self.ActiveStage].stepsize)
         self.createWidgets()
+        #sys.stdout = StdoutRedirector(self.Console)
 
         # Bind Key Strokes To Function
         self.bind('<KeyRelease-Left>', self.leftKey)
@@ -202,9 +204,8 @@ class Application(tk.Frame):
         #Console Text Widget
         self.Console = tk.Text(self, height=18, width=80)
         self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30, sticky='ew')
-        self.ConsoleScrollBar = tk.Scrollbar(self, orient='vertical')
+        self.ConsoleScrollBar = tk.Scrollbar(self, orient='vertical', command=self.Console.yview)
         self.ConsoleScrollBar.grid(row=2,column=2,columnspan = 2, rowspan = 30, sticky='nse')
-        self.ConsoleScrollBar.config(command=self.Console.yview)
 
         # Auto Generate Fields for Connected Stages
         self.StageButtonI = 0
@@ -299,11 +300,6 @@ class Application(tk.Frame):
     def hitEnter(self, event):
         self.ScriptRun()
 
-    # function for updating console every time script is run; ideally would be placed in loop that updates even when no script is running
-    def updateConsole(self, controller):
-        self.Console.insert(tk.END, buffer.getvalue() + buffer2.getvalue())
-        self.Console.see("end")
-
     ### Functions Triggered by events
     def ToggleStickyPlotter(self):
 
@@ -336,7 +332,6 @@ class Application(tk.Frame):
 
             # Start a thread for the script to run with
             controller = ScriptController.ScriptController(self.Maitre, self.Stages, scriptName=name,queue = self.q)
-            self.updateConsole(controller)
 
             scriptThread = threading.Thread(target=controller.read_execute)
             scriptThread.start()
