@@ -207,7 +207,7 @@ class Application(tk.Frame):
         self.ScriptButton.grid(column=0,row=6,columnspan=2, rowspan = 4, padx=5, pady=5)
 
         #Console Text Widget
-        self.Console = scrolledtext.ScrolledText(self, height=18, width=80, bg='black', fg='white')
+        self.Console = scrolledtext.ScrolledText(self, height=18, width=120, bg='black', fg='white', font='consolas 10')
         self.Console.grid(column=2,row=2,columnspan = 2, rowspan = 30, sticky='ew')
         self.Console.tag_config("stderr", background="black", foreground="red")
         self.Console.tag_config("stdout", background="black", foreground="white")
