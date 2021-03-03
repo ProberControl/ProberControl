@@ -16,6 +16,7 @@ from . import ScriptController
 from .plotter import NBPlot
 from .Global_MeasureHandler import Global_MeasureHandler as g
 from . import ScriptBuilderGUI
+from . import DebugGUI
 from .EthernetInterface import Eth_Server
 from .EthernetInterface import Eth_GUI
 from .DataIO import DataIO
@@ -158,37 +159,13 @@ class Application(tk.Frame):
 
         # Create Debug Cascade, with Func to Exec window
         DebugMenu = tk.Menu(MenuBar, tearoff=False)
-        DebugMenu.add_command(label='Debug',command = self.new_winF)
+        DebugMenu.add_command(label='Debug',command = self.startDebugGUI)
         MenuBar.add_cascade(label='Debug',menu = DebugMenu)
 
         # Create Network Cascade
         NetworkMenu = tk.Menu(MenuBar, tearoff=False)
         NetworkMenu.add_command(label='Network Config',command = self.startEthernetGUI)
         MenuBar.add_cascade(label='Network',menu = NetworkMenu)
-
-        # Hidden features on GUI
-        if self.Stages != {}:
-            ##Label
-            self.StageCommandLabel = tk.Label(self,text='Stage Function to Exec')
-            self.StageCommandLabel.grid(column=0,row=4,columnspan = 2)
-            ##Stage-Class
-            self.StageModBox = tk.OptionMenu(self,self.StageMod,*list(self.Stages.keys()),command=self.StageClassChange)
-            self.StageModBox.config(width = 20)
-            self.StageModBox.grid(column=2,row=4,columnspan = 1)
-            ##Function
-            self.StageFuncBox = tk.OptionMenu(self,self.StageFunc,[],command=self.StageFuncChange)
-            self.StageFuncBox.config(width = 20)
-            self.StageFuncBox.grid(column=3,row=4,columnspan = 1)
-            ## Argument Display Field
-            self.StageCommandEntry = tk.Entry(self,textvariable=self.StageArgDispText, width = 60,state = 'disabled')
-            self.StageCommandEntry.grid(column=4,row=3,columnspan = 2)
-            ## Argument Entry Field
-            self.StageCommandEntry = tk.Entry(self,textvariable=self.StageArgText, width = 60)
-            self.StageCommandEntry.grid(column=4,row=4,columnspan = 2)
-            ## Execute Button
-            self.StageProcButton = tk.Button(self, text='Execute',command=self.StageClassButton)
-            self.StageProcButton.grid(column=6,row=4)
-
 
         # Parameters for adjusting main buttons on GUI (Browse, Execute, Build)
         self.ScriptLabel = tk.Label(self,text='Script to Execute')
@@ -212,94 +189,12 @@ class Application(tk.Frame):
         self.Console.tag_config("stderr", background="black", foreground="red")
         self.Console.tag_config("stdout", background="black", foreground="white")
 
-        # Auto Generate Fields for Connected Stages
-        self.StageButtonI = 0
-        self.StageButtons = {}
-        for k,v in list(self.Stages.items()):
-            if 'O' == k[0]:
-                self.StageButtons[k]=tk.Button(self, text=k ,command= partial(self.SetActiveStage,k))
-                self.StageButtons[k].grid(column=self.StageButtonI,row=7)
-                self.StageButtonI +=  1
-            if 'C' == k[0]:
-                self.StageButtons[k]=tk.Button(self, text=k ,command= partial(self.SetActiveStage,k))
-                self.StageButtons[k].grid(column=self.StageButtonI,row=7)
-                self.StageButtonI +=  1
-            if 'E' == k[0]:
-                self.StageButtons[k]=tk.Button(self, text=k ,command= partial(self.SetActiveStage,k))
-                self.StageButtons[k].grid(column=self.StageButtonI,row=7)
-                self.StageButtonI +=  1
-
-        # Set Stepsize in either mm or deg
-        if self.StageButtonI != 0:
-            self.StatusLabel = tk.Label(self,text='Step Size in deg')
-            if self.Stages != {}:
-                if 'O' in self.ActiveStage or 'E' in self.ActiveStage:
-                    self.StatusLabel = tk.Label(self,text='Step Size in mm')
-                if 'C' in self.ActiveStage:
-                    self.StatusLabel = tk.Label(self,text='Step Size in deg')
-            self.StatusLabel.grid(column=0,row=8,columnspan = 1)
-            self.StepEntry = tk.Entry(self,textvariable=self.StepText)
-            self.StepEntry.grid(column=2,row=8,columnspan = 2)
-            self.StepButton = tk.Button(self, text='Set Step',command=self.StepSetButton)
-            self.StepButton.grid(column=4,row=8)
 
     # Function for creating Debug Window
-    def new_winF(self):
-        newwin = tk.Toplevel(self)
-
-        # COMMAND TO EXEC
-        newwin.CommandLabel = tk.Label(newwin,text='Command to Exec')
-        newwin.CommandLabel.grid(column=0,row=5,columnspan = 2)
-        newwin.CommandEntry = tk.Entry(newwin,textvariable=self.CommandText,width = 55)
-        newwin.CommandEntry.grid(column=2,row=5,columnspan = 2)
-        newwin.CommandButton = tk.Button(newwin, text='Execute',command=self.CommandButton)
-        newwin.CommandButton.grid(column=4,row=5)
-
-        # Procedure OptionMenu for Procedure selection
-        ##Label
-        newwin.CommandLabel = tk.Label(newwin,text='Procedure Function to Exec')
-        newwin.CommandLabel.grid(column=0,row=20,columnspan = 2)
-        ##Module
-        newwin.ModBox = tk.OptionMenu(newwin,self.ProcMod,*self.Maitre.get_all_modules(),command=self.ModBoxChange)
-        newwin.ModBox.config(width = 20)
-        newwin.ModBox.grid(column=2,row=20,columnspan = 1)
-        ##Function
-        newwin.FuncBox = tk.OptionMenu(newwin,self.ProcFunc,*self.Maitre.get_func_name(0),command=self.FuncBoxChange)
-        newwin.FuncBox.config(width = 20)
-        newwin.FuncBox.grid(column=3,row=20,columnspan = 1)
-        ## Argument Display Field
-        newwin.CommandDisplay = tk.Entry(newwin,textvariable=self.ArgDispText, width = 60,state = 'disabled')
-        newwin.CommandDisplay.grid(column=4,row=19,columnspan = 2)
-        ## Argument Entry Field
-        newwin.CommandEntry = tk.Entry(newwin,textvariable=self.ArgText, width = 60)
-        newwin.CommandEntry.grid(column=4,row=20,columnspan = 2)
-        ## Execute Button
-        newwin.ProcButton = tk.Button(newwin, text='Execute',command=self.ProcButton)
-        newwin.ProcButton.grid(column=6,row=20)
-
-        # STAGE FUNC TO EXEC
-
-        if self.Stages != {}:
-            ##Label
-            newwin.StageCommandLabel = tk.Label(newwin,text='Stage Function to Exec')
-            newwin.StageCommandLabel.grid(column=0,row=4,columnspan = 2)
-            ##Stage-Class
-            newwin.StageModBox = tk.OptionMenu(newwin,self.StageMod,*list(self.Stages.keys()),command=self.StageClassChange)
-            newwin.StageModBox.config(width = 20)
-            newwin.StageModBox.grid(column=2,row=4,columnspan = 1)
-            ##Function
-            newwin.StageFuncBox = tk.OptionMenu(newwin,self.StageFunc,[],command=self.StageFuncChange)
-            newwin.StageFuncBox.config(width = 20)
-            newwin.StageFuncBox.grid(column=3,row=4,columnspan = 1)
-            ## Argument Display Field
-            newwin.StageCommandEntry = tk.Entry(newwin,textvariable=self.StageArgDispText, width = 60,state = 'disabled')
-            newwin.StageCommandEntry.grid(column=4,row=3,columnspan = 2)
-            ## Argument Entry Field
-            newwin.StageCommandEntry = tk.Entry(newwin,textvariable=self.StageArgText, width = 60)
-            newwin.StageCommandEntry.grid(column=4,row=4,columnspan = 2)
-            ## Execute Button
-            newwin.StageProcButton = tk.Button(newwin, text='Execute',command=self.StageClassButton)
-            newwin.StageProcButton.grid(column=6,row=4)
+    def startDebugGUI(self):
+        BuilderWindow=tk.Toplevel(self)
+        #DebugGUI.DebugGUI(BuilderWindow, self.Maitre, self.Stages)
+        DebugGUI.create_Debug(BuilderWindow, self.Maitre, self.Stages)
 
     # function for enabling you to hit enter to run script instead of pressing execute
     def hitEnter(self, event):
