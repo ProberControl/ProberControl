@@ -193,8 +193,6 @@ class DebugGUI:
         except Exception as e:
             print(("Error: {}".format(e)))
 
-            self.ConsoleText.set(self.ConsoleText.get() + " \n Error: {}".format(e))
-
     def startEthernetGUI(self):
         BuilderWindow=tk.Toplevel(self)
         Eth_GUI(BuilderWindow,self.eth)
@@ -220,10 +218,8 @@ class DebugGUI:
         if g().is_locked(bounded_method.__self__):
 
             print('Cannot execute method {} : instrument locked by running script.'.format(bounded_method))
-            self.ConsoleText.set(self.ConsoleText.get() +  '\n Cannot execute method {} : instrument locked by running script.'.format(bounded_method))
         else:
             print(bounded_method(*ArgList))
-            self.ConsoleText.set(self.ConsoleText.get() + bounded_method(*ArgList))
 
 
     def StageFuncChange(self,choice):
