@@ -24,11 +24,9 @@ class TL2500(object):
         self.port       = int(address.split(":")[1])
 
         try:
-            self.sock.connect((ip_address, port))
-
-
-        except Exception:
-            print("Error in Connection")
+            self.sock.connect((self.ip_address, self.port))
+        except Exception as e:
+            print("Error in Openining the Connection: " + e)
 
 
         self.active = False
@@ -44,31 +42,42 @@ class TL2500(object):
         else:
             self.active = True
 
-    def _communicate(self, message, option=2):
-        ## 1 Base Cummincation - Just Send "message"
+    def _communicate(self, message, option=2, timeout=10):
+        ## 1 Base Communication - Just Send "message"
         if option == 0:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
             try:
                 sock.connect((self.ip_address, self.port))
-                sock.sendall(message + '\n')
+                sock.sendall(message.encode())
                 sock.close()
 
-            except Exception:
-                print("Error in Connection")
+            except Exception as e:
+                print("Error in Sending Message (Option 1): " + e)
 
-        ## 2 Base Cummincation -  Send "message" and print answer
+        ## 2 Base Communication -  Send "message" and print answer
         if option == 2:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+            total_data = []
+            begin = time.time()
             try:
                 sock.connect((self.ip_address, self.port))
-                sock.sendall(message + '\n')
-                print(sock.recv(1024))
+                sock.sendall(message.encode())
+                while True:
+                    if total_data and time.time() - begin > timeout:
+                        break
+                    elif time.time() - begin > timeout * 2:
+                        break
+                    data = sock.recv(1024)
+                    if data:
+                        total_data.append(data)
+                        begin=time.time()
+                    else:
+                        time.sleep(0.1)
                 sock.close()
 
-            except Exception:
-                print("Error in Connection")
+            except Exception as e:
+                print("Error in Establishing a Connection (Option 2): " + e)
 
 ################## TOOL COMMANDS ###############################
 
