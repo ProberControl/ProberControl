@@ -57,3 +57,5 @@ win-unicode-console==0.5
 tqdm==4.11.2
 setuptools==18.5
 serial
+nidcpower==1.1.2
+nidaqmx==0.5.7

@@ -1,0 +1,13 @@
+#Measurement Name 
+Laser power reading
+#structure 
+basic
+#procedure 
+Measure
+#Function 
+get_o_spectrum_triggered_PowerMeter
+#Arguments 
+1550 1560 0.1 1 .\test_jd
+
+
+
