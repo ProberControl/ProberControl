@@ -20,7 +20,7 @@ imagesize==0.7.1
 lesscpy==0.13.0
 matplotlib>=1.5.1
 mistune==0.8.1
-nbconvert==5.2.1
+nbconvert==6.3.0
 nbformat==4.3.0
 numpy>=1.11.1
 packaging==16.8
